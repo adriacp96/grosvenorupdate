@@ -1,4 +1,3 @@
-Puedes agregar una ventana flotante que se pueda cerrar que ponga el siguiente evento que hay en este calendario? Tiene que tener opacidad para que no distraiga mucho y debe estar en la parte superior derecha, que quede estético. El calendario es este: webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,6 +8,8 @@ Puedes agregar una ventana flotante que se pueda cerrar que ponga el siguiente e
     <title>Grosvenor</title>
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
+    <!-- Incluir ical.js desde CDN -->
+    <script src="https://unpkg.com/ical.js@1.4.0/build/ical.min.js"></script>
     <style>
         @font-face {
             font-family: 'Emirates Bold';
@@ -275,9 +276,9 @@ Puedes agregar una ventana flotante que se pueda cerrar que ponga el siguiente e
             text-align: center;
         }
         #firstVisitPopup .icon {
-            height: 1em; /* Ajusta la altura al tamaño de la línea de texto */
-            margin-right: 8px; /* Espaciado ajustado */
-            vertical-align: middle; /* Alineación vertical con el texto */
+            height: 1em;
+            margin-right: 8px;
+            vertical-align: middle;
         }
         #closePopup {
             padding: 5px 15px;
@@ -303,6 +304,39 @@ Puedes agregar una ventana flotante que se pueda cerrar que ponga el siguiente e
             background-color: rgba(0, 0, 0, 1);
             z-index: 999;
             transition: opacity 0.3s ease;
+        }
+        /* Floating Calendar Event Window */
+        #calendarEventPopup {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            z-index: 10;
+            max-width: 200px;
+            font-size: 0.9em;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        #calendarEventPopup p {
+            margin: 0 0 5px 0;
+            text-align: right;
+        }
+        #closeCalendarPopup {
+            background: none;
+            border: none;
+            font-size: 1em;
+            color: #2c3e50;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        #closeCalendarPopup:hover {
+            color: #34495e;
         }
     </style>
 </head>
@@ -355,6 +389,12 @@ Puedes agregar una ventana flotante que se pueda cerrar que ponga el siguiente e
             </li>
         </ul>
         <button id="closePopup">Close</button>
+    </div>
+
+    <!-- Floating Calendar Event Popup -->
+    <div id="calendarEventPopup">
+        <p id="nextEventText">Next Event: Loading...</p>
+        <button id="closeCalendarPopup">✕</button>
     </div>
 
     <script>
@@ -684,15 +724,56 @@ Puedes agregar una ventana flotante que se pueda cerrar que ponga el siguiente e
             localStorage.setItem('hasVisited', 'true');
         });
 
+        // Calendar Event Logic
+        async function updateCalendarEvent() {
+            const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(calendarUrl)}`;
+
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Failed to fetch calendar');
+                const icsData = await response.text();
+
+                // Parsear el archivo iCal con ical.js
+                const jcalData = ICAL.parse(icsData);
+                const comp = new ICAL.Component(jcalData);
+                const vevents = comp.getAllSubcomponents('vevent');
+
+                const now = new Date();
+                const futureEvents = vevents
+                    .map(event => ({
+                        summary: event.getFirstPropertyValue('summary') || 'No Title',
+                        start: event.getFirstPropertyValue('dtstart').toJSDate()
+                    }))
+                    .filter(event => event.start > now)
+                    .sort((a, b) => a.start - b.start);
+
+                const nextEvent = futureEvents[0] || { summary: "No upcoming events", start: null };
+                const eventText = nextEvent.start 
+                    ? `Next Event: ${nextEvent.summary} at ${nextEvent.start.toLocaleTimeString()}`
+                    : `Next Event: ${nextEvent.summary}`;
+                document.getElementById('nextEventText').textContent = eventText;
+            } catch (error) {
+                console.error('Error fetching or parsing calendar:', error);
+                document.getElementById('nextEventText').textContent = 'Next Event: Error loading calendar';
+            }
+        }
+
+        document.getElementById('closeCalendarPopup').addEventListener('click', function() {
+            document.getElementById('calendarEventPopup').style.display = 'none';
+        });
+
         window.onload = function() {
             generateRandomDune();
             window.scrollTo(0, 0);
             updateSkyAndCelestial();
             updateCountdown();
             showFirstVisitPopup();
+            updateCalendarEvent(); // Initialize calendar event display
         };
 
         setInterval(updateCountdown, 100);
+        setInterval(updateCalendarEvent, 60000); // Update calendar event every minute
     </script>
 </body>
 </html>
