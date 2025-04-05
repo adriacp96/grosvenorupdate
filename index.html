@@ -320,13 +320,22 @@
             color: #2c3e50;
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
+            align-items: flex-start;
+            line-height: 1.2;
         }
-        #calendarEventPopup p {
-            margin: 0 0 5px 0;
-            text-align: right;
+        #calendarEventPopup .event-date {
+            margin: 0 0 5px 20px;
+            text-align: left;
+        }
+        #calendarEventPopup .event-summary {
+            margin: 0 0 0 20px;
+            text-align: left;
+            word-wrap: break-word;
         }
         #closeCalendarPopup {
+            position: absolute;
+            top: 5px;
+            left: 5px;
             background: none;
             border: none;
             font-size: 1em;
@@ -393,8 +402,9 @@
 
     <!-- Floating Calendar Event Popup -->
     <div id="calendarEventPopup">
-        <p id="nextEventText">Next Event: Loading...</p>
         <button id="closeCalendarPopup">✕</button>
+        <p id="eventDate" class="event-date">Loading...</p>
+        <p id="eventSummary" class="event-summary">Fetching event...</p>
     </div>
 
     <script>
@@ -749,13 +759,15 @@
                     .sort((a, b) => a.start - b.start);
 
                 const nextEvent = futureEvents[0] || { summary: "No upcoming events", start: null };
-                const eventText = nextEvent.start 
-                    ? `Next Event: ${nextEvent.summary} at ${nextEvent.start.toLocaleTimeString()}`
-                    : `Next Event: ${nextEvent.summary}`;
-                document.getElementById('nextEventText').textContent = eventText;
+                const eventDate = nextEvent.start 
+                    ? `${nextEvent.start.toLocaleDateString()} ${nextEvent.start.toLocaleTimeString()}`
+                    : 'No date';
+                document.getElementById('eventDate').textContent = eventDate;
+                document.getElementById('eventSummary').textContent = nextEvent.summary;
             } catch (error) {
                 console.error('Error fetching or parsing calendar:', error);
-                document.getElementById('nextEventText').textContent = 'Next Event: Error loading calendar';
+                document.getElementById('eventDate').textContent = 'Error';
+                document.getElementById('eventSummary').textContent = 'Failed to load event';
             }
         }
 
