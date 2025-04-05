@@ -308,8 +308,9 @@
 /* Floating Calendar Event Window */
 #calendarEventPopup {
     position: fixed;
-    top: 50px; /* Bajado de 10px a 50px */
-    right: 10px;
+    top: 50%; /* Centrado verticalmente */
+    left: 50%; /* Centrado horizontalmente */
+    transform: translate(-50%, -50%); /* Ajusta el centro exacto */
     background-color: rgba(255, 255, 255, 0.7);
     padding: 10px;
     border-radius: 5px;
@@ -320,32 +321,17 @@
     color: #2c3e50;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centrado horizontal del contenido */
+    align-items: center; /* Contenido centrado horizontalmente */
     line-height: 1.2;
 }
 #calendarEventPopup .event-date {
-    margin: 0 0 5px 0; /* Quitado el margen izquierdo para centrar */
-    text-align: center; /* Texto centrado */
+    margin: 0 0 5px 0;
+    text-align: center;
 }
 #calendarEventPopup .event-summary {
-    margin: 0; /* Quitado el margen izquierdo para centrar */
-    text-align: center; /* Texto centrado */
+    margin: 0;
+    text-align: center;
     word-wrap: break-word;
-}
-#closeCalendarPopup {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    background: none;
-    border: none;
-    font-size: 1em;
-    color: #2c3e50;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-}
-#closeCalendarPopup:hover {
-    color: #34495e;
 }
     </style>
 </head>
@@ -400,12 +386,11 @@
         <button id="closePopup">Close</button>
     </div>
 
-    <!-- Floating Calendar Event Popup -->
-    <div id="calendarEventPopup">
-        <button id="closeCalendarPopup">✕</button>
-        <p id="eventDate" class="event-date">Loading...</p>
-        <p id="eventSummary" class="event-summary">Fetching event...</p>
-    </div>
+<!-- Floating Calendar Event Popup -->
+<div id="calendarEventPopup">
+    <p id="eventDate" class="event-date">Loading...</p>
+    <p id="eventSummary" class="event-summary">Fetching event...</p>
+</div>
 
     <script>
         let dunePoints = [];
