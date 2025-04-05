@@ -8,7 +8,6 @@
     <title>Grosvenor</title>
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
-    <!-- Incluir ical.js desde CDN -->
     <script src="https://unpkg.com/ical.js@1.4.0/build/ical.min.js"></script>
     <style>
         @font-face {
@@ -17,7 +16,6 @@
             font-weight: bold;
             font-style: normal;
         }
-
         html {
             height: 100%;
             width: 100%;
@@ -234,7 +232,6 @@
         #eGateButton:hover {
             transform: scale(1.05);
         }
-        /* Popup Styles */
         #firstVisitPopup {
             display: none;
             position: fixed;
@@ -293,7 +290,6 @@
         #closePopup:hover {
             background-color: #34495e;
         }
-        /* Black background when popup is active */
         .black-background::before {
             content: '';
             position: fixed;
@@ -305,34 +301,33 @@
             z-index: 999;
             transition: opacity 0.3s ease;
         }
-/* Floating Calendar Event Window */
-#calendarEventPopup {
-    position: fixed;
-    top: 50%; /* Centrado verticalmente */
-    left: 50%; /* Centrado horizontalmente */
-    transform: translate(-50%, -50%); /* Ajusta el centro exacto */
-    background-color: rgba(255, 255, 255, 0.7);
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.2);
-    z-index: 10;
-    max-width: 200px;
-    font-size: 0.9em;
-    color: #2c3e50;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Contenido centrado horizontalmente */
-    line-height: 1.2;
-}
-#calendarEventPopup .event-date {
-    margin: 0 0 5px 0;
-    text-align: center;
-}
-#calendarEventPopup .event-summary {
-    margin: 0;
-    text-align: center;
-    word-wrap: break-word;
-}
+        #calendarEventPopup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            z-index: 10;
+            max-width: 200px;
+            font-size: 0.9em;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.2;
+        }
+        #calendarEventPopup .event-date {
+            margin: 0 0 5px 0;
+            text-align: center;
+        }
+        #calendarEventPopup .event-summary {
+            margin: 0;
+            text-align: center;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
@@ -365,8 +360,6 @@
         <path id="dunePath" fill="rgba(237, 201, 175, 0.4)" />
     </svg>
     <div class="stars-container" id="starsContainer"></div>
-
-    <!-- Popup for first visit -->
     <div id="firstVisitPopup">
         <h2>Add to Home Screen</h2>
         <p>To install this app on your iPhone:</p>
@@ -385,18 +378,14 @@
         </ul>
         <button id="closePopup">Close</button>
     </div>
-
-<!-- Floating Calendar Event Popup -->
-<div id="calendarEventPopup">
-    <p id="eventDate" class="event-date">Loading...</p>
-    <p id="eventSummary" class="event-summary">Fetching event...</p>
-</div>
-
+    <div id="calendarEventPopup">
+        <p id="eventDate" class="event-date">Loading...</p>
+        <p id="eventSummary" class="event-summary">Fetching event...</p>
+    </div>
     <script>
         let dunePoints = [];
         let isGrosvenorToHQ = true;
         let starsCreated = false;
-
         const grosvenorToHQSchedule = [
             { gros: "00:43", hq: "01:03" }, { gros: "01:03", hq: "01:23" }, { gros: "01:23", hq: "01:43" },
             { gros: "01:43", hq: "02:03" }, { gros: "02:03", hq: "02:23" }, { gros: "02:23", hq: "02:43" },
@@ -419,7 +408,6 @@
             { gros: "22:13", hq: "22:33" }, { gros: "22:38", hq: "22:58" }, { gros: "23:03", hq: "23:23" },
             { gros: "23:28", hq: "23:48" }, { gros: "23:53", hq: "00:13" }, { gros: "00:18", hq: "00:38" }
         ];
-
         const hqToGrosvenorSchedule = [
             "00:15", "00:35", "00:55", "01:15", "01:35", "01:55", "02:25", "02:55", "03:25", "03:55", 
             "04:20", "04:40", "05:00", "05:25", "05:45", "06:05", "06:25", "06:45", "07:10", "07:35", 
@@ -428,14 +416,12 @@
             "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40", 
             "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
         ];
-
         function generateRandomDune() {
             const segments = 4;
             const width = 1000;
             const segmentWidth = width / segments;
             let path = "M0,250";
             dunePoints = [{ x: 0, y: 250 }];
-
             for (let i = 1; i <= segments; i++) {
                 const x1 = (i - 0.66) * segmentWidth;
                 const y1 = 250 - Math.random() * 130;
@@ -443,21 +429,17 @@
                 const y2 = 250 - Math.random() * 130;
                 const x3 = i * segmentWidth;
                 const y3 = i === segments ? 250 : 250 - Math.random() * 130;
-
                 path += ` C${x1},${y1} ${x2},${y2} ${x3},${y3}`;
                 dunePoints.push({ x: x1, y: y1 }, { x: x2, y: y2 }, { x: x3, y: y3 });
             }
-
             path += " L0,250 Z";
             document.getElementById("dunePath").setAttribute("d", path);
         }
-
         function getBezierY(t, p0, p1, p2, p3) {
             const mt = 1 - t;
             return Math.pow(mt, 3) * p0.y + 3 * Math.pow(mt, 2) * t * p1.y + 
                    3 * mt * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
         }
-
         function getDuneHeight(x) {
             for (let i = 0; i < dunePoints.length - 3; i += 3) {
                 const p0 = dunePoints[i];
@@ -471,18 +453,15 @@
             }
             return 250;
         }
-
         function getBusTimes() {
             const currentSchedule = isGrosvenorToHQ ? grosvenorToHQSchedule.map(item => item.gros) : hqToGrosvenorSchedule;
             const now = new Date();
             const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
             let previousBus = { time: currentSchedule[currentSchedule.length - 1], minutes: 0 };
             let nextBus = { time: currentSchedule[0], minutes: 0 };
-
             for (let i = 0; i < currentSchedule.length; i++) {
                 const [hours, minutes] = currentSchedule[i].split(':').map(Number);
                 const busTimeInMinutes = hours * 60 + minutes;
-
                 if (busTimeInMinutes > currentTimeInMinutes) {
                     nextBus = { time: currentSchedule[i], minutes: busTimeInMinutes };
                     previousBus = { 
@@ -493,7 +472,6 @@
                     break;
                 }
             }
-
             if (!nextBus.minutes) {
                 nextBus = { time: currentSchedule[0], minutes: currentSchedule[0].split(':').map(Number)[0] * 60 + 
                            currentSchedule[0].split(':').map(Number)[1] + 1440 };
@@ -501,26 +479,21 @@
                               minutes: currentSchedule[currentSchedule.length-1].split(':').map(Number)[0] * 60 + 
                               currentSchedule[currentSchedule.length-1].split(':').map(Number)[1] };
             }
-
             return { previousBus, nextBus };
         }
-
         function updateSkyAndCelestial() {
             const now = new Date();
             const hours = now.getHours();
             const minutes = now.getMinutes();
             const totalMinutes = hours * 60 + minutes;
-
             const celestial = document.getElementById('celestialBody');
             const starsContainer = document.getElementById('starsContainer');
             let gradient;
-
             const dayLength = 12 * 60;
             const sunrise = 6 * 60;
             const sunset = 18 * 60;
             const moonrise = sunset;
             const moonset = sunrise + 1440;
-
             const isDay = totalMinutes >= sunrise && totalMinutes < sunset;
             if (isDay) {
                 gradient = 'linear-gradient(to bottom, #87cefa, #4682b4)';
@@ -536,7 +509,6 @@
                 }
             }
             document.getElementById('background-container').style.background = gradient;
-
             let progress;
             if (isDay) {
                 progress = (totalMinutes - sunrise) / dayLength;
@@ -545,40 +517,31 @@
                 progress = (adjustedMinutes - moonrise) / dayLength;
             }
             progress = Math.max(0, Math.min(1, progress));
-
             const xPos = 5 + progress * 90;
             const yPos = 90 - 80 * 4 * progress * (1 - progress);
-
             celestial.style.left = `${xPos}vw`;
             celestial.style.top = `${yPos}vh`;
             celestial.style.display = 'block';
         }
-
         function updateCountdown() {
             const now = new Date();
             const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
             const { previousBus, nextBus } = getBusTimes();
             let timeDifference = nextBus.minutes - currentTimeInMinutes;
-
             if (timeDifference < 0) {
                 timeDifference += 1440;
             }
-
             const minutes = Math.floor(timeDifference % 60);
             const seconds = Math.floor((timeDifference * 60) % 60);
-
             document.getElementById('countdown').textContent = 
                 `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
-
             const totalDuration = (nextBus.minutes - previousBus.minutes + 1440) % 1440;
             const elapsed = (currentTimeInMinutes - previousBus.minutes + 1440) % 1440;
             const percentage = (elapsed / totalDuration) * 100;
             const busPosition = Math.min(Math.max(percentage, 0), 100) * 2.76;
-
             const progressFill = document.getElementById('progressFill');
             progressFill.style.width = `${Math.min(Math.max(percentage, 0), 100)}%`;
-
             const remainingMinutes = timeDifference;
             if (remainingMinutes <= 3 && remainingMinutes > 2.9167) {
                 progressFill.style.transition = 'background-color 5s linear';
@@ -593,41 +556,31 @@
                 progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
                 progressFill.style.transition = 'none';
             }
-
             document.getElementById('busEmoji').style.left = `${busPosition}px`;
-            
             updateSkyAndCelestial();
         }
-
         function createStars() {
             const starsContainer = document.getElementById('starsContainer');
             const numberOfStars = 50;
-
             for (let i = 0; i < numberOfStars; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-
                 const x = Math.random() * 100;
                 const y = Math.random() * 75;
                 const size = Math.random() * 3 + 1;
-
                 star.style.left = `${x}vw`;
                 star.style.top = `${y}vh`;
                 star.style.width = `${size}px`;
                 star.style.height = `${size}px`;
-
                 const delay = Math.random() * 3;
                 star.style.animationDelay = `${delay}s`;
-
                 starsContainer.appendChild(star);
             }
         }
-
         document.getElementById('toggleRoute').addEventListener('click', function() {
             isGrosvenorToHQ = !isGrosvenorToHQ;
             const routeTitle = document.getElementById('routeTitle');
             const toggleButton = document.getElementById('toggleRoute');
-            
             if (isGrosvenorToHQ) {
                 routeTitle.textContent = "Grosvenor to HQ in";
                 toggleButton.textContent = "🔄";
@@ -637,36 +590,29 @@
             }
             updateCountdown();
         });
-
         function findClosestBusTimes(inputTime) {
             const [inputHours, inputMinutes] = inputTime.split(':').map(Number);
             const targetTimeInMinutes = inputHours * 60 + inputMinutes;
             const maxDelayMinutes = 50;
-
             const schedule = grosvenorToHQSchedule.map(item => ({
                 gros: item.gros,
                 hq: item.hq,
                 grosMinutes: item.gros.split(':').map(Number)[0] * 60 + item.gros.split(':').map(Number)[1],
                 hqMinutes: item.hq.split(':').map(Number)[0] * 60 + item.hq.split(':').map(Number)[1]
             }));
-
             schedule.push({
                 gros: schedule[0].gros,
                 hq: schedule[0].hq,
                 grosMinutes: schedule[0].grosMinutes + 1440,
                 hqMinutes: schedule[0].hqMinutes + 1440
             });
-
             const validTimes = schedule.filter(item => {
                 const diff = item.hqMinutes - targetTimeInMinutes;
                 return diff >= 0 && diff <= maxDelayMinutes;
             });
-
             validTimes.sort((a, b) => a.grosMinutes - b.grosMinutes);
-
             return validTimes.slice(0, 3).map(item => ({ gros: item.gros, hq: item.hq }));
         }
-
         document.getElementById('playButton').addEventListener('click', function() {
             document.querySelector('.input-container').style.display = 'none';
             document.getElementById('closestTimes').style.display = 'none';
@@ -676,17 +622,14 @@
             eGateButton.style.height = '24px';
             eGateButton.style.background = 'white';
         });
-
         document.getElementById('busTimeInput').addEventListener('change', function() {
             const input = document.getElementById('busTimeInput').value.trim();
             const closestTimesDiv = document.getElementById('closestTimes');
-
             if (!input) {
                 closestTimesDiv.textContent = '';
                 closestTimesDiv.style.display = 'none';
                 return;
             }
-
             const closestTimes = findClosestBusTimes(input);
             if (closestTimes.length === 0) {
                 closestTimesDiv.textContent = '';
@@ -697,13 +640,10 @@
                 closestTimesDiv.style.display = 'block';
             }
         });
-
         document.getElementById('eGateButton').addEventListener('click', function() {
             document.getElementById('eGateButton').style.display = 'none';
             document.querySelector('.input-container').style.display = 'flex';
         });
-
-        // Popup logic with black background
         function showFirstVisitPopup() {
             if (!localStorage.getItem('hasVisited')) {
                 const popup = document.getElementById('firstVisitPopup');
@@ -711,42 +651,39 @@
                 document.body.classList.add('black-background');
             }
         }
-
         document.getElementById('closePopup').addEventListener('click', function() {
             const popup = document.getElementById('firstVisitPopup');
             popup.style.display = 'none';
             document.body.classList.remove('black-background');
             localStorage.setItem('hasVisited', 'true');
         });
-
-        // Calendar Event Logic
         async function updateCalendarEvent() {
             const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
             const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(calendarUrl)}`;
-
             try {
                 const response = await fetch(proxyUrl);
                 if (!response.ok) throw new Error('Failed to fetch calendar');
                 const icsData = await response.text();
-
-                // Parsear el archivo iCal con ical.js
                 const jcalData = ICAL.parse(icsData);
                 const comp = new ICAL.Component(jcalData);
                 const vevents = comp.getAllSubcomponents('vevent');
-
                 const now = new Date();
-                const futureEvents = vevents
+                const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+                const endOfDay = new Date(now.setHours(23, 59, 59, 999));
+                const todayEvents = vevents
                     .map(event => ({
                         summary: event.getFirstPropertyValue('summary') || 'No Title',
                         start: event.getFirstPropertyValue('dtstart').toJSDate()
                     }))
-                    .filter(event => event.start > now)
+                    .filter(event => {
+                        const eventDate = event.start;
+                        return eventDate >= startOfDay && eventDate <= endOfDay && eventDate >= now;
+                    })
                     .sort((a, b) => a.start - b.start);
-
-                const nextEvent = futureEvents[0] || { summary: "No upcoming events", start: null };
+                const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
                 const eventDate = nextEvent.start 
-                    ? `${nextEvent.start.toLocaleDateString()} ${nextEvent.start.toLocaleTimeString()}`
-                    : 'No date';
+                    ? `${nextEvent.start.toLocaleTimeString()}`
+                    : 'No time';
                 document.getElementById('eventDate').textContent = eventDate;
                 document.getElementById('eventSummary').textContent = nextEvent.summary;
             } catch (error) {
@@ -755,22 +692,16 @@
                 document.getElementById('eventSummary').textContent = 'Failed to load event';
             }
         }
-
-        document.getElementById('closeCalendarPopup').addEventListener('click', function() {
-            document.getElementById('calendarEventPopup').style.display = 'none';
-        });
-
         window.onload = function() {
             generateRandomDune();
             window.scrollTo(0, 0);
             updateSkyAndCelestial();
             updateCountdown();
             showFirstVisitPopup();
-            updateCalendarEvent(); // Initialize calendar event display
+            updateCalendarEvent();
         };
-
         setInterval(updateCountdown, 100);
-        setInterval(updateCalendarEvent, 60000); // Update calendar event every minute
+        setInterval(updateCalendarEvent, 60000);
     </script>
 </body>
 </html>
