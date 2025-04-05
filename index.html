@@ -1,3 +1,4 @@
+Puedes agregar una ventana flotante que se pueda cerrar que ponga el siguiente evento que hay en este calendario? Tiene que tener opacidad para que no distraiga mucho y debe estar en la parte superior derecha, que quede estético. El calendario es este: webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,8 +9,6 @@
     <title>Grosvenor</title>
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
-    <!-- Librería ical.js para parsear el calendario -->
-    <script src="https://unpkg.com/ical.js/build/ical.min.js"></script>
     <style>
         @font-face {
             font-family: 'Emirates Bold';
@@ -276,9 +275,9 @@
             text-align: center;
         }
         #firstVisitPopup .icon {
-            height: 1em;
-            margin-right: 8px;
-            vertical-align: middle;
+            height: 1em; /* Ajusta la altura al tamaño de la línea de texto */
+            margin-right: 8px; /* Espaciado ajustado */
+            vertical-align: middle; /* Alineación vertical con el texto */
         }
         #closePopup {
             padding: 5px 15px;
@@ -293,6 +292,7 @@
         #closePopup:hover {
             background-color: #34495e;
         }
+        /* Black background when popup is active */
         .black-background::before {
             content: '';
             position: fixed;
@@ -303,50 +303,6 @@
             background-color: rgba(0, 0, 0, 1);
             z-index: 999;
             transition: opacity 0.3s ease;
-        }
-        /* Floating Calendar Popup Styles */
-        .calendar-popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 10px 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            z-index: 1001;
-            max-width: 250px;
-            opacity: 0.85;
-            transition: opacity 0.3s ease;
-            display: none;
-        }
-        .calendar-popup:hover {
-            opacity: 1;
-        }
-        #nextEvent {
-            font-size: 1em;
-            color: #2c3e50;
-            font-family: 'Emirates Bold', sans-serif;
-            text-align: left;
-            word-wrap: break-word;
-        }
-        .close-calendar-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: none;
-            border: none;
-            font-size: 1em;
-            color: #2c3e50;
-            cursor: pointer;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            line-height: 20px;
-            text-align: center;
-            transition: color 0.3s;
-        }
-        .close-calendar-btn:hover {
-            color: #34495e;
         }
     </style>
 </head>
@@ -401,12 +357,6 @@
         <button id="closePopup">Close</button>
     </div>
 
-    <!-- Floating Calendar Event Window -->
-    <div id="calendarPopup" class="calendar-popup">
-        <button id="closeCalendarPopup" class="close-calendar-btn">✕</button>
-        <div id="nextEvent">Next Event: Loading...</div>
-    </div>
-
     <script>
         let dunePoints = [];
         let isGrosvenorToHQ = true;
@@ -434,8 +384,6 @@
             { gros: "22:13", hq: "22:33" }, { gros: "22:38", hq: "22:58" }, { gros: "23:03", hq: "23:23" },
             { gros: "23:28", hq: "23:48" }, { gros: "23:53", hq: "00:13" }, { gros: "00:18", hq: "00:38" }
         ];
-
-       ，唐
 
         const hqToGrosvenorSchedule = [
             "00:15", "00:35", "00:55", "01:15", "01:35", "01:55", "02:25", "02:55", "03:25", "03:55", 
@@ -736,71 +684,12 @@
             localStorage.setItem('hasVisited', 'true');
         });
 
-        // Fetch and display the next calendar event
-        async function fetchNextCalendarEvent() {
-            const calendarUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-            const popup = document.getElementById('calendarPopup');
-            const nextEventDiv = document.getElementById('nextEvent');
-
-            try {
-                // Convert webcal to https (may require a proxy due to CORS)
-                const icsUrl = calendarUrl.replace('webcal://', 'https://');
-                const response = await fetch(icsUrl); // Note: May need proxy for CORS
-                const icsData = await response.text();
-
-                const jcalData = ICAL.parse(icsData);
-                const comp = new ICAL.Component(jcalData);
-                const vevents = comp.getAllSubcomponents('vevent');
-
-                const now = new Date();
-                let nextEvent = null;
-                let minDiff = Infinity;
-
-                vevents.forEach(event => {
-                    const startDate = event.getFirstPropertyValue('dtstart').toJSDate();
-                    const diff = startDate - now;
-                    if (diff > 0 && diff < minDiff) {
-                        minDiff = diff;
-                        nextEvent = {
-                            summary: event.getFirstPropertyValue('summary'),
-                            start: startDate
-                        };
-                    }
-                });
-
-                if (nextEvent) {
-                    const eventDate = nextEvent.start.toLocaleString('es-ES', {
-                        weekday: 'short',
-                        day: 'numeric',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    nextEventDiv.textContent = `Next Event: ${nextEvent.summary} (${eventDate})`;
-                    popup.style.display = 'block';
-                } else {
-                    nextEventDiv.textContent = 'No upcoming events found.';
-                    popup.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error fetching calendar:', error);
-                nextEventDiv.textContent = 'Error loading calendar.';
-                popup.style.display = 'block';
-            }
-        }
-
-        // Close calendar popup
-        document.getElementById('closeCalendarPopup').addEventListener('click', function() {
-            document.getElementById('calendarPopup').style.display = 'none';
-        });
-
         window.onload = function() {
             generateRandomDune();
             window.scrollTo(0, 0);
             updateSkyAndCelestial();
             updateCountdown();
             showFirstVisitPopup();
-            fetchNextCalendarEvent();
         };
 
         setInterval(updateCountdown, 100);
