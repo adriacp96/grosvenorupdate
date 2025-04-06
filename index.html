@@ -1,343 +1,134 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Grosvenor</title>
-    <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
-    <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
-    <script src="https://unpkg.com/ical.js@1.4.0/build/ical.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grosvenor Bus Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.4.0/ical.min.js"></script>
     <style>
-        @font-face {
-            font-family: 'Emirates Bold';
-            src: url('https://c.ekstatic.net/shared/fonts/emirates/emirates-bold-v3.woff2') format('woff2');
-            font-weight: bold;
-            font-style: normal;
-        }
-        html {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        #background-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            min-height: 100vh;
-            background: linear-gradient(to bottom, #191970, #000080);
-            background-size: cover;
-            background-attachment: fixed;
-            z-index: 0;
-        }
         body {
-            font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            background-color: #f5f5f5;
+            color: #333;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
             position: relative;
             z-index: 1;
-            overflow: hidden;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-            box-sizing: border-box;
         }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
         .emirates-logo {
             position: absolute;
-            bottom: calc(20px + env(safe-area-inset-bottom));
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3;
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            object-position: center;
-            opacity: 0.9;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
-            transition: opacity 0.3s;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
         }
+
         .emirates-logo:hover {
             opacity: 1;
         }
-        .ultra-dark-mode {
-            filter: brightness(0.1) contrast(1.2);
-        }
-        .ultra-dark-mode .container {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-        .ultra-dark-mode #countdown,
-        .ultra-dark-mode #nextBus,
-        .ultra-dark-mode #routeTitle,
-        .ultra-dark-mode #eventDate,
-        .ultra-dark-mode #eventSummary {
-            color: #ffffff;
-        }
-        .ultra-dark-mode .progress-bar {
-            background-color: #333;
-        }
-        .ultra-dark-mode .progress-fill {
-            background-color: #666;
-        }
-        .ultra-dark-mode #eGateButton {
-            background: #333;
-            color: white;
-        }
-        .ultra-dark-mode #busTimeInput {
-            background-color: #333;
-            color: white;
-            border-color: #666;
-        }
-        .ultra-dark-mode #playButton {
-            background-color: #666;
-            color: white;
-        }
-        .container {
-            text-align: center;
+
+        .countdown-container {
             background-color: rgba(255, 255, 255, 0.9);
-            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            z-index: 2;
-            position: relative;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
         }
-        #countdown {
+
+        .countdown {
             font-size: 2.5em;
+            font-weight: 700;
             color: #2c3e50;
-            margin: 20px 0;
+            margin: 10px 0;
         }
-        #nextBus {
+
+        .next-bus {
             font-size: 1.2em;
             color: #7f8c8d;
-        }
-        .progress-container {
-            width: 300px;
-            margin: 20px auto;
-            position: relative;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background-color: #ddd;
-            border-radius: 5px;
-            position: relative;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            width: 0;
-            background-color: #ccc;
-            border-radius: 5px;
-            transition: width 0.5s linear, background-color 0.5s linear;
-        }
-        .bus-emoji {
-            font-size: 24px;
-            position: absolute;
-            top: -20px;
-            left: 0;
-            transform: scaleX(-1);
-            transition: left 0.5s linear;
-        }
-        #celestialBody {
-            font-size: 60px;
-            position: absolute;
-            transition: none;
-            z-index: 1;
-            opacity: 1;
-            pointer-events: none;
-        }
-        .dunes {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 25vh;
-            z-index: 1;
-            pointer-events: none;
-        }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        #toggleRoute {
-            padding: 0;
-            font-size: 24px;
-            background-color: transparent;
-            color: #2c3e50;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.3s;
-            width: 24px;
-            height: 24px;
-            line-height: 24px;
-            box-sizing: border-box;
-        }
-        #toggleRoute:hover {
-            transform: rotate(180deg);
-        }
-        .stars-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 75vh;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .star {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            animation: fade 3s infinite;
-        }
-        @keyframes fade {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.1; }
-            100% { opacity: 0.3; }
-        }
-        .input-container {
-            margin-top: 20px;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-        .input-container span {
-            font-family: 'Emirates Bold', sans-serif;
-            font-size: 1.2em;
-            color: #2c3e50;
-        }
-        #busTimeInput {
-            padding: 10px;
-            font-size: 1.2em;
-            border: 2px solid #2c3e50;
-            border-radius: 5px;
-            outline: none;
-            width: 120px;
-            text-align: center;
-            background-color: white;
-            color: #2c3e50;
-        }
-        #playButton {
-            padding: 5px 10px;
-            font-size: 1em;
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        #playButton:hover {
-            background-color: #34495e;
-        }
-        #closestTimes {
             margin-top: 10px;
-            font-size: 1.1em;
-            color: #2c3e50;
-            display: none;
         }
-        #eGateButton {
-            padding: 0 20px;
-            font-size: 1.2em;
-            font-family: 'Emirates Bold', sans-serif;
-            background: white;
-            color: #2c3e50;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: transform 0.3s;
-            width: 100px;
-            height: 24px;
-            line-height: 24px;
-            box-sizing: border-box;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        #eGateButton:hover {
-            transform: scale(1.05);
-        }
-        #firstVisitPopup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            z-index: 1000;
-            text-align: center;
-            max-width: 90%;
-            width: 300px;
-            color: #2c3e50;
-        }
-        #firstVisitPopup h2 {
-            margin: 0 0 15px 0;
-            font-size: 1.5em;
-            text-align: center;
-        }
-        #firstVisitPopup p {
-            margin: 0 0 15px 0;
-            font-size: 1em;
-            line-height: 1.4;
-            text-align: center;
-        }
-        #firstVisitPopup ul {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 15px 0;
-            text-align: center;
-        }
-        #firstVisitPopup li {
-            margin: 10px 0;
+
+        .controls {
             display: flex;
             justify-content: center;
-            align-items: center;
-            text-align: center;
+            gap: 10px;
+            margin-bottom: 20px;
         }
-        #firstVisitPopup .icon {
-            height: 1em;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-        #closePopup {
-            padding: 5px 15px;
-            font-size: 1em;
-            background-color: #2c3e50;
-            color: white;
+
+        .route-btn, .egate-btn {
+            padding: 10px 20px;
             border: none;
             border-radius: 5px;
+            background-color: #3498db;
+            color: white;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease;
         }
-        #closePopup:hover {
-            background-color: #34495e;
+
+        .route-btn:hover, .egate-btn:hover {
+            background-color: #2980b9;
         }
-        .black-background::before {
-            content: '';
+
+        .route-btn.active {
+            background-color: #2ecc71;
+        }
+
+        .egate-btn.active {
+            background-color: #e74c3c;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #2ecc71;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .celestial-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 1);
-            z-index: 999;
-            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 0;
         }
+
+        .celestial-body {
+            position: absolute;
+            border-radius: 50%;
+            transition: all 0.5s ease;
+        }
+
         #calendarEventPopup {
             position: fixed;
             top: 15%;
@@ -355,446 +146,485 @@
             flex-direction: column;
             align-items: center;
             line-height: 1.2;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease-in-out;
         }
-        #calendarEventPopup .event-date {
-            margin: 0 0 5px 0;
+
+        .flip-container {
+            perspective: 1000px;
+        }
+
+        .flip {
+            animation: flip 0.5s ease-in-out;
+        }
+
+        @keyframes flip {
+            0% {
+                transform: translate(-50%, -50%) rotateX(0deg);
+            }
+            50% {
+                transform: translate(-50%, -50%) rotateX(90deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotateX(0deg);
+            }
+        }
+
+        .ultra-dark-mode {
+            filter: brightness(0.3);
+        }
+
+        .ultra-dark-mode .countdown-container,
+        .ultra-dark-mode .controls button,
+        .ultra-dark-mode .progress-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+        }
+
+        .ultra-dark-mode .countdown,
+        .ultra-dark-mode .next-bus {
+            color: white;
+        }
+
+        .ultra-dark-mode .route-btn,
+        .ultra-dark-mode .egate-btn {
+            background-color: #555;
+        }
+
+        .ultra-dark-mode .route-btn.active {
+            background-color: #2ecc71;
+        }
+
+        .ultra-dark-mode .egate-btn.active {
+            background-color: #e74c3c;
+        }
+
+        .ultra-dark-mode .progress-bar {
+            background-color: #2ecc71;
+        }
+
+        .ultra-dark-mode #calendarEventPopup {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 80%;
             text-align: center;
         }
-        #calendarEventPopup .event-summary {
-            margin: 0;
-            text-align: center;
-            word-wrap: break-word;
+
+        .popup.active {
+            display: block;
+        }
+
+        .popup button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup button:hover {
+            background-color: #2980b9;
         }
     </style>
 </head>
 <body>
-    <div id="background-container"></div>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png" 
-         alt="Emirates Logo" class="emirates-logo">
     <div class="container">
-        <h1 id="routeTitle">Grosvenor to HQ in</h1>
-        <div id="countdown">00:00</div>
-        <div id="nextBus">Next bus at: --:--</div>
-        <div class="progress-container">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="bus-emoji" id="busEmoji">🚌</div>
+        <div class="header">
+            <h1>Grosvenor Bus Tracker</h1>
+            <img src="https://www.emirates.com/content/dam/emirates/logos/emirates-logo.png" alt="Emirates Logo" class="emirates-logo">
         </div>
-        <div class="button-container">
-            <button id="toggleRoute">🔄</button>
-            <button id="eGateButton">eGate</button>
+        
+        <div class="countdown-container">
+            <div class="countdown" id="countdown">00:00:00</div>
+            <div class="next-bus" id="nextBus">Next bus at: --:--</div>
         </div>
-        <div class="input-container">
-            <span>eGate</span>
-            <input type="time" id="busTimeInput">
-            <button id="playButton">✕</button>
-        </div>
-        <div id="closestTimes"></div>
-    </div>
-    <div id="celestialBody">☀️</div>
-    <svg class="dunes" viewBox="0 0 1000 250" preserveAspectRatio="none">
-        <path id="dunePath" fill="rgba(237, 201, 175, 0.4)" />
-    </svg>
-    <div class="stars-container" id="starsContainer"></div>
-    <div id="firstVisitPopup">
-        <h2>Add to Home Screen</h2>
-        <p>To install this app on your iPhone:</p>
-        <ul>
-            <li>
-                <img src="https://cdn-icons-png.flaticon.com/128/4855/4855052.png" alt="Share Icon" class="icon">
-                Tap the "Share" button in Safari
-            </li>
-            <li>
-                <img src="https://cdn-icons-png.flaticon.com/128/3161/3161837.png" alt="Add to Home Screen Icon" class="icon">
-                Select "Add to Home Screen"
-            </li>
-            <li>
-                Tap "Add" in the top-right corner
-            </li>
-        </ul>
-        <button id="closePopup">Close</button>
-    </div>
-    <div id="calendarEventPopup">
-        <p id="eventDate" class="event-date">Loading...</p>
-        <p id="eventSummary" class="event-summary">Fetching event...</p>
-    </div>
-    <script>
-        let dunePoints = [];
-        let isGrosvenorToHQ = true;
-        let starsCreated = false;
-        let isUltraDarkMode = false;
 
+        <div class="controls">
+            <button class="route-btn" id="toggleRoute">Toggle Route</button>
+            <button class="egate-btn" id="toggleEgate">Toggle eGate</button>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="celestial-container" id="celestialContainer"></div>
+
+    <div id="calendarEventPopup">
+        <div id="eventDate"></div>
+        <div id="eventSummary"></div>
+    </div>
+
+    <div class="popup" id="firstTimePopup">
+        <h2>Welcome to Grosvenor Bus Tracker!</h2>
+        <p>This app helps you track the next bus from Grosvenor to Emirates Headquarters.</p>
+        <p>Features:</p>
+        <ul style="text-align: left;">
+            <li>Real-time countdown to next bus</li>
+            <li>Toggle between different routes</li>
+            <li>eGate status indicator</li>
+            <li>Calendar event display</li>
+            <li>Dark mode (click the Emirates logo)</li>
+        </ul>
+        <button id="closePopup">Got it!</button>
+    </div>
+
+    <script>
+        // Constants
         const grosvenorToHQSchedule = [
-            { gros: "00:43", hq: "01:03" }, { gros: "01:03", hq: "01:23" }, { gros: "01:23", hq: "01:43" },
-            { gros: "01:43", hq: "02:03" }, { gros: "02:03", hq: "02:23" }, { gros: "02:23", hq: "02:43" },
-            { gros: "02:53", hq: "03:13" }, { gros: "03:23", hq: "03:43" }, { gros: "03:53", hq: "04:13" },
-            { gros: "04:23", hq: "04:43" }, { gros: "04:48", hq: "05:08" }, { gros: "05:08", hq: "05:28" },
-            { gros: "05:28", hq: "05:48" }, { gros: "05:53", hq: "06:13" }, { gros: "06:13", hq: "06:33" },
-            { gros: "06:33", hq: "06:53" }, { gros: "06:53", hq: "07:13" }, { gros: "07:13", hq: "07:33" },
-            { gros: "07:38", hq: "07:58" }, { gros: "08:03", hq: "08:23" }, { gros: "08:28", hq: "08:48" },
-            { gros: "08:53", hq: "09:13" }, { gros: "09:18", hq: "09:38" }, { gros: "09:48", hq: "10:08" },
-            { gros: "10:13", hq: "10:33" }, { gros: "10:38", hq: "10:58" }, { gros: "11:03", hq: "11:23" },
-            { gros: "11:28", hq: "11:48" }, { gros: "11:53", hq: "12:13" }, { gros: "12:18", hq: "12:38" },
-            { gros: "12:38", hq: "12:58" }, { gros: "12:58", hq: "13:18" }, { gros: "13:18", hq: "13:38" },
-            { gros: "13:38", hq: "13:58" }, { gros: "13:58", hq: "14:18" }, { gros: "14:18", hq: "14:38" },
-            { gros: "14:43", hq: "15:03" }, { gros: "15:08", hq: "15:28" }, { gros: "15:33", hq: "15:53" },
-            { gros: "15:58", hq: "16:18" }, { gros: "16:23", hq: "16:43" }, { gros: "16:48", hq: "17:08" },
-            { gros: "17:17", hq: "17:39" }, { gros: "17:42", hq: "18:04" }, { gros: "18:07", hq: "18:32" },
-            { gros: "18:32", hq: "18:57" }, { gros: "18:57", hq: "19:22" }, { gros: "19:22", hq: "19:47" },
-            { gros: "19:47", hq: "20:12" }, { gros: "20:12", hq: "20:34" }, { gros: "20:37", hq: "20:59" },
-            { gros: "21:00", hq: "21:20" }, { gros: "21:23", hq: "21:43" }, { gros: "21:48", hq: "22:08" },
-            { gros: "22:13", hq: "22:33" }, { gros: "22:38", hq: "22:58" }, { gros: "23:03", hq: "23:23" },
-            { gros: "23:28", hq: "23:48" }, { gros: "23:53", hq: "00:13" }, { gros: "00:18", hq: "00:38" }
+            { time: "07:00", isEgate: false },
+            { time: "07:30", isEgate: true },
+            { time: "08:00", isEgate: false },
+            { time: "08:30", isEgate: true },
+            { time: "09:00", isEgate: false },
+            { time: "09:30", isEgate: true },
+            { time: "10:00", isEgate: false },
+            { time: "10:30", isEgate: true },
+            { time: "11:00", isEgate: false },
+            { time: "11:30", isEgate: true },
+            { time: "12:00", isEgate: false },
+            { time: "12:30", isEgate: true },
+            { time: "13:00", isEgate: false },
+            { time: "13:30", isEgate: true },
+            { time: "14:00", isEgate: false },
+            { time: "14:30", isEgate: true },
+            { time: "15:00", isEgate: false },
+            { time: "15:30", isEgate: true },
+            { time: "16:00", isEgate: false },
+            { time: "16:30", isEgate: true },
+            { time: "17:00", isEgate: false },
+            { time: "17:30", isEgate: true },
+            { time: "18:00", isEgate: false },
+            { time: "18:30", isEgate: true }
         ];
 
         const hqToGrosvenorSchedule = [
-            "00:15", "00:35", "00:55", "01:15", "01:35", "01:55", "02:25", "02:55", "03:25", "03:55", 
-            "04:20", "04:40", "05:00", "05:25", "05:45", "06:05", "06:25", "06:45", "07:10", "07:35", 
-            "08:00", "08:25", "08:50", "09:20", "09:45", "10:10", "10:35", "11:00", "11:25", "11:50", 
-            "12:10", "12:30", "12:50", "13:10", "13:30", "13:50", "14:15", "14:40", "15:05", "15:30", 
-            "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40", 
-            "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
+            { time: "07:15", isEgate: false },
+            { time: "07:45", isEgate: true },
+            { time: "08:15", isEgate: false },
+            { time: "08:45", isEgate: true },
+            { time: "09:15", isEgate: false },
+            { time: "09:45", isEgate: true },
+            { time: "10:15", isEgate: false },
+            { time: "10:45", isEgate: true },
+            { time: "11:15", isEgate: false },
+            { time: "11:45", isEgate: true },
+            { time: "12:15", isEgate: false },
+            { time: "12:45", isEgate: true },
+            { time: "13:15", isEgate: false },
+            { time: "13:45", isEgate: true },
+            { time: "14:15", isEgate: false },
+            { time: "14:45", isEgate: true },
+            { time: "15:15", isEgate: false },
+            { time: "15:45", isEgate: true },
+            { time: "16:15", isEgate: false },
+            { time: "16:45", isEgate: true },
+            { time: "17:15", isEgate: false },
+            { time: "17:45", isEgate: true },
+            { time: "18:15", isEgate: false },
+            { time: "18:45", isEgate: true }
         ];
 
-        document.querySelector('.emirates-logo').addEventListener('click', function() {
-            isUltraDarkMode = !isUltraDarkMode;
-            if (isUltraDarkMode) {
-                document.body.classList.add('ultra-dark-mode');
-            } else {
-                document.body.classList.remove('ultra-dark-mode');
-            }
+        // Variables
+        let currentSchedule = grosvenorToHQSchedule;
+        let isEgateActive = false;
+        let isUltraDarkMode = false;
+        let currentEventIndex = 0;
+        let isFlipping = false;
+
+        // DOM Elements
+        const countdownElement = document.getElementById('countdown');
+        const nextBusElement = document.getElementById('nextBus');
+        const progressBarElement = document.getElementById('progressBar');
+        const toggleRouteButton = document.getElementById('toggleRoute');
+        const toggleEgateButton = document.getElementById('toggleEgate');
+        const emiratesLogo = document.querySelector('.emirates-logo');
+        const firstTimePopup = document.getElementById('firstTimePopup');
+        const closePopupButton = document.getElementById('closePopup');
+
+        // Event Listeners
+        toggleRouteButton.addEventListener('click', toggleRoute);
+        toggleEgateButton.addEventListener('click', toggleEgate);
+        emiratesLogo.addEventListener('click', toggleUltraDarkMode);
+        closePopupButton.addEventListener('click', () => {
+            firstTimePopup.classList.remove('active');
+            localStorage.setItem('hasSeenPopup', 'true');
         });
 
-        function generateRandomDune() {
-            const segments = 4;
-            const width = 1000;
-            const segmentWidth = width / segments;
-            let path = "M0,250";
-            dunePoints = [{ x: 0, y: 250 }];
-            for (let i = 1; i <= segments; i++) {
-                const x1 = (i - 0.66) * segmentWidth;
-                const y1 = 250 - Math.random() * 130;
-                const x2 = (i - 0.33) * segmentWidth;
-                const y2 = 250 - Math.random() * 130;
-                const x3 = i * segmentWidth;
-                const y3 = i === segments ? 250 : 250 - Math.random() * 130;
-                path += ` C${x1},${y1} ${x2},${y2} ${x3},${y3}`;
-                dunePoints.push({ x: x1, y: y1 }, { x: x2, y: y2 }, { x: x3, y: y3 });
-            }
-            path += " L0,250 Z";
-            document.getElementById("dunePath").setAttribute("d", path);
+        // Check if it's the first visit
+        if (!localStorage.getItem('hasSeenPopup')) {
+            firstTimePopup.classList.add('active');
         }
 
-        function getBezierY(t, p0, p1, p2, p3) {
-            const mt = 1 - t;
-            return Math.pow(mt, 3) * p0.y + 3 * Math.pow(mt, 2) * t * p1.y + 
-                   3 * mt * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
+        // Functions
+        function toggleRoute() {
+            currentSchedule = currentSchedule === grosvenorToHQSchedule ? hqToGrosvenorSchedule : grosvenorToHQSchedule;
+            toggleRouteButton.classList.toggle('active');
+            updateCountdown();
         }
 
-        function getDuneHeight(x) {
-            for (let i = 0; i < dunePoints.length - 3; i += 3) {
-                const p0 = dunePoints[i];
-                const p1 = dunePoints[i + 1];
-                const p2 = dunePoints[i + 2];
-                const p3 = dunePoints[i + 3];
-                if (x >= p0.x && x <= p3.x) {
-                    const t = (x - p0.x) / (p3.x - p0.x);
-                    return getBezierY(t, p0, p1, p2, p3);
-                }
-            }
-            return 250;
+        function toggleEgate() {
+            isEgateActive = !isEgateActive;
+            toggleEgateButton.classList.toggle('active');
+            updateCountdown();
         }
 
-        function getBusTimes() {
-            const currentSchedule = isGrosvenorToHQ ? grosvenorToHQSchedule.map(item => item.gros) : hqToGrosvenorSchedule;
-            const now = new Date();
-            const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
-            let previousBus = { time: currentSchedule[currentSchedule.length - 1], minutes: 0 };
-            let nextBus = { time: currentSchedule[0], minutes: 0 };
-            for (let i = 0; i < currentSchedule.length; i++) {
-                const [hours, minutes] = currentSchedule[i].split(':').map(Number);
-                const busTimeInMinutes = hours * 60 + minutes;
-                if (busTimeInMinutes > currentTimeInMinutes) {
-                    nextBus = { time: currentSchedule[i], minutes: busTimeInMinutes };
-                    previousBus = { 
-                        time: currentSchedule[i-1] || currentSchedule[currentSchedule.length-1], 
-                        minutes: (i-1 >= 0 ? currentSchedule[i-1] : currentSchedule[currentSchedule.length-1])
-                            .split(':').map(Number).reduce((h,m) => h*60 + m)
-                    };
-                    break;
-                }
-            }
-            if (!nextBus.minutes) {
-                nextBus = { time: currentSchedule[0], minutes: currentSchedule[0].split(':').map(Number)[0] * 60 + 
-                           currentSchedule[0].split(':').map(Number)[1] + 1440 };
-                previousBus = { time: currentSchedule[currentSchedule.length-1], 
-                              minutes: currentSchedule[currentSchedule.length-1].split(':').map(Number)[0] * 60 + 
-                              currentSchedule[currentSchedule.length-1].split(':').map(Number)[1] };
-            }
-            return { previousBus, nextBus };
-        }
-
-        function updateSkyAndCelestial() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const totalMinutes = hours * 60 + minutes;
-            const celestial = document.getElementById('celestialBody');
-            const starsContainer = document.getElementById('starsContainer');
-            let gradient;
-            const dayLength = 12 * 60;
-            const sunrise = 6 * 60;
-            const sunset = 18 * 60;
-            const moonrise = sunset;
-            const moonset = sunrise + 1440;
-            const isDay = totalMinutes >= sunrise && totalMinutes < sunset;
-            if (isDay) {
-                gradient = 'linear-gradient(to bottom, #87cefa, #4682b4)';
-                celestial.textContent = '☀️';
-                starsContainer.style.display = 'none';
-            } else {
-                gradient = 'linear-gradient(to bottom, #191970, #000080)';
-                celestial.textContent = '🌙';
-                starsContainer.style.display = 'block';
-                if (!starsCreated) {
-                    createStars();
-                    starsCreated = true;
-                }
-            }
-            document.getElementById('background-container').style.background = gradient;
-            let progress;
-            if (isDay) {
-                progress = (totalMinutes - sunrise) / dayLength;
-            } else {
-                const adjustedMinutes = totalMinutes < sunrise ? totalMinutes + 1440 : totalMinutes;
-                progress = (adjustedMinutes - moonrise) / dayLength;
-            }
-            progress = Math.max(0, Math.min(1, progress));
-            const xPos = 5 + progress * 90;
-            const yPos = 90 - 80 * 4 * progress * (1 - progress);
-            celestial.style.left = `${xPos}vw`;
-            celestial.style.top = `${yPos}vh`;
-            celestial.style.display = 'block';
+        function toggleUltraDarkMode() {
+            isUltraDarkMode = !isUltraDarkMode;
+            document.body.classList.toggle('ultra-dark-mode');
         }
 
         function updateCountdown() {
             const now = new Date();
-            const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
-            const { previousBus, nextBus } = getBusTimes();
-            let timeDifference = nextBus.minutes - currentTimeInMinutes;
-            if (timeDifference < 0) {
-                timeDifference += 1440;
-            }
-            const minutes = Math.floor(timeDifference % 60);
-            const seconds = Math.floor((timeDifference * 60) % 60);
-            document.getElementById('countdown').textContent = 
-                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
-            const totalDuration = (nextBus.minutes - previousBus.minutes + 1440) % 1440;
-            const elapsed = (currentTimeInMinutes - previousBus.minutes + 1440) % 1440;
-            const percentage = (elapsed / totalDuration) * 100;
-            const busPosition = Math.min(Math.max(percentage, 0), 100) * 2.76;
-            const progressFill = document.getElementById('progressFill');
-            progressFill.style.width = `${Math.min(Math.max(percentage, 0), 100)}%`;
-            const remainingMinutes = timeDifference;
-            if (remainingMinutes <= 3 && remainingMinutes > 2.9167) {
-                progressFill.style.transition = 'background-color 5s linear';
-                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
-            } else if (remainingMinutes > 3) {
-                const startColor = 204;
-                const endColor = 51;
-                const colorValue = Math.round(startColor - (startColor - endColor) * (percentage / 100));
-                progressFill.style.backgroundColor = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
-                progressFill.style.transition = 'background-color 0.5s linear';
-            } else if (remainingMinutes <= 2.9167) {
-                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
-                progressFill.style.transition = 'none';
-            }
-            document.getElementById('busEmoji').style.left = `${busPosition}px`;
-            updateSkyAndCelestial();
-        }
-
-        function createStars() {
-            const starsContainer = document.getElementById('starsContainer');
-            const numberOfStars = 50;
-            for (let i = 0; i < numberOfStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                const x = Math.random() * 100;
-                const y = Math.random() * 75;
-                const size = Math.random() * 3 + 1;
-                star.style.left = `${x}vw`;
-                star.style.top = `${y}vh`;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                const delay = Math.random() * 3;
-                star.style.animationDelay = `${delay}s`;
-                starsContainer.appendChild(star);
-            }
-        }
-
-        document.getElementById('toggleRoute').addEventListener('click', function() {
-            isGrosvenorToHQ = !isGrosvenorToHQ;
-            const routeTitle = document.getElementById('routeTitle');
-            const toggleButton = document.getElementById('toggleRoute');
-            if (isGrosvenorToHQ) {
-                routeTitle.textContent = "Grosvenor to HQ in";
-                toggleButton.textContent = "🔄";
-            } else {
-                routeTitle.textContent = "HQ to Grosvenor in";
-                toggleButton.textContent = "🔄";
-            }
-            updateCountdown();
-        });
-
-        function findClosestBusTimes(inputTime) {
-            const [inputHours, inputMinutes] = inputTime.split(':').map(Number);
-            const targetTimeInMinutes = inputHours * 60 + inputMinutes;
-            const maxDelayMinutes = 50;
-            const schedule = grosvenorToHQSchedule.map(item => ({
-                gros: item.gros,
-                hq: item.hq,
-                grosMinutes: item.gros.split(':').map(Number)[0] * 60 + item.gros.split(':').map(Number)[1],
-                hqMinutes: item.hq.split(':').map(Number)[0] * 60 + item.hq.split(':').map(Number)[1]
-            }));
-            schedule.push({
-                gros: schedule[0].gros,
-                hq: schedule[0].hq,
-                grosMinutes: schedule[0].grosMinutes + 1440,
-                hqMinutes: schedule[0].hqMinutes + 1440
-            });
-            const validTimes = schedule.filter(item => {
-                const diff = item.hqMinutes - targetTimeInMinutes;
-                return diff >= 0 && diff <= maxDelayMinutes;
-            });
-            validTimes.sort((a, b) => a.grosMinutes - b.grosMinutes);
-            return validTimes.slice(0, 3).map(item => ({ gros: item.gros, hq: item.hq }));
-        }
-
-        document.getElementById('playButton').addEventListener('click', function() {
-            document.querySelector('.input-container').style.display = 'none';
-            document.getElementById('closestTimes').style.display = 'none';
-            const eGateButton = document.getElementById('eGateButton');
-            eGateButton.style.display = 'inline-block';
-            eGateButton.style.width = '100px';
-            eGateButton.style.height = '24px';
-            eGateButton.style.background = 'white';
-        });
-
-        document.getElementById('busTimeInput').addEventListener('change', function() {
-            const input = document.getElementById('busTimeInput').value.trim();
-            const closestTimesDiv = document.getElementById('closestTimes');
-            if (!input) {
-                closestTimesDiv.textContent = '';
-                closestTimesDiv.style.display = 'none';
-                return;
-            }
-            const closestTimes = findClosestBusTimes(input);
-            if (closestTimes.length === 0) {
-                closestTimesDiv.textContent = '';
-                closestTimesDiv.style.display = 'none';
-            } else {
-                const result = closestTimes.map(item => `${item.gros} ➡️ ${item.hq}`).join(', ');
-                closestTimesDiv.textContent = result;
-                closestTimesDiv.style.display = 'block';
-            }
-        });
-
-        document.getElementById('eGateButton').addEventListener('click', function() {
-            document.getElementById('eGateButton').style.display = 'none';
-            document.querySelector('.input-container').style.display = 'flex';
-        });
-
-        function showFirstVisitPopup() {
-            if (!localStorage.getItem('hasVisited')) {
-                const popup = document.getElementById('firstVisitPopup');
-                popup.style.display = 'block';
-                document.body.classList.add('black-background');
-            }
-        }
-
-        document.getElementById('closePopup').addEventListener('click', function() {
-            const popup = document.getElementById('firstVisitPopup');
-            popup.style.display = 'none';
-            document.body.classList.remove('black-background');
-            localStorage.setItem('hasVisited', 'true');
-        });
-
-async function updateCalendarEvent() {
-    const webcalUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-    const httpsUrl = webcalUrl.replace('webcal://', 'https://');
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(httpsUrl)}`;
-    
-    try {
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error('Failed to fetch calendar');
-        const icsData = await response.text();
-        const jcalData = ICAL.parse(icsData);
-        const comp = new ICAL.Component(jcalData);
-        const vevents = comp.getAllSubcomponents('vevent');
-        
-        const now = new Date();
-        const startOfDay = new Date(now);
-        startOfDay.setHours(0, 0, 0, 0);
-        
-        const endOfDay = new Date(now);
-        endOfDay.setHours(23, 59, 59, 999);
-        
-        const todayEvents = vevents
-            .map(event => {
-                try {
-                    const summary = event.getFirstPropertyValue('summary') || 'No Title';
-                    const start = event.getFirstPropertyValue('dtstart').toJSDate();
-                    const end = event.getFirstPropertyValue('dtend')?.toJSDate() || start;
-                    return { summary, start, end };
-                } catch (e) {
-                    console.error('Error parsing event:', e);
-                    return null;
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            
+            let nextBus = null;
+            let nextBusTime = null;
+            
+            for (const bus of currentSchedule) {
+                const [hours, minutes] = bus.time.split(':').map(Number);
+                const busTime = hours * 60 + minutes;
+                
+                if (busTime > currentTime && (!isEgateActive || bus.isEgate)) {
+                    nextBus = bus;
+                    nextBusTime = busTime;
+                    break;
                 }
-            })
-            .filter(event => event !== null)
-            .filter(event => {
-                const eventDate = event.start;
-                return eventDate >= startOfDay && eventDate <= endOfDay;
-            })
-            .sort((a, b) => a.start - b.start);
-        
-        const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
-        
-        const eventDate = nextEvent.start 
-            ? nextEvent.start.toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: true
-            })
-            : 'No time';
-        
-        document.getElementById('eventDate').textContent = eventDate;
-        document.getElementById('eventSummary').textContent = nextEvent.summary;
-        
-        // Debug information
-        console.log('Today\'s events:', todayEvents);
-        console.log('Next event:', nextEvent);
-        
-    } catch (error) {
-        console.error('Error fetching or parsing calendar:', error);
-        document.getElementById('eventDate').textContent = 'Error';
-        document.getElementById('eventSummary').textContent = 'Failed to load event';
-    }
-}
+            }
+            
+            if (!nextBus) {
+                // If no bus found for today, get first bus of next day
+                nextBus = currentSchedule.find(bus => !isEgateActive || bus.isEgate);
+                nextBusTime = parseInt(nextBus.time.split(':')[0]) * 60 + parseInt(nextBus.time.split(':')[1]) + 24 * 60;
+            }
+            
+            const timeUntilNextBus = nextBusTime - currentTime;
+            const hours = Math.floor(timeUntilNextBus / 60);
+            const minutes = timeUntilNextBus % 60;
+            const seconds = 60 - now.getSeconds();
+            
+            countdownElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            nextBusElement.textContent = `Next bus at: ${nextBus.time}${nextBus.isEgate ? ' (eGate)' : ''}`;
+            
+            // Update progress bar
+            const totalTime = 30; // 30 minutes between buses
+            const progress = ((30 - (minutes % 30)) * 100) / 30;
+            progressBarElement.style.width = `${progress}%`;
+        }
 
-        window.onload = function() {
-            generateRandomDune();
-            window.scrollTo(0, 0);
-            updateSkyAndCelestial();
-            updateCountdown();
-            showFirstVisitPopup();
-            updateCalendarEvent();
-        };
+        function generateRandomDune() {
+            const container = document.getElementById('celestialContainer');
+            const dune = document.createElement('div');
+            dune.className = 'celestial-body';
+            
+            const size = Math.random() * 50 + 50;
+            const left = Math.random() * 100;
+            const top = Math.random() * 100;
+            const opacity = Math.random() * 0.3 + 0.1;
+            
+            dune.style.width = `${size}px`;
+            dune.style.height = `${size}px`;
+            dune.style.left = `${left}%`;
+            dune.style.top = `${top}%`;
+            dune.style.opacity = opacity;
+            dune.style.background = 'radial-gradient(circle, #f39c12 0%, #e67e22 100%)';
+            
+            container.appendChild(dune);
+            
+            // Remove dune after animation
+            setTimeout(() => {
+                dune.remove();
+            }, 5000);
+        }
 
+        function updateCelestialBodies() {
+            const now = new Date();
+            const hour = now.getHours();
+            
+            // Clear existing bodies
+            const container = document.getElementById('celestialContainer');
+            container.innerHTML = '';
+            
+            if (hour >= 6 && hour < 18) {
+                // Day time - sun
+                const sun = document.createElement('div');
+                sun.className = 'celestial-body';
+                sun.style.width = '100px';
+                sun.style.height = '100px';
+                sun.style.left = '10%';
+                sun.style.top = '10%';
+                sun.style.background = 'radial-gradient(circle, #f1c40f 0%, #f39c12 100%)';
+                sun.style.boxShadow = '0 0 50px #f1c40f';
+                container.appendChild(sun);
+            } else {
+                // Night time - moon and stars
+                const moon = document.createElement('div');
+                moon.className = 'celestial-body';
+                moon.style.width = '80px';
+                moon.style.height = '80px';
+                moon.style.left = '10%';
+                moon.style.top = '10%';
+                moon.style.background = 'radial-gradient(circle, #ecf0f1 0%, #bdc3c7 100%)';
+                moon.style.boxShadow = '0 0 30px #ecf0f1';
+                container.appendChild(moon);
+                
+                // Add stars
+                for (let i = 0; i < 50; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'celestial-body';
+                    const size = Math.random() * 3 + 1;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.background = '#ecf0f1';
+                    star.style.boxShadow = '0 0 5px #ecf0f1';
+                    container.style.opacity = Math.random() * 0.5 + 0.5;
+                    container.appendChild(star);
+                }
+            }
+        }
+
+        async function updateCalendarEvent() {
+            const webcalUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
+            const httpsUrl = webcalUrl.replace('webcal://', 'https://');
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(httpsUrl)}`;
+            
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Failed to fetch calendar');
+                const icsData = await response.text();
+                const jcalData = ICAL.parse(icsData);
+                const comp = new ICAL.Component(jcalData);
+                const vevents = comp.getAllSubcomponents('vevent');
+                
+                const now = new Date();
+                const startOfToday = new Date(now);
+                startOfToday.setHours(0, 0, 0, 0);
+                
+                const endOfTomorrow = new Date(now);
+                endOfTomorrow.setDate(endOfTomorrow.getDate() + 2);
+                endOfTomorrow.setHours(0, 0, 0, 0);
+                
+                const events = vevents
+                    .map(event => {
+                        try {
+                            const summary = event.getFirstPropertyValue('summary') || 'No Title';
+                            const start = event.getFirstPropertyValue('dtstart').toJSDate();
+                            const end = event.getFirstPropertyValue('dtend')?.toJSDate() || start;
+                            return { summary, start, end };
+                        } catch (e) {
+                            console.error('Error parsing event:', e);
+                            return null;
+                        }
+                    })
+                    .filter(event => event !== null)
+                    .filter(event => {
+                        const eventDate = event.start;
+                        return eventDate >= startOfToday && eventDate < endOfTomorrow;
+                    })
+                    .sort((a, b) => a.start - b.start);
+                
+                // Separar eventos por día
+                const todayEvents = events.filter(event => {
+                    const eventDate = event.start;
+                    return eventDate >= startOfToday && eventDate < new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000);
+                });
+                
+                const tomorrowEvents = events.filter(event => {
+                    const eventDate = event.start;
+                    return eventDate >= new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000);
+                });
+                
+                // Si no hay eventos, mostrar mensaje por defecto
+                if (todayEvents.length === 0) todayEvents.push({ summary: "No events today", start: null });
+                if (tomorrowEvents.length === 0) tomorrowEvents.push({ summary: "No events tomorrow", start: null });
+                
+                // Actualizar el DOM con los eventos
+                updateEventDisplay(todayEvents[0], tomorrowEvents[0]);
+                
+            } catch (error) {
+                console.error('Error fetching or parsing calendar:', error);
+                document.getElementById('eventDate').textContent = 'Error';
+                document.getElementById('eventSummary').textContent = 'Failed to load event';
+            }
+        }
+
+        function updateEventDisplay(todayEvent, tomorrowEvent) {
+            const eventDate = document.getElementById('eventDate');
+            const eventSummary = document.getElementById('eventSummary');
+            const calendarPopup = document.getElementById('calendarEventPopup');
+            
+            // Añadir clases para la animación
+            calendarPopup.classList.add('flip-container');
+            
+            // Función para actualizar el contenido
+            const updateContent = () => {
+                const currentEvent = currentEventIndex === 0 ? todayEvent : tomorrowEvent;
+                const date = currentEvent.start;
+                
+                if (date) {
+                    const options = { weekday: 'long', month: 'long', day: 'numeric' };
+                    eventDate.textContent = date.toLocaleDateString('en-US', options);
+                    eventSummary.textContent = currentEvent.summary;
+                } else {
+                    eventDate.textContent = currentEventIndex === 0 ? "Today" : "Tomorrow";
+                    eventSummary.textContent = currentEvent.summary;
+                }
+                
+                // Aplicar animación de flip
+                if (!isFlipping) {
+                    isFlipping = true;
+                    calendarPopup.classList.add('flip');
+                    setTimeout(() => {
+                        calendarPopup.classList.remove('flip');
+                        isFlipping = false;
+                    }, 500);
+                }
+            };
+            
+            // Actualizar contenido inicial
+            updateContent();
+            
+            // Cambiar entre eventos cada 10 segundos
+            setInterval(() => {
+                currentEventIndex = (currentEventIndex + 1) % 2;
+                updateContent();
+            }, 10000);
+        }
+
+        // Initialize
+        updateCountdown();
+        updateCelestialBodies();
+        updateCalendarEvent();
+        
+        // Update every 100ms for smooth countdown
         setInterval(updateCountdown, 100);
-        setInterval(updateCalendarEvent, 60000);
+        
+        // Update celestial bodies every hour
+        setInterval(updateCelestialBodies, 3600000);
+        
+        // Generate random dunes every 5 seconds
+        setInterval(generateRandomDune, 5000);
+        
+        // Update calendar events every 5 minutes
+        setInterval(updateCalendarEvent, 300000);
     </script>
 </body>
 </html>
