@@ -269,29 +269,6 @@
         #eGateButton:hover {
             transform: scale(1.05);
         }
-        #smartLifeButton {
-            padding: 0 20px;
-            font-size: 1.2em;
-            font-family: 'Emirates Bold', sans-serif;
-            background: white;
-            color: #2c3e50;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: transform 0.3s;
-            width: 100px;
-            height: 24px;
-            line-height: 24px;
-            box-sizing: border-box;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        #smartLifeButton:hover {
-            transform: scale(1.05);
-        }
-        .ultra-dark-mode #smartLifeButton {
-            background: #333;
-            color: white;
-        }
         #firstVisitPopup {
             display: none;
             position: fixed;
@@ -392,8 +369,8 @@
 </head>
 <body>
     <div id="background-container"></div>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png"
-          alt="Emirates Logo" class="emirates-logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png" 
+         alt="Emirates Logo" class="emirates-logo">
     <div class="container">
         <h1 id="routeTitle">Grosvenor to HQ in</h1>
         <div id="countdown">00:00</div>
@@ -407,7 +384,6 @@
         <div class="button-container">
             <button id="toggleRoute">🔄</button>
             <button id="eGateButton">eGate</button>
-            <button id="smartLifeButton">Lights</button>
         </div>
         <div class="input-container">
             <span>eGate</span>
@@ -448,7 +424,6 @@
         let isGrosvenorToHQ = true;
         let starsCreated = false;
         let isUltraDarkMode = false;
-        let lightsOn = false;
 
         const grosvenorToHQSchedule = [
             { gros: "00:43", hq: "01:03" }, { gros: "01:03", hq: "01:23" }, { gros: "01:23", hq: "01:43" },
@@ -474,11 +449,11 @@
         ];
 
         const hqToGrosvenorSchedule = [
-            "00:15", "00:35", "00:55", "01:15", "01:35", "01:55", "02:25", "02:55", "03:25", "03:55",
-            "04:20", "04:40", "05:00", "05:25", "05:45", "06:05", "06:25", "06:45", "07:10", "07:35",
-            "08:00", "08:25", "08:50", "09:20", "09:45", "10:10", "10:35", "11:00", "11:25", "11:50",
-            "12:10", "12:30", "12:50", "13:10", "13:30", "13:50", "14:15", "14:40", "15:05", "15:30",
-            "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40",
+            "00:15", "00:35", "00:55", "01:15", "01:35", "01:55", "02:25", "02:55", "03:25", "03:55", 
+            "04:20", "04:40", "05:00", "05:25", "05:45", "06:05", "06:25", "06:45", "07:10", "07:35", 
+            "08:00", "08:25", "08:50", "09:20", "09:45", "10:10", "10:35", "11:00", "11:25", "11:50", 
+            "12:10", "12:30", "12:50", "13:10", "13:30", "13:50", "14:15", "14:40", "15:05", "15:30", 
+            "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40", 
             "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
         ];
 
@@ -513,8 +488,8 @@
 
         function getBezierY(t, p0, p1, p2, p3) {
             const mt = 1 - t;
-            return Math.pow(mt, 3) * p0.y + 3 * Math.pow(mt, 2) * t * p1.y +
-                    3 * mt * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
+            return Math.pow(mt, 3) * p0.y + 3 * Math.pow(mt, 2) * t * p1.y + 
+                   3 * mt * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
         }
 
         function getDuneHeight(x) {
@@ -542,20 +517,20 @@
                 const busTimeInMinutes = hours * 60 + minutes;
                 if (busTimeInMinutes > currentTimeInMinutes) {
                     nextBus = { time: currentSchedule[i], minutes: busTimeInMinutes };
-                    previousBus = {
-                         time: currentSchedule[i-1] || currentSchedule[currentSchedule.length-1],
-                         minutes: (i-1 >= 0 ? currentSchedule[i-1] : currentSchedule[currentSchedule.length-1])
+                    previousBus = { 
+                        time: currentSchedule[i-1] || currentSchedule[currentSchedule.length-1], 
+                        minutes: (i-1 >= 0 ? currentSchedule[i-1] : currentSchedule[currentSchedule.length-1])
                             .split(':').map(Number).reduce((h,m) => h*60 + m)
                     };
                     break;
                 }
             }
             if (!nextBus.minutes) {
-                nextBus = { time: currentSchedule[0], minutes: currentSchedule[0].split(':').map(Number)[0] * 60 +
-                            currentSchedule[0].split(':').map(Number)[1] + 1440 };
-                previousBus = { time: currentSchedule[currentSchedule.length-1],
-                               minutes: currentSchedule[currentSchedule.length-1].split(':').map(Number)[0] * 60 +
-                               currentSchedule[currentSchedule.length-1].split(':').map(Number)[1] };
+                nextBus = { time: currentSchedule[0], minutes: currentSchedule[0].split(':').map(Number)[0] * 60 + 
+                           currentSchedule[0].split(':').map(Number)[1] + 1440 };
+                previousBus = { time: currentSchedule[currentSchedule.length-1], 
+                              minutes: currentSchedule[currentSchedule.length-1].split(':').map(Number)[0] * 60 + 
+                              currentSchedule[currentSchedule.length-1].split(':').map(Number)[1] };
             }
             return { previousBus, nextBus };
         }
@@ -613,7 +588,7 @@
             }
             const minutes = Math.floor(timeDifference % 60);
             const seconds = Math.floor((timeDifference * 60) % 60);
-            document.getElementById('countdown').textContent =
+            document.getElementById('countdown').textContent = 
                 `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
             const totalDuration = (nextBus.minutes - previousBus.minutes + 1440) % 1440;
@@ -746,103 +721,68 @@
             localStorage.setItem('hasVisited', 'true');
         });
 
-        document.getElementById('smartLifeButton').addEventListener('click', async function() {
-            try {
-                // Replace these with your actual SmartLife API credentials and device ID
-                const apiKey = 'YOUR_API_KEY';
-                const deviceId = 'YOUR_DEVICE_ID';
-                const accessToken = 'YOUR_ACCESS_TOKEN';
-                
-                const response = await fetch('https://openapi.tuyaeu.com/v1.0/devices/' + deviceId + '/commands', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'client_id': apiKey,
-                        'access_token': accessToken
-                    },
-                    body: JSON.stringify({
-                        commands: [{
-                            code: 'switch_led',
-                            value: !lightsOn
-                        }]
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to control lights');
+async function updateCalendarEvent() {
+    const webcalUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
+    const httpsUrl = webcalUrl.replace('webcal://', 'https://');
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(httpsUrl)}`;
+    
+    try {
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error('Failed to fetch calendar');
+        const icsData = await response.text();
+        const jcalData = ICAL.parse(icsData);
+        const comp = new ICAL.Component(jcalData);
+        const vevents = comp.getAllSubcomponents('vevent');
+        
+        const now = new Date();
+        const startOfDay = new Date(now);
+        startOfDay.setHours(0, 0, 0, 0);
+        
+        const endOfDay = new Date(now);
+        endOfDay.setHours(23, 59, 59, 999);
+        
+        const todayEvents = vevents
+            .map(event => {
+                try {
+                    const summary = event.getFirstPropertyValue('summary') || 'No Title';
+                    const start = event.getFirstPropertyValue('dtstart').toJSDate();
+                    const end = event.getFirstPropertyValue('dtend')?.toJSDate() || start;
+                    return { summary, start, end };
+                } catch (e) {
+                    console.error('Error parsing event:', e);
+                    return null;
                 }
-                
-                lightsOn = !lightsOn;
-                this.textContent = lightsOn ? 'Lights On' : 'Lights';
-                alert('Lights ' + (lightsOn ? 'turned on' : 'turned off') + ' successfully!');
-            } catch (error) {
-                console.error('Error controlling lights:', error);
-                alert('Failed to control lights. Please check console for details.');
-            }
-        });
-
-        async function updateCalendarEvent() {
-            const webcalUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-            const httpsUrl = webcalUrl.replace('webcal://', 'https://');
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(httpsUrl)}`;
-
-            try {
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Failed to fetch calendar');
-                const icsData = await response.text();
-                const jcalData = ICAL.parse(icsData);
-                const comp = new ICAL.Component(jcalData);
-                const vevents = comp.getAllSubcomponents('vevent');
-
-                const now = new Date();
-                const startOfDay = new Date(now);
-                startOfDay.setHours(0, 0, 0, 0);
-
-                const endOfDay = new Date(now);
-                endOfDay.setHours(23, 59, 59, 999);
-
-                const todayEvents = vevents
-                    .map(event => {
-                        try {
-                            const summary = event.getFirstPropertyValue('summary') || 'No Title';
-                            const start = event.getFirstPropertyValue('dtstart').toJSDate();
-                            const end = event.getFirstPropertyValue('dtend')?.toJSDate() || start;
-                            return { summary, start, end };
-                        } catch (e) {
-                            console.error('Error parsing event:', e);
-                            return null;
-                        }
-                    })
-                    .filter(event => event !== null)
-                    .filter(event => {
-                        const eventDate = event.start;
-                        return eventDate >= startOfDay && eventDate <= endOfDay;
-                    })
-                    .sort((a, b) => a.start - b.start);
-
-                const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
-
-                const eventDate = nextEvent.start
-                    ? nextEvent.start.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                    })
-                    : 'No time';
-
-                document.getElementById('eventDate').textContent = eventDate;
-                document.getElementById('eventSummary').textContent = nextEvent.summary;
-
-                // Debug information
-                console.log('Today\'s events:', todayEvents);
-                console.log('Next event:', nextEvent);
-
-            } catch (error) {
-                console.error('Error fetching or parsing calendar:', error);
-                document.getElementById('eventDate').textContent = 'Error';
-                document.getElementById('eventSummary').textContent = 'Failed to load event';
-            }
-        }
+            })
+            .filter(event => event !== null)
+            .filter(event => {
+                const eventDate = event.start;
+                return eventDate >= startOfDay && eventDate <= endOfDay;
+            })
+            .sort((a, b) => a.start - b.start);
+        
+        const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
+        
+        const eventDate = nextEvent.start 
+            ? nextEvent.start.toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true
+            })
+            : 'No time';
+        
+        document.getElementById('eventDate').textContent = eventDate;
+        document.getElementById('eventSummary').textContent = nextEvent.summary;
+        
+        // Debug information
+        console.log('Today\'s events:', todayEvents);
+        console.log('Next event:', nextEvent);
+        
+    } catch (error) {
+        console.error('Error fetching or parsing calendar:', error);
+        document.getElementById('eventDate').textContent = 'Error';
+        document.getElementById('eventSummary').textContent = 'Failed to load event';
+    }
+}
 
         window.onload = function() {
             generateRandomDune();
