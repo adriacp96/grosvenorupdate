@@ -734,16 +734,66 @@ const fetchUrl = calendarUrl.replace('webcal://', 'https://');
         document.getElementById('eventSummary').textContent = 'Failed to load event';
     }
 }
-        window.onload = function() {
-            generateRandomDune();
-            window.scrollTo(0, 0);
-            updateSkyAndCelestial();
-            updateCountdown();
-            showFirstVisitPopup();
-            updateCalendarEvent();
-        };
+window.onload = function() {
+    generateRandomDune();
+    window.scrollTo(0, 0);
+    updateSkyAndCelestial();
+    updateCountdown();
+    showFirstVisitPopup();
+    updateCalendarEvent();
+    createNightModeElements(); // Add this line to initialize night mode
+};
         setInterval(updateCountdown, 100);
         setInterval(updateCalendarEvent, 60000);
+        // Create night mode elements
+function createNightModeElements() {
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'night-mode-overlay';
+    overlay.id = 'nightModeOverlay';
+    document.body.appendChild(overlay);
+    
+    // Add light bulb button to existing button container
+    const buttonContainer = document.querySelector('.button-container');
+    const nightModeButton = document.createElement('button');
+    nightModeButton.id = 'nightModeButton';
+    nightModeButton.innerHTML = '💡';
+    nightModeButton.title = 'Night mode';
+    buttonContainer.appendChild(nightModeButton);
+    
+    // Set up click event for the button
+    nightModeButton.addEventListener('click', toggleNightMode);
+    
+    // Restore saved night mode state
+    if (localStorage.getItem('nightModeActive') === 'true') {
+        activateNightMode();
+    }
+}
+
+// Toggle night mode on/off
+function toggleNightMode() {
+    const overlay = document.getElementById('nightModeOverlay');
+    const button = document.getElementById('nightModeButton');
+    
+    if (overlay.classList.contains('active')) {
+        // Deactivate night mode
+        overlay.classList.remove('active');
+        button.classList.remove('night-mode-active');
+        localStorage.setItem('nightModeActive', 'false');
+    } else {
+        // Activate night mode
+        activateNightMode();
+    }
+}
+
+// Activate night mode
+function activateNightMode() {
+    const overlay = document.getElementById('nightModeOverlay');
+    const button = document.getElementById('nightModeButton');
+    overlay.classList.add('active');
+    button.classList.add('night-mode-active');
+    localStorage.setItem('nightModeActive', 'true');
+}
     </script>
 </body>
 </html>
