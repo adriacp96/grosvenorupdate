@@ -328,6 +328,54 @@
             text-align: center;
             word-wrap: break-word;
         }
+        .emirates-logo {
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.emirates-logo:hover {
+    opacity: 1;
+}
+
+.ultra-dark-mode {
+    filter: brightness(0.1) contrast(1.2);
+}
+
+.ultra-dark-mode .container {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.ultra-dark-mode #countdown,
+.ultra-dark-mode #nextBus,
+.ultra-dark-mode #routeTitle,
+.ultra-dark-mode #eventDate,
+.ultra-dark-mode #eventSummary {
+    color: #ffffff;
+}
+
+.ultra-dark-mode .progress-bar {
+    background-color: #333;
+}
+
+.ultra-dark-mode .progress-fill {
+    background-color: #666;
+}
+
+.ultra-dark-mode #eGateButton {
+    background: #333;
+    color: white;
+}
+
+.ultra-dark-mode #busTimeInput {
+    background-color: #333;
+    color: white;
+    border-color: #666;
+}
+
+.ultra-dark-mode #playButton {
+    background-color: #666;
+    color: white;
+}
     </style>
 </head>
 <body>
@@ -416,6 +464,19 @@
             "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40", 
             "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
         ];
+        let dunePoints = [];
+let isGrosvenorToHQ = true;
+let starsCreated = false;
+let isUltraDarkMode = false;  // Agrega esta línea aquí
+
+document.querySelector('.emirates-logo').addEventListener('click', function() {
+    isUltraDarkMode = !isUltraDarkMode;
+    if (isUltraDarkMode) {
+        document.body.classList.add('ultra-dark-mode');
+    } else {
+        document.body.classList.remove('ultra-dark-mode');
+    }
+});
         function generateRandomDune() {
             const segments = 4;
             const width = 1000;
