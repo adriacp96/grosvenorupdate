@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -64,26 +64,6 @@
             opacity: 0.9;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-        .emirates-logo:active {
-            transform: translateX(-50%) scale(0.95);
-        }
-        .dim-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 2;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            opacity: 0;
-        }
-        .dim-screen.active {
-            opacity: 1;
         }
         .container {
             text-align: center;
@@ -352,7 +332,6 @@
 </head>
 <body>
     <div id="background-container"></div>
-    <div class="dim-screen" id="dimScreen"></div>
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png" 
          alt="Emirates Logo" class="emirates-logo">
     <div class="container">
@@ -437,7 +416,6 @@
             "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40", 
             "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
         ];
-
         function generateRandomDune() {
             const segments = 4;
             const width = 1000;
@@ -457,13 +435,11 @@
             path += " L0,250 Z";
             document.getElementById("dunePath").setAttribute("d", path);
         }
-
         function getBezierY(t, p0, p1, p2, p3) {
             const mt = 1 - t;
             return Math.pow(mt, 3) * p0.y + 3 * Math.pow(mt, 2) * t * p1.y + 
                    3 * mt * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
         }
-
         function getDuneHeight(x) {
             for (let i = 0; i < dunePoints.length - 3; i += 3) {
                 const p0 = dunePoints[i];
@@ -477,7 +453,6 @@
             }
             return 250;
         }
-
         function getBusTimes() {
             const currentSchedule = isGrosvenorToHQ ? grosvenorToHQSchedule.map(item => item.gros) : hqToGrosvenorSchedule;
             const now = new Date();
@@ -506,7 +481,6 @@
             }
             return { previousBus, nextBus };
         }
-
         function updateSkyAndCelestial() {
             const now = new Date();
             const hours = now.getHours();
@@ -549,7 +523,6 @@
             celestial.style.top = `${yPos}vh`;
             celestial.style.display = 'block';
         }
-
         function updateCountdown() {
             const now = new Date();
             const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
@@ -586,7 +559,6 @@
             document.getElementById('busEmoji').style.left = `${busPosition}px`;
             updateSkyAndCelestial();
         }
-
         function createStars() {
             const starsContainer = document.getElementById('starsContainer');
             const numberOfStars = 50;
@@ -605,7 +577,6 @@
                 starsContainer.appendChild(star);
             }
         }
-
         document.getElementById('toggleRoute').addEventListener('click', function() {
             isGrosvenorToHQ = !isGrosvenorToHQ;
             const routeTitle = document.getElementById('routeTitle');
@@ -619,10 +590,8 @@
             }
             updateCountdown();
         });
-
         function findClosestBusTimes(inputTime) {
-            const [inputHours, input
-Minutes] = inputTime.split(':').map(Number);
+            const [inputHours, inputMinutes] = inputTime.split(':').map(Number);
             const targetTimeInMinutes = inputHours * 60 + inputMinutes;
             const maxDelayMinutes = 50;
             const schedule = grosvenorToHQSchedule.map(item => ({
@@ -644,7 +613,6 @@ Minutes] = inputTime.split(':').map(Number);
             validTimes.sort((a, b) => a.grosMinutes - b.grosMinutes);
             return validTimes.slice(0, 3).map(item => ({ gros: item.gros, hq: item.hq }));
         }
-
         document.getElementById('playButton').addEventListener('click', function() {
             document.querySelector('.input-container').style.display = 'none';
             document.getElementById('closestTimes').style.display = 'none';
@@ -654,7 +622,6 @@ Minutes] = inputTime.split(':').map(Number);
             eGateButton.style.height = '24px';
             eGateButton.style.background = 'white';
         });
-
         document.getElementById('busTimeInput').addEventListener('change', function() {
             const input = document.getElementById('busTimeInput').value.trim();
             const closestTimesDiv = document.getElementById('closestTimes');
@@ -673,12 +640,10 @@ Minutes] = inputTime.split(':').map(Number);
                 closestTimesDiv.style.display = 'block';
             }
         });
-
         document.getElementById('eGateButton').addEventListener('click', function() {
             document.getElementById('eGateButton').style.display = 'none';
             document.querySelector('.input-container').style.display = 'flex';
         });
-
         function showFirstVisitPopup() {
             if (!localStorage.getItem('hasVisited')) {
                 const popup = document.getElementById('firstVisitPopup');
@@ -686,14 +651,12 @@ Minutes] = inputTime.split(':').map(Number);
                 document.body.classList.add('black-background');
             }
         }
-
         document.getElementById('closePopup').addEventListener('click', function() {
             const popup = document.getElementById('firstVisitPopup');
             popup.style.display = 'none';
             document.body.classList.remove('black-background');
             localStorage.setItem('hasVisited', 'true');
         });
-
         async function updateCalendarEvent() {
             const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
             const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(calendarUrl)}`;
@@ -729,17 +692,6 @@ Minutes] = inputTime.split(':').map(Number);
                 document.getElementById('eventSummary').textContent = 'Failed to load event';
             }
         }
-
-        // Brightness control
-        let isDimmed = false;
-        const dimScreen = document.getElementById('dimScreen');
-        const emiratesLogo = document.querySelector('.emirates-logo');
-
-        emiratesLogo.addEventListener('click', function() {
-            isDimmed = !isDimmed;
-            dimScreen.classList.toggle('active', isDimmed);
-        });
-
         window.onload = function() {
             generateRandomDune();
             window.scrollTo(0, 0);
@@ -748,7 +700,6 @@ Minutes] = inputTime.split(':').map(Number);
             showFirstVisitPopup();
             updateCalendarEvent();
         };
-
         setInterval(updateCountdown, 100);
         setInterval(updateCalendarEvent, 60000);
     </script>
