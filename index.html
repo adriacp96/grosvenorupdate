@@ -658,102 +658,50 @@
             localStorage.setItem('hasVisited', 'true');
         });
         async function updateCalendarEvent() {
-        const calendarUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-const fetchUrl = calendarUrl.replace('webcal://', 'https://');
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(fetchUrl)}`;
-    
-    try {
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error('Failed to fetch calendar');
-        const icsData = await response.text();
-        const jcalData = ICAL.parse(icsData);
-        const comp = new ICAL.Component(jcalData);
-        const vevents = comp.getAllSubcomponents('vevent');
-        const now = new Date();
-        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(now.setHours(23, 59, 59, 999));
-        const todayEvents = vevents
-            .map(event => ({
-                summary: event.getFirstPropertyValue('summary') || 'No Title',
-                start: event.getFirstPropertyValue('dtstart').toJSDate()
-            }))
-            .filter(event => {
-                const eventDate = event.start;
-                return eventDate >= startOfDay && eventDate <= endOfDay && eventDate >= now;
-            })
-            .sort((a, b) => a.start - b.start);
-        const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
-        const eventDate = nextEvent.start 
-            ? `${nextEvent.start.toLocaleTimeString()}`
-            : 'No time';
-        document.getElementById('eventDate').textContent = eventDate;
-        document.getElementById('eventSummary').textContent = nextEvent.summary;
-    } catch (error) {
-        console.error('Error fetching or parsing calendar:', error);
-        document.getElementById('eventDate').textContent = 'Error';
-        document.getElementById('eventSummary').textContent = 'Failed to load event';
-    }
-}
-window.onload = function() {
-    generateRandomDune();
-    window.scrollTo(0, 0);
-    updateSkyAndCelestial();
-    updateCountdown();
-    showFirstVisitPopup();
-    updateCalendarEvent();
-    createNightModeElements(); // Add this line to initialize night mode
-};
+            const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(calendarUrl)}`;
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Failed to fetch calendar');
+                const icsData = await response.text();
+                const jcalData = ICAL.parse(icsData);
+                const comp = new ICAL.Component(jcalData);
+                const vevents = comp.getAllSubcomponents('vevent');
+                const now = new Date();
+                const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+                const endOfDay = new Date(now.setHours(23, 59, 59, 999));
+                const todayEvents = vevents
+                    .map(event => ({
+                        summary: event.getFirstPropertyValue('summary') || 'No Title',
+                        start: event.getFirstPropertyValue('dtstart').toJSDate()
+                    }))
+                    .filter(event => {
+                        const eventDate = event.start;
+                        return eventDate >= startOfDay && eventDate <= endOfDay && eventDate >= now;
+                    })
+                    .sort((a, b) => a.start - b.start);
+                const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
+                const eventDate = nextEvent.start 
+                    ? `${nextEvent.start.toLocaleTimeString()}`
+                    : 'No time';
+                document.getElementById('eventDate').textContent = eventDate;
+                document.getElementById('eventSummary').textContent = nextEvent.summary;
+            } catch (error) {
+                console.error('Error fetching or parsing calendar:', error);
+                document.getElementById('eventDate').textContent = 'Error';
+                document.getElementById('eventSummary').textContent = 'Failed to load event';
+            }
+        }
+        window.onload = function() {
+            generateRandomDune();
+            window.scrollTo(0, 0);
+            updateSkyAndCelestial();
+            updateCountdown();
+            showFirstVisitPopup();
+            updateCalendarEvent();
+        };
         setInterval(updateCountdown, 100);
         setInterval(updateCalendarEvent, 60000);
-        // Create night mode elements
-function createNightModeElements() {
-    // Create overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'night-mode-overlay';
-    overlay.id = 'nightModeOverlay';
-    document.body.appendChild(overlay);
-    
-    // Add light bulb button to existing button container
-    const buttonContainer = document.querySelector('.button-container');
-    const nightModeButton = document.createElement('button');
-    nightModeButton.id = 'nightModeButton';
-    nightModeButton.innerHTML = '💡';
-    nightModeButton.title = 'Night mode';
-    buttonContainer.appendChild(nightModeButton);
-    
-    // Set up click event for the button
-    nightModeButton.addEventListener('click', toggleNightMode);
-    
-    // Restore saved night mode state
-    if (localStorage.getItem('nightModeActive') === 'true') {
-        activateNightMode();
-    }
-}
-
-// Toggle night mode on/off
-function toggleNightMode() {
-    const overlay = document.getElementById('nightModeOverlay');
-    const button = document.getElementById('nightModeButton');
-    
-    if (overlay.classList.contains('active')) {
-        // Deactivate night mode
-        overlay.classList.remove('active');
-        button.classList.remove('night-mode-active');
-        localStorage.setItem('nightModeActive', 'false');
-    } else {
-        // Activate night mode
-        activateNightMode();
-    }
-}
-
-// Activate night mode
-function activateNightMode() {
-    const overlay = document.getElementById('nightModeOverlay');
-    const button = document.getElementById('nightModeButton');
-    overlay.classList.add('active');
-    button.classList.add('night-mode-active');
-    localStorage.setItem('nightModeActive', 'true');
-}
     </script>
 </body>
 </html>
