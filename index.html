@@ -721,52 +721,68 @@
             localStorage.setItem('hasVisited', 'true');
         });
 
-        async function updateCalendarEvent() {
-            const webcalUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-            const httpsUrl = webcalUrl.replace('webcal://', 'https://');
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(httpsUrl)}`;
-            
-            try {
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Failed to fetch calendar');
-                const icsData = await response.text();
-                const jcalData = ICAL.parse(icsData);
-                const comp = new ICAL.Component(jcalData);
-                const vevents = comp.getAllSubcomponents('vevent');
-                
-                const now = new Date();
-                const startOfDay = new Date(now);
-                startOfDay.setHours(0, 0, 0, 0);
-                
-                const endOfDay = new Date(now);
-                endOfDay.setHours(23, 59, 59, 999);
-                
-                const todayEvents = vevents
-                    .map(event => {
-                        const summary = event.getFirstPropertyValue('summary') || 'No Title';
-                        const start = event.getFirstPropertyValue('dtstart').toJSDate();
-                        return { summary, start };
-                    })
-                    .filter(event => {
-                        const eventDate = event.start;
-                        return eventDate >= startOfDay && eventDate <= endOfDay && eventDate >= now;
-                    })
-                    .sort((a, b) => a.start - b.start);
-                
-                const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
-                
-                const eventDate = nextEvent.start 
-                    ? nextEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    : 'No time';
-                
-                document.getElementById('eventDate').textContent = eventDate;
-                document.getElementById('eventSummary').textContent = nextEvent.summary;
-            } catch (error) {
-                console.error('Error fetching or parsing calendar:', error);
-                document.getElementById('eventDate').textContent = 'Error';
-                document.getElementById('eventSummary').textContent = 'Failed to load event';
-            }
-        }
+async function updateCalendarEvent() {
+    const webcalUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
+    const httpsUrl = webcalUrl.replace('webcal://', 'https://');
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(httpsUrl)}`;
+    
+    try {
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error('Failed to fetch calendar');
+        const icsData = await response.text();
+        const jcalData = ICAL.parse(icsData);
+        const comp = new ICAL.Component(jcalData);
+        const vevents = comp.getAllSubcomponents('vevent');
+        
+        const now = new Date();
+        const startOfDay = new Date(now);
+        startOfDay.setHours(0, 0, 0, 0);
+        
+        const endOfDay = new Date(now);
+        endOfDay.setHours(23, 59, 59, 999);
+        
+        const todayEvents = vevents
+            .map(event => {
+                try {
+                    const summary = event.getFirstPropertyValue('summary') || 'No Title';
+                    const start = event.getFirstPropertyValue('dtstart').toJSDate();
+                    const end = event.getFirstPropertyValue('dtend')?.toJSDate() || start;
+                    return { summary, start, end };
+                } catch (e) {
+                    console.error('Error parsing event:', e);
+                    return null;
+                }
+            })
+            .filter(event => event !== null)
+            .filter(event => {
+                const eventDate = event.start;
+                return eventDate >= startOfDay && eventDate <= endOfDay;
+            })
+            .sort((a, b) => a.start - b.start);
+        
+        const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
+        
+        const eventDate = nextEvent.start 
+            ? nextEvent.start.toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true
+            })
+            : 'No time';
+        
+        document.getElementById('eventDate').textContent = eventDate;
+        document.getElementById('eventSummary').textContent = nextEvent.summary;
+        
+        // Debug information
+        console.log('Today\'s events:', todayEvents);
+        console.log('Next event:', nextEvent);
+        
+    } catch (error) {
+        console.error('Error fetching or parsing calendar:', error);
+        document.getElementById('eventDate').textContent = 'Error';
+        document.getElementById('eventSummary').textContent = 'Failed to load event';
+    }
+}
 
         window.onload = function() {
             generateRandomDune();
