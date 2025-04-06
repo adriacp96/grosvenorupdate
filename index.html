@@ -64,6 +64,43 @@
             opacity: 0.9;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .emirates-logo:hover {
+            opacity: 1;
+        }
+        .ultra-dark-mode {
+            filter: brightness(0.1) contrast(1.2);
+        }
+        .ultra-dark-mode .container {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        .ultra-dark-mode #countdown,
+        .ultra-dark-mode #nextBus,
+        .ultra-dark-mode #routeTitle,
+        .ultra-dark-mode #eventDate,
+        .ultra-dark-mode #eventSummary {
+            color: #ffffff;
+        }
+        .ultra-dark-mode .progress-bar {
+            background-color: #333;
+        }
+        .ultra-dark-mode .progress-fill {
+            background-color: #666;
+        }
+        .ultra-dark-mode #eGateButton {
+            background: #333;
+            color: white;
+        }
+        .ultra-dark-mode #busTimeInput {
+            background-color: #333;
+            color: white;
+            border-color: #666;
+        }
+        .ultra-dark-mode #playButton {
+            background-color: #666;
+            color: white;
         }
         .container {
             text-align: center;
@@ -328,54 +365,6 @@
             text-align: center;
             word-wrap: break-word;
         }
-        .emirates-logo {
-    cursor: pointer;
-    transition: opacity 0.3s;
-}
-
-.emirates-logo:hover {
-    opacity: 1;
-}
-
-.ultra-dark-mode {
-    filter: brightness(0.1) contrast(1.2);
-}
-
-.ultra-dark-mode .container {
-    background-color: rgba(0, 0, 0, 0.9);
-}
-
-.ultra-dark-mode #countdown,
-.ultra-dark-mode #nextBus,
-.ultra-dark-mode #routeTitle,
-.ultra-dark-mode #eventDate,
-.ultra-dark-mode #eventSummary {
-    color: #ffffff;
-}
-
-.ultra-dark-mode .progress-bar {
-    background-color: #333;
-}
-
-.ultra-dark-mode .progress-fill {
-    background-color: #666;
-}
-
-.ultra-dark-mode #eGateButton {
-    background: #333;
-    color: white;
-}
-
-.ultra-dark-mode #busTimeInput {
-    background-color: #333;
-    color: white;
-    border-color: #666;
-}
-
-.ultra-dark-mode #playButton {
-    background-color: #666;
-    color: white;
-}
     </style>
 </head>
 <body>
@@ -434,49 +423,17 @@
         let dunePoints = [];
         let isGrosvenorToHQ = true;
         let starsCreated = false;
-        const grosvenorToHQSchedule = [
-            { gros: "00:43", hq: "01:03" }, { gros: "01:03", hq: "01:23" }, { gros: "01:23", hq: "01:43" },
-            { gros: "01:43", hq: "02:03" }, { gros: "02:03", hq: "02:23" }, { gros: "02:23", hq: "02:43" },
-            { gros: "02:53", hq: "03:13" }, { gros: "03:23", hq: "03:43" }, { gros: "03:53", hq: "04:13" },
-            { gros: "04:23", hq: "04:43" }, { gros: "04:48", hq: "05:08" }, { gros: "05:08", hq: "05:28" },
-            { gros: "05:28", hq: "05:48" }, { gros: "05:53", hq: "06:13" }, { gros: "06:13", hq: "06:33" },
-            { gros: "06:33", hq: "06:53" }, { gros: "06:53", hq: "07:13" }, { gros: "07:13", hq: "07:33" },
-            { gros: "07:38", hq: "07:58" }, { gros: "08:03", hq: "08:23" }, { gros: "08:28", hq: "08:48" },
-            { gros: "08:53", hq: "09:13" }, { gros: "09:18", hq: "09:38" }, { gros: "09:48", hq: "10:08" },
-            { gros: "10:13", hq: "10:33" }, { gros: "10:38", hq: "10:58" }, { gros: "11:03", hq: "11:23" },
-            { gros: "11:28", hq: "11:48" }, { gros: "11:53", hq: "12:13" }, { gros: "12:18", hq: "12:38" },
-            { gros: "12:38", hq: "12:58" }, { gros: "12:58", hq: "13:18" }, { gros: "13:18", hq: "13:38" },
-            { gros: "13:38", hq: "13:58" }, { gros: "13:58", hq: "14:18" }, { gros: "14:18", hq: "14:38" },
-            { gros: "14:43", hq: "15:03" }, { gros: "15:08", hq: "15:28" }, { gros: "15:33", hq: "15:53" },
-            { gros: "15:58", hq: "16:18" }, { gros: "16:23", hq: "16:43" }, { gros: "16:48", hq: "17:08" },
-            { gros: "17:17", hq: "17:39" }, { gros: "17:42", hq: "18:04" }, { gros: "18:07", hq: "18:32" },
-            { gros: "18:32", hq: "18:57" }, { gros: "18:57", hq: "19:22" }, { gros: "19:22", hq: "19:47" },
-            { gros: "19:47", hq: "20:12" }, { gros: "20:12", hq: "20:34" }, { gros: "20:37", hq: "20:59" },
-            { gros: "21:00", hq: "21:20" }, { gros: "21:23", hq: "21:43" }, { gros: "21:48", hq: "22:08" },
-            { gros: "22:13", hq: "22:33" }, { gros: "22:38", hq: "22:58" }, { gros: "23:03", hq: "23:23" },
-            { gros: "23:28", hq: "23:48" }, { gros: "23:53", hq: "00:13" }, { gros: "00:18", hq: "00:38" }
-        ];
-        const hqToGrosvenorSchedule = [
-            "00:15", "00:35", "00:55", "01:15", "01:35", "01:55", "02:25", "02:55", "03:25", "03:55", 
-            "04:20", "04:40", "05:00", "05:25", "05:45", "06:05", "06:25", "06:45", "07:10", "07:35", 
-            "08:00", "08:25", "08:50", "09:20", "09:45", "10:10", "10:35", "11:00", "11:25", "11:50", 
-            "12:10", "12:30", "12:50", "13:10", "13:30", "13:50", "14:15", "14:40", "15:05", "15:30", 
-            "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40", 
-            "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
-        ];
-        let dunePoints = [];
-let isGrosvenorToHQ = true;
-let starsCreated = false;
-let isUltraDarkMode = false;  // Agrega esta línea aquí
+        let isUltraDarkMode = false;
 
-document.querySelector('.emirates-logo').addEventListener('click', function() {
-    isUltraDarkMode = !isUltraDarkMode;
-    if (isUltraDarkMode) {
-        document.body.classList.add('ultra-dark-mode');
-    } else {
-        document.body.classList.remove('ultra-dark-mode');
-    }
-});
+        document.querySelector('.emirates-logo').addEventListener('click', function() {
+            isUltraDarkMode = !isUltraDarkMode;
+            if (isUltraDarkMode) {
+                document.body.classList.add('ultra-dark-mode');
+            } else {
+                document.body.classList.remove('ultra-dark-mode');
+            }
+        });
+
         function generateRandomDune() {
             const segments = 4;
             const width = 1000;
@@ -496,11 +453,13 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
             path += " L0,250 Z";
             document.getElementById("dunePath").setAttribute("d", path);
         }
+
         function getBezierY(t, p0, p1, p2, p3) {
             const mt = 1 - t;
             return Math.pow(mt, 3) * p0.y + 3 * Math.pow(mt, 2) * t * p1.y + 
                    3 * mt * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
         }
+
         function getDuneHeight(x) {
             for (let i = 0; i < dunePoints.length - 3; i += 3) {
                 const p0 = dunePoints[i];
@@ -514,6 +473,7 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
             }
             return 250;
         }
+
         function getBusTimes() {
             const currentSchedule = isGrosvenorToHQ ? grosvenorToHQSchedule.map(item => item.gros) : hqToGrosvenorSchedule;
             const now = new Date();
@@ -542,6 +502,7 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
             }
             return { previousBus, nextBus };
         }
+
         function updateSkyAndCelestial() {
             const now = new Date();
             const hours = now.getHours();
@@ -584,6 +545,7 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
             celestial.style.top = `${yPos}vh`;
             celestial.style.display = 'block';
         }
+
         function updateCountdown() {
             const now = new Date();
             const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
@@ -620,6 +582,7 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
             document.getElementById('busEmoji').style.left = `${busPosition}px`;
             updateSkyAndCelestial();
         }
+
         function createStars() {
             const starsContainer = document.getElementById('starsContainer');
             const numberOfStars = 50;
@@ -638,6 +601,7 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
                 starsContainer.appendChild(star);
             }
         }
+
         document.getElementById('toggleRoute').addEventListener('click', function() {
             isGrosvenorToHQ = !isGrosvenorToHQ;
             const routeTitle = document.getElementById('routeTitle');
@@ -651,6 +615,7 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
             }
             updateCountdown();
         });
+
         function findClosestBusTimes(inputTime) {
             const [inputHours, inputMinutes] = inputTime.split(':').map(Number);
             const targetTimeInMinutes = inputHours * 60 + inputMinutes;
@@ -674,6 +639,7 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
             validTimes.sort((a, b) => a.grosMinutes - b.grosMinutes);
             return validTimes.slice(0, 3).map(item => ({ gros: item.gros, hq: item.hq }));
         }
+
         document.getElementById('playButton').addEventListener('click', function() {
             document.querySelector('.input-container').style.display = 'none';
             document.getElementById('closestTimes').style.display = 'none';
@@ -683,6 +649,7 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
             eGateButton.style.height = '24px';
             eGateButton.style.background = 'white';
         });
+
         document.getElementById('busTimeInput').addEventListener('change', function() {
             const input = document.getElementById('busTimeInput').value.trim();
             const closestTimesDiv = document.getElementById('closestTimes');
@@ -701,10 +668,12 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
                 closestTimesDiv.style.display = 'block';
             }
         });
+
         document.getElementById('eGateButton').addEventListener('click', function() {
             document.getElementById('eGateButton').style.display = 'none';
             document.querySelector('.input-container').style.display = 'flex';
         });
+
         function showFirstVisitPopup() {
             if (!localStorage.getItem('hasVisited')) {
                 const popup = document.getElementById('firstVisitPopup');
@@ -712,12 +681,14 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
                 document.body.classList.add('black-background');
             }
         }
+
         document.getElementById('closePopup').addEventListener('click', function() {
             const popup = document.getElementById('firstVisitPopup');
             popup.style.display = 'none';
             document.body.classList.remove('black-background');
             localStorage.setItem('hasVisited', 'true');
         });
+
         async function updateCalendarEvent() {
             const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
             const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(calendarUrl)}`;
@@ -753,6 +724,7 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
                 document.getElementById('eventSummary').textContent = 'Failed to load event';
             }
         }
+
         window.onload = function() {
             generateRandomDune();
             window.scrollTo(0, 0);
@@ -761,6 +733,7 @@ document.querySelector('.emirates-logo').addEventListener('click', function() {
             showFirstVisitPopup();
             updateCalendarEvent();
         };
+
         setInterval(updateCountdown, 100);
         setInterval(updateCalendarEvent, 60000);
     </script>
