@@ -51,6 +51,7 @@
             padding-bottom: env(safe-area-inset-bottom);
             box-sizing: border-box;
         }
+        /* CAMBIOS: Se agregaron estilos para el modo oscuro */
         .emirates-logo {
             position: absolute;
             bottom: calc(20px + env(safe-area-inset-bottom));
@@ -102,6 +103,7 @@
             background-color: #666;
             color: white;
         }
+        /* FIN DE CAMBIOS */
         .container {
             text-align: center;
             background-color: rgba(255, 255, 255, 0.9);
@@ -423,8 +425,10 @@
         let dunePoints = [];
         let isGrosvenorToHQ = true;
         let starsCreated = false;
+        /* CAMBIO: Se agregó la variable para el modo oscuro */
         let isUltraDarkMode = false;
 
+        /* CAMBIO: Se agregó el event listener para el logo */
         document.querySelector('.emirates-logo').addEventListener('click', function() {
             isUltraDarkMode = !isUltraDarkMode;
             if (isUltraDarkMode) {
