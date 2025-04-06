@@ -51,7 +51,6 @@
             padding-bottom: env(safe-area-inset-bottom);
             box-sizing: border-box;
         }
-        /* CAMBIOS: Se agregaron estilos para el modo oscuro */
         .emirates-logo {
             position: absolute;
             bottom: calc(20px + env(safe-area-inset-bottom));
@@ -103,7 +102,6 @@
             background-color: #666;
             color: white;
         }
-        /* FIN DE CAMBIOS */
         .container {
             text-align: center;
             background-color: rgba(255, 255, 255, 0.9);
@@ -425,10 +423,8 @@
         let dunePoints = [];
         let isGrosvenorToHQ = true;
         let starsCreated = false;
-        /* CAMBIO: Se agregó la variable para el modo oscuro */
         let isUltraDarkMode = false;
 
-        /* CAMBIO: Se agregaron los horarios de los buses */
         const grosvenorToHQSchedule = [
             { gros: "00:43", hq: "01:03" }, { gros: "01:03", hq: "01:23" }, { gros: "01:23", hq: "01:43" },
             { gros: "01:43", hq: "02:03" }, { gros: "02:03", hq: "02:23" }, { gros: "02:23", hq: "02:43" },
@@ -461,7 +457,6 @@
             "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
         ];
 
-        /* CAMBIO: Se agregó el event listener para el logo */
         document.querySelector('.emirates-logo').addEventListener('click', function() {
             isUltraDarkMode = !isUltraDarkMode;
             if (isUltraDarkMode) {
@@ -727,8 +722,10 @@
         });
 
         async function updateCalendarEvent() {
-            const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(calendarUrl)}`;
+            const webcalUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
+            const httpsUrl = webcalUrl.replace('webcal://', 'https://');
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(httpsUrl)}`;
+            
             try {
                 const response = await fetch(proxyUrl);
                 if (!response.ok) throw new Error('Failed to fetch calendar');
@@ -736,23 +733,32 @@
                 const jcalData = ICAL.parse(icsData);
                 const comp = new ICAL.Component(jcalData);
                 const vevents = comp.getAllSubcomponents('vevent');
+                
                 const now = new Date();
-                const startOfDay = new Date(now.setHours(0, 0, 0, 0));
-                const endOfDay = new Date(now.setHours(23, 59, 59, 999));
+                const startOfDay = new Date(now);
+                startOfDay.setHours(0, 0, 0, 0);
+                
+                const endOfDay = new Date(now);
+                endOfDay.setHours(23, 59, 59, 999);
+                
                 const todayEvents = vevents
-                    .map(event => ({
-                        summary: event.getFirstPropertyValue('summary') || 'No Title',
-                        start: event.getFirstPropertyValue('dtstart').toJSDate()
-                    }))
+                    .map(event => {
+                        const summary = event.getFirstPropertyValue('summary') || 'No Title';
+                        const start = event.getFirstPropertyValue('dtstart').toJSDate();
+                        return { summary, start };
+                    })
                     .filter(event => {
                         const eventDate = event.start;
                         return eventDate >= startOfDay && eventDate <= endOfDay && eventDate >= now;
                     })
                     .sort((a, b) => a.start - b.start);
+                
                 const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
+                
                 const eventDate = nextEvent.start 
-                    ? `${nextEvent.start.toLocaleTimeString()}`
+                    ? nextEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     : 'No time';
+                
                 document.getElementById('eventDate').textContent = eventDate;
                 document.getElementById('eventSummary').textContent = nextEvent.summary;
             } catch (error) {
