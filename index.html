@@ -356,14 +356,35 @@
             align-items: center;
             line-height: 1.2;
         }
-        #calendarEventPopup .event-date {
-            margin: 0 0 5px 0;
-            text-align: center;
+        .flip-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 40px;
+            position: relative;
         }
-        #calendarEventPopup .event-summary {
-            margin: 0;
-            text-align: center;
-            word-wrap: break-word;
+        .flipper {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .flip-container.flip .flipper {
+            transform: rotateX(180deg);
+        }
+        .front, .back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .back {
+            transform: rotateX(180deg);
         }
     </style>
 </head>
@@ -416,7 +437,16 @@
         <button id="closePopup">Close</button>
     </div>
     <div id="calendarEventPopup">
-        <p id="eventDate" class="event-date">Loading...</p>
+        <div class="flip-container" id="dateFlipContainer">
+            <div class="flipper">
+                <div class="front">
+                    <p id="eventDate" class="event-date">Loading...</p>
+                </div>
+                <div class="back">
+                    <p id="eventDateNext" class="event-date">Loading...</p>
+                </div>
+            </div>
+        </div>
         <p id="eventSummary" class="event-summary">Fetching event...</p>
     </div>
     <script>
@@ -721,68 +751,112 @@
             localStorage.setItem('hasVisited', 'true');
         });
 
-async function updateCalendarEvent() {
-    const webcalUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-    const httpsUrl = webcalUrl.replace('webcal://', 'https://');
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(httpsUrl)}`;
-    
-    try {
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error('Failed to fetch calendar');
-        const icsData = await response.text();
-        const jcalData = ICAL.parse(icsData);
-        const comp = new ICAL.Component(jcalData);
-        const vevents = comp.getAllSubcomponents('vevent');
-        
-        const now = new Date();
-        const startOfDay = new Date(now);
-        startOfDay.setHours(0, 0, 0, 0);
-        
-        const endOfDay = new Date(now);
-        endOfDay.setHours(23, 59, 59, 999);
-        
-        const todayEvents = vevents
-            .map(event => {
-                try {
-                    const summary = event.getFirstPropertyValue('summary') || 'No Title';
-                    const start = event.getFirstPropertyValue('dtstart').toJSDate();
-                    const end = event.getFirstPropertyValue('dtend')?.toJSDate() || start;
-                    return { summary, start, end };
-                } catch (e) {
-                    console.error('Error parsing event:', e);
-                    return null;
-                }
-            })
-            .filter(event => event !== null)
-            .filter(event => {
-                const eventDate = event.start;
-                return eventDate >= startOfDay && eventDate <= endOfDay;
-            })
-            .sort((a, b) => a.start - b.start);
-        
-        const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
-        
-        const eventDate = nextEvent.start 
-            ? nextEvent.start.toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: true
-            })
-            : 'No time';
-        
-        document.getElementById('eventDate').textContent = eventDate;
-        document.getElementById('eventSummary').textContent = nextEvent.summary;
-        
-        // Debug information
-        console.log('Today\'s events:', todayEvents);
-        console.log('Next event:', nextEvent);
-        
-    } catch (error) {
-        console.error('Error fetching or parsing calendar:', error);
-        document.getElementById('eventDate').textContent = 'Error';
-        document.getElementById('eventSummary').textContent = 'Failed to load event';
-    }
-}
+        async function updateCalendarEvent() {
+            const webcalUrl = 'webcal://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
+            const httpsUrl = webcalUrl.replace('webcal://', 'https://');
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(httpsUrl)}`;
+            
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Failed to fetch calendar');
+                const icsData = await response.text();
+                const jcalData = ICAL.parse(icsData);
+                const comp = new ICAL.Component(jcalData);
+                const vevents = comp.getAllSubcomponents('vevent');
+                
+                const now = new Date();
+                const startOfDay = new Date(now);
+                startOfDay.setHours(0, 0, 0, 0);
+                
+                const endOfDay = new Date(now);
+                endOfDay.setHours(23, 59, 59, 999);
+                
+                const startOfNextDay = new Date(now);
+                startOfNextDay.setDate(startOfNextDay.getDate() + 1);
+                startOfNextDay.setHours(0, 0, 0, 0);
+                
+                const endOfNextDay = new Date(startOfNextDay);
+                endOfNextDay.setHours(23, 59, 59, 999);
+                
+                const todayEvents = vevents
+                    .map(event => {
+                        try {
+                            const summary = event.getFirstPropertyValue('summary') || 'No Title';
+                            const start = event.getFirstPropertyValue('dtstart').toJSDate();
+                            const end = event.getFirstPropertyValue('dtend')?.toJSDate() || start;
+                            return { summary, start, end };
+                        } catch (e) {
+                            console.error('Error parsing event:', e);
+                            return null;
+                        }
+                    })
+                    .filter(event => event !== null)
+                    .filter(event => {
+                        const eventDate = event.start;
+                        return eventDate >= startOfDay && eventDate <= endOfDay;
+                    })
+                    .sort((a, b) => a.start - b.start);
+                    
+                const tomorrowEvents = vevents
+                    .map(event => {
+                        try {
+                            const summary = event.getFirstPropertyValue('summary') || 'No Title';
+                            const start = event.getFirstPropertyValue('dtstart').toJSDate();
+                            const end = event.getFirstPropertyValue('dtend')?.toJSDate() || start;
+                            return { summary, start, end };
+                        } catch (e) {
+                            console.error('Error parsing event:', e);
+                            return null;
+                        }
+                    })
+                    .filter(event => event !== null)
+                    .filter(event => {
+                        const eventDate = event.start;
+                        return eventDate >= startOfNextDay && eventDate <= endOfNextDay;
+                    })
+                    .sort((a, b) => a.start - b.start);
+                
+                const nextEvent = todayEvents[0] || { summary: "No events today", start: null };
+                const nextDayEvent = tomorrowEvents[0] || { summary: "No events tomorrow", start: null };
+                
+                const eventDate = nextEvent.start 
+                    ? nextEvent.start.toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        hour12: true
+                    })
+                    : 'No time';
+                    
+                const nextDayEventDate = nextDayEvent.start
+                    ? nextDayEvent.start.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    })
+                    : 'No time';
+                
+                document.getElementById('eventDate').textContent = eventDate;
+                document.getElementById('eventDateNext').textContent = nextDayEventDate;
+                document.getElementById('eventSummary').textContent = nextEvent.summary;
+                
+                // Debug information
+                console.log('Today\'s events:', todayEvents);
+                console.log('Next event:', nextEvent);
+                console.log('Tomorrow\'s events:', tomorrowEvents);
+                console.log('Next day event:', nextDayEvent);
+                
+            } catch (error) {
+                console.error('Error fetching or parsing calendar:', error);
+                document.getElementById('eventDate').textContent = 'Error';
+                document.getElementById('eventDateNext').textContent = 'Error';
+                document.getElementById('eventSummary').textContent = 'Failed to load event';
+            }
+        }
+
+        function toggleDateFlip() {
+            const container = document.getElementById('dateFlipContainer');
+            container.classList.toggle('flip');
+        }
 
         window.onload = function() {
             generateRandomDune();
@@ -791,6 +865,9 @@ async function updateCalendarEvent() {
             updateCountdown();
             showFirstVisitPopup();
             updateCalendarEvent();
+            
+            // Add interval for date flip animation
+            setInterval(toggleDateFlip, 10000);
         };
 
         setInterval(updateCountdown, 100);
