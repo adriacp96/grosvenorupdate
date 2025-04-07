@@ -379,10 +379,12 @@
         </ul>
         <button id="closePopup">Close</button>
     </div>
+
     <script>
         let dunePoints = [];
         let isGrosvenorToHQ = true;
         let starsCreated = false;
+        let calendarEvents = [];
 
         const grosvenorToHQSchedule = [
             { gros: "00:43", hq: "01:03" }, { gros: "01:03", hq: "01:23" }, { gros: "01:23", hq: "01:43" },
@@ -420,11 +422,42 @@
             try {
                 const response = await fetch('https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg');
                 const data = await response.text();
-                return data;
+                return parseICalData(data);
             } catch (error) {
                 console.error('Error fetching calendar:', error);
                 return null;
             }
+        }
+
+        function parseICalData(icalData) {
+            const events = [];
+            const lines = icalData.split('\n');
+            let currentEvent = {};
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (line.startsWith('BEGIN:VEVENT')) {
+                    currentEvent = {};
+                } else if (line.startsWith('END:VEVENT')) {
+                    if (currentEvent.summary && currentEvent.start) {
+                        events.push(currentEvent);
+                    }
+                } else if (line.startsWith('SUMMARY:')) {
+                    currentEvent.summary = line.substring(8);
+                } else if (line.startsWith('DTSTART:')) {
+                    const dateStr = line.substring(8);
+                    currentEvent.start = new Date(
+                        dateStr.substring(0, 4),
+                        parseInt(dateStr.substring(4, 6)) - 1,
+                        dateStr.substring(6, 8),
+                        dateStr.substring(9, 11),
+                        dateStr.substring(11, 13)
+                    );
+                }
+            }
+            
+            return events;
         }
 
         function updateCalendar() {
@@ -440,15 +473,25 @@
             
             const progress = (now.getHours() * 60 + now.getMinutes()) / (24 * 60);
             
+            fetchCalendarEvents().then(events => {
+                if (events && events.length > 0) {
+                    const nextEvent = events.find(event => event.start > now) || events[0];
+                    const eventTime = nextEvent.start.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                    eventElement.textContent = `${nextEvent.summary} - ${eventTime}`;
+                } else {
+                    eventElement.textContent = "No hay eventos programados";
+                }
+            }).catch(() => {
+                eventElement.textContent = "No hay eventos programados";
+            });
+            
             dateElement.textContent = todayStr;
-            eventElement.textContent = "Próximo evento del calendario";
             
             dateElement.style.opacity = 1 - progress;
             eventElement.style.opacity = 1 - progress;
             
             if (progress > 0.5) {
                 dateElement.textContent = tomorrowStr;
-                eventElement.textContent = "Próximo evento del calendario";
                 dateElement.style.opacity = progress;
                 eventElement.style.opacity = progress;
             }
@@ -750,11 +793,10 @@
             updateCountdown();
             showFirstVisitPopup();
             updateCalendar();
-            fetchCalendarEvents();
+            setInterval(updateCalendar, 60000);
         };
 
         setInterval(updateCountdown, 100);
-        setInterval(updateCalendar, 1000);
     </script>
 </body>
 </html>
