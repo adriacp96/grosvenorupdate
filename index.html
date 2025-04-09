@@ -424,7 +424,12 @@
         async function fetchCalendarEvents() {
             try {
                 const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-                const response = await fetch(calendarUrl);
+                const response = await fetch(calendarUrl, {
+                    headers: {
+                        'Accept': 'text/calendar',
+                        'Content-Type': 'text/calendar'
+                    }
+                });
                 const data = await response.text();
                 return parseICalData(data);
             } catch (error) {
@@ -437,26 +442,42 @@
             const events = [];
             const lines = icalData.split('\n');
             let currentEvent = {};
+            let inEvent = false;
             
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 
                 if (line.startsWith('BEGIN:VEVENT')) {
+                    inEvent = true;
                     currentEvent = {};
                 } else if (line.startsWith('END:VEVENT')) {
+                    inEvent = false;
                     if (currentEvent.summary && currentEvent.start) {
                         events.push(currentEvent);
                     }
-                } else if (line.startsWith('SUMMARY:')) {
-                    currentEvent.summary = line.substring(8);
-                } else if (line.startsWith('DTSTART:')) {
-                    const dateStr = line.substring(8);
-                    const year = parseInt(dateStr.substring(0, 4));
-                    const month = parseInt(dateStr.substring(4, 6)) - 1;
-                    const day = parseInt(dateStr.substring(6, 8));
-                    const hour = parseInt(dateStr.substring(9, 11));
-                    const minute = parseInt(dateStr.substring(11, 13));
-                    currentEvent.start = new Date(year, month, day, hour, minute);
+                } else if (inEvent) {
+                    if (line.startsWith('SUMMARY:')) {
+                        currentEvent.summary = line.substring(8).replace(/\\,/g, ',');
+                    } else if (line.startsWith('DTSTART;TZID=')) {
+                        const timezone = line.substring(13, line.indexOf(':'));
+                        const dateStr = line.substring(line.indexOf(':') + 1);
+                        const [datePart, timePart] = dateStr.split('T');
+                        const year = parseInt(datePart.substring(0, 4));
+                        const month = parseInt(datePart.substring(4, 6)) - 1;
+                        const day = parseInt(datePart.substring(6, 8));
+                        const hour = timePart ? parseInt(timePart.substring(0, 2)) : 0;
+                        const minute = timePart ? parseInt(timePart.substring(2, 4)) : 0;
+                        currentEvent.start = new Date(year, month, day, hour, minute);
+                    } else if (line.startsWith('DTSTART:')) {
+                        const dateStr = line.substring(8);
+                        const [datePart, timePart] = dateStr.split('T');
+                        const year = parseInt(datePart.substring(0, 4));
+                        const month = parseInt(datePart.substring(4, 6)) - 1;
+                        const day = parseInt(datePart.substring(6, 8));
+                        const hour = timePart ? parseInt(timePart.substring(0, 2)) : 0;
+                        const minute = timePart ? parseInt(timePart.substring(2, 4)) : 0;
+                        currentEvent.start = new Date(year, month, day, hour, minute);
+                    }
                 }
             }
             
@@ -472,7 +493,6 @@
             const eventElement = document.getElementById('calendarEvent');
             
             const todayStr = now.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
-            const tomorrowStr = tomorrow.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
             
             fetchCalendarEvents().then(events => {
                 if (events && events.length > 0) {
