@@ -423,18 +423,45 @@
 
         async function fetchCalendarEvents() {
             try {
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
                 const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-                const response = await fetch(proxyUrl + calendarUrl, {
-                    headers: {
-                        'Accept': 'text/calendar',
-                        'Content-Type': 'text/calendar',
-                        'Origin': window.location.origin
+                
+                // Primero intentamos sin proxy
+                try {
+                    const response = await fetch(calendarUrl, {
+                        headers: {
+                            'Accept': 'text/calendar',
+                            'Content-Type': 'text/calendar'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                });
-                const data = await response.text();
-                console.log('Raw calendar data:', data); // Para depuración
-                return parseICalData(data);
+                    
+                    const data = await response.text();
+                    console.log('Raw calendar data:', data);
+                    return parseICalData(data);
+                } catch (error) {
+                    console.log('Direct fetch failed, trying with proxy:', error);
+                    
+                    // Si falla, intentamos con el proxy
+                    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                    const proxyResponse = await fetch(proxyUrl + calendarUrl, {
+                        headers: {
+                            'Accept': 'text/calendar',
+                            'Content-Type': 'text/calendar',
+                            'Origin': window.location.origin
+                        }
+                    });
+                    
+                    if (!proxyResponse.ok) {
+                        throw new Error(`Proxy HTTP error! status: ${proxyResponse.status}`);
+                    }
+                    
+                    const proxyData = await proxyResponse.text();
+                    console.log('Raw calendar data from proxy:', proxyData);
+                    return parseICalData(proxyData);
+                }
             } catch (error) {
                 console.error('Error fetching calendar:', error);
                 return null;
@@ -484,7 +511,7 @@
                 }
             }
             
-            console.log('Parsed events:', events); // Para depuración
+            console.log('Parsed events:', events);
             return events.sort((a, b) => a.start - b.start);
         }
 
@@ -499,7 +526,7 @@
             const todayStr = now.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
             
             fetchCalendarEvents().then(events => {
-                console.log('Events in updateCalendar:', events); // Para depuración
+                console.log('Events in updateCalendar:', events);
                 if (events && events.length > 0) {
                     const todayEvents = events.filter(event => {
                         const eventDate = new Date(event.start);
@@ -511,8 +538,8 @@
                         return eventDate.toDateString() === tomorrow.toDateString();
                     });
                     
-                    console.log('Today events:', todayEvents); // Para depuración
-                    console.log('Tomorrow events:', tomorrowEvents); // Para depuración
+                    console.log('Today events:', todayEvents);
+                    console.log('Tomorrow events:', tomorrowEvents);
                     
                     if (todayEvents.length > 0) {
                         const nextEvent = todayEvents[0];
