@@ -423,15 +423,9 @@
 
         async function fetchCalendarEvents() {
             try {
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
                 const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-                const response = await fetch(proxyUrl + calendarUrl, {
-                    headers: {
-                        'Origin': window.location.origin
-                    }
-                });
+                const response = await fetch(calendarUrl);
                 const data = await response.text();
-                console.log('Calendar data:', data);
                 return parseICalData(data);
             } catch (error) {
                 console.error('Error fetching calendar:', error);
@@ -457,25 +451,15 @@
                     currentEvent.summary = line.substring(8);
                 } else if (line.startsWith('DTSTART:')) {
                     const dateStr = line.substring(8);
-                    if (dateStr.includes('T')) {
-                        currentEvent.start = new Date(
-                            dateStr.substring(0, 4),
-                            parseInt(dateStr.substring(4, 6)) - 1,
-                            dateStr.substring(6, 8),
-                            dateStr.substring(9, 11),
-                            dateStr.substring(11, 13)
-                        );
-                    } else {
-                        currentEvent.start = new Date(
-                            dateStr.substring(0, 4),
-                            parseInt(dateStr.substring(4, 6)) - 1,
-                            dateStr.substring(6, 8)
-                        );
-                    }
+                    const year = parseInt(dateStr.substring(0, 4));
+                    const month = parseInt(dateStr.substring(4, 6)) - 1;
+                    const day = parseInt(dateStr.substring(6, 8));
+                    const hour = parseInt(dateStr.substring(9, 11));
+                    const minute = parseInt(dateStr.substring(11, 13));
+                    currentEvent.start = new Date(year, month, day, hour, minute);
                 }
             }
             
-            console.log('Parsed events:', events);
             return events.sort((a, b) => a.start - b.start);
         }
 
@@ -490,15 +474,29 @@
             const todayStr = now.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
             const tomorrowStr = tomorrow.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
             
-            const progress = (now.getHours() * 60 + now.getMinutes()) / (24 * 60);
-            
             fetchCalendarEvents().then(events => {
-                console.log('Fetched events:', events);
                 if (events && events.length > 0) {
-                    const nextEvent = events.find(event => event.start > now) || events[0];
-                    const eventTime = nextEvent.start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                    const eventDate = nextEvent.start.toLocaleDateString('en-US', { day: 'numeric', month: 'long' });
-                    eventElement.textContent = `${nextEvent.summary} - ${eventDate} ${eventTime}`;
+                    const todayEvents = events.filter(event => {
+                        const eventDate = new Date(event.start);
+                        return eventDate.toDateString() === now.toDateString();
+                    });
+                    
+                    const tomorrowEvents = events.filter(event => {
+                        const eventDate = new Date(event.start);
+                        return eventDate.toDateString() === tomorrow.toDateString();
+                    });
+                    
+                    if (todayEvents.length > 0) {
+                        const nextEvent = todayEvents[0];
+                        const eventTime = nextEvent.start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                        eventElement.textContent = `${nextEvent.summary} - ${eventTime}`;
+                    } else if (tomorrowEvents.length > 0) {
+                        const nextEvent = tomorrowEvents[0];
+                        const eventTime = nextEvent.start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                        eventElement.textContent = `${nextEvent.summary} - ${eventTime}`;
+                    } else {
+                        eventElement.textContent = "No scheduled events";
+                    }
                 } else {
                     eventElement.textContent = "No scheduled events";
                 }
@@ -508,15 +506,6 @@
             });
             
             dateElement.textContent = todayStr;
-            
-            dateElement.style.opacity = 1 - progress;
-            eventElement.style.opacity = 1 - progress;
-            
-            if (progress > 0.5) {
-                dateElement.textContent = tomorrowStr;
-                dateElement.style.opacity = progress;
-                eventElement.style.opacity = progress;
-            }
         }
 
         function generateRandomDune() {
