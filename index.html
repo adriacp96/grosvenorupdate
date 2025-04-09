@@ -423,14 +423,17 @@
 
         async function fetchCalendarEvents() {
             try {
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
                 const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-                const response = await fetch(calendarUrl, {
+                const response = await fetch(proxyUrl + calendarUrl, {
                     headers: {
                         'Accept': 'text/calendar',
-                        'Content-Type': 'text/calendar'
+                        'Content-Type': 'text/calendar',
+                        'Origin': window.location.origin
                     }
                 });
                 const data = await response.text();
+                console.log('Raw calendar data:', data); // Para depuración
                 return parseICalData(data);
             } catch (error) {
                 console.error('Error fetching calendar:', error);
@@ -481,6 +484,7 @@
                 }
             }
             
+            console.log('Parsed events:', events); // Para depuración
             return events.sort((a, b) => a.start - b.start);
         }
 
@@ -495,6 +499,7 @@
             const todayStr = now.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
             
             fetchCalendarEvents().then(events => {
+                console.log('Events in updateCalendar:', events); // Para depuración
                 if (events && events.length > 0) {
                     const todayEvents = events.filter(event => {
                         const eventDate = new Date(event.start);
@@ -505,6 +510,9 @@
                         const eventDate = new Date(event.start);
                         return eventDate.toDateString() === tomorrow.toDateString();
                     });
+                    
+                    console.log('Today events:', todayEvents); // Para depuración
+                    console.log('Tomorrow events:', tomorrowEvents); // Para depuración
                     
                     if (todayEvents.length > 0) {
                         const nextEvent = todayEvents[0];
