@@ -210,11 +210,463 @@
         }
         #closestTimes {
             margin-top: 10px;
-            font-size: 1.1em padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            font-size: 1.1em;
+            color: #2c3e50;
+            display: none;
+        }
+        #eGateButton {
+            padding: 0 20px;
+            font-size: 1.2em;
+            font-family: 'Emirates Bold', sans-serif;
+            background: white;
+            color: #2c3e50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            width: 100px;
+            height: 24px;
+            line-height: 24px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        #eGateButton:hover {
+            transform: scale(1.05);
+        }
+        #firstVisitPopup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+            max-width: 90%;
+            width: 300px;
+            color: #2c3e50;
+        }
+        #firstVisitPopup h2 {
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        #firstVisitPopup p {
+            margin: 0 0 15px 0;
+            font-size: 1em;
+            line-height: 1.4;
+            text-align: center;
+        }
+        #firstVisitPopup ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+            text-align: center;
+        }
+        #firstVisitPopup li {
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        #firstVisitPopup .icon {
+            height: 1em;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        #closePopup {
+            padding: 5px 15px;
+            font-size: 1em;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #closePopup:hover {
+            background-color: #34495e;
+        }
+        .black-background::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 1);
+            z-index: 999;
+            transition: opacity 0.3s ease;
+        }
+    </style>
+    <style>
+        /* Calendar Widget Styles */
+        #calendar-window {
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            z-index: 9999;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #title-bar {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #title {
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            font-size: 1em;
+        }
+
+        #toggle-day {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #toggle-day:hover {
+            background: #34495e;
+        }
+
+        #events-container {
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .events-list {
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .events-list.slide-out-left {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .events-list.slide-in-right {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .events-list.slide-out-right {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .events-list.slide-in-left {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .event {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .event:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .event-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .date-header {
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div id="background-container"></div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png"
+         alt="Emirates Logo" class="emirates-logo">
+    <div class="container">
+        <h1 id="routeTitle">Grosvenor to HQ in</h1>
+        <div id="countdown">00:00</div>
+        <div id="nextBus">Next bus at: --:--</div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="bus-emoji" id="busEmoji">🚌</div>
+        </div>
+        <div class="button-container">
+            <button id="toggleRoute">🔄</button>
+            <button id="eGateButton">eGate</button>
+        </div>
+        <div class="input-container">
+            <span>eGate</span>
+            <input type="time" id="busTimeInput">
+            <button id="playButton">✕</button>
+        </div>
+        <div id="closestTimes"></div>
+    </div>
+    <div id="celestialBody">☀️</div>
+    <svg class="dunes" viewBox="0 0 1000 250" preserveAspectRatio="none">
+        <path id="dunePath" fill="rgba(237, 201, 175, 0.4)" />
+    </svg>
+    <div class="stars-container" id="starsContainer"></div>
+
+    <div id="firstVisitPopup">
+        <h2>Add to Home Screen</h2>
+        <p>To install this app on your iPhone:</p>
+        <ul>
+            <li>
+                <img src="https://cdn-icons-png.flaticon.com/128/4855/4855052.png" alt="Share Icon" class="icon">
+                Tap the "Share" button in Safari
+            </li>
+            <li>
+                <img src="https://cdn-icons-png.flaticon.com/128/3161/3161837.png" alt="Add to Home Screen Icon" class="icon">
+                Select "Add to Home Screen"
+            </li>
+            <li>
+                Tap "Add" in the top-right corner
+            </li>
+        </ul>
+        <button id="closePopup">Close</button>
+    </div>
+
+    <div id="calendar-window">
+        <div id="title-bar">
+            <h3 id="title">Today's Events</h3>
+            <button id="toggle-day">Tomorrow ➡️</button>
+        </div>
+        <div id="events-container">
+            <div class="date-header" id="current-date"></div>
+            <div id="events-list" class="events-list"></div>
+        </div>
+    </div>
+
+    <script>
+        // Bus Countdown and Calendar JavaScript
+        let dunePoints = [];
+        let isGrosvenorToHQ = true;
+        let starsCreated = false;
+
+        const grosvenorToHQSchedule = [
+            { gros: "00:43", hq: "01:03" }, { gros: "01:03", hq: "01:23" }, { gros: "01:23", hq: "01:43" },
+            { gros: "01:43", hq: "02:03" }, { gros: "02:03", hq: "02:23" }, { gros: "02:23", hq: "02:43" },
+            { gros: "02:53", hq: "03:13" }, { gros: "03:23", hq: "03:43" }, { gros: "03:53", hq: "04:13" },
+            { gros: "04:23", hq: "04:43" }, { gros: "04:48", hq: "05:08" }, { gros: "05:08", hq: "05:28" },
+            { gros: "05:28", hq: "05:48" }, { gros: "05:53", hq: "06:13" }, { gros: "06:13", hq: "06:33" },
+            { gros: "06:33", hq: "06:53" }, { gros: "06:53", hq: "07:13" }, { gros: "07:13", hq: "07:33" },
+            { gros: "07:38", hq: "07:58" }, { gros: "08:03", hq: "08:23" }, { gros: "08:28", hq: "08:48" },
+            { gros: "08:53", hq: "09:13" }, { gros: "09:18", hq: "09:38" }, { gros: "09:48", hq: "10:08" },
+            { gros: "10:13", hq: "10:33" }, { gros: "10:38", hq: "10:58" }, { gros: "11:03", hq: "11:23" },
+            { gros: "11:28", hq: "11:48" }, { gros: "11:53", hq: "12:13" }, { gros: "12:18", hq: "12:38" },
+            { gros: "12:38", hq: "12:58" }, { gros: "12:58", hq: "13:18" }, { gros: "13:18", hq: "13:38" },
+            { gros: "13:38", hq: "13:58" }, { gros: "13:58", hq: "14:18" }, { gros: "14:18", hq: "14:38" },
+            { gros: "14:43", hq: "15:03" }, { gros: "15:08", hq: "15:28" }, { gros: "15:33", hq: "15:53" },
+            { gros: "15:58", hq: "16:18" }, { gros: "16:23", hq: "16:43" }, { gros: "16:48", hq: "17:08" },
+            { gros: "17:17", hq: "17:39" }, { gros: "17:42", hq: "18:04" }, { gros: "18:07", hq: "18:32" },
+            { gros: "18:32", hq: "18:57" }, { gros: "18:57", hq: "19:22" }, { gros: "19:22", hq: "19:47" },
+            { gros: "19:47", hq: "20:12" }, { gros: "20:12", hq: "20:34" }, { gros: "20:37", hq: "20:59" },
+            { gros: "21:00", hq: "21:20" }, { gros: "21:23", hq: "21:43" }, { gros: "21:48", hq: "22:08" },
+            { gros: "22:13", hq: "22:33" }, { gros: "22:38", hq: "22:58" }, { gros: "23:03", hq: "23:23" },
+            { gros: "23:28", hq: "23:48" }, { gros: "23:53", hq: "00:13" }, { gros: "00:18", hq: "00:38" }
+        ];
+
+        const hqToGrosvenorSchedule = [
+            "00:15", "00:35", "00:55", "01:15", "01:35", "01:55", "02:25", "02:55", "03:25", "03:55",
+            "04:20", "04:40", "05:00", "05:25", "05:45", "06:05", "06:25", "06:45", "07:10", "07:35",
+            "08:00", "08:25", "08:50", "09:20", "09:45", "10:10", "10:35", "11:00", "11:25", "11:50",
+            "12:10", "12:30", "12:50", "13:10", "13:30", "13:50", "14:15", "14:40", "15:05", "15:30",
+            "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40",
+            "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
+        ];
+
+        function generateRandomDune() {
+            const segments = 4;
+            const width = 1000;
+            const segmentWidth = width / segments;
+            let path = "M0,250";
+            dunePoints = [{ x: 0, y: 250 }];
+
+            for (let i = 1; i <= segments; i++) {
+                const x1 = (i - 0.66) * segmentWidth;
+                const y1 = 250 - Math.random() * 130;
+                const x2 = (i - 0.33) * segmentWidth;
+                const y2 = 250 - Math.random() * 130;
+                const x3 = i * segmentWidth;
+                const y3 = i === segments ? 250 : 250 - Math.random() * 130;
+
+                path += ` C${x1},${y1} ${x2},${y2} ${x3},${y3}`;
+                dunePoints.push({ x: x1, y: y1 }, { x: x2, y: y2 }, { x: x3, y: y3 });
+            }
+
+            path += " L0,250 Z";
+            document.getElementById("dunePath").setAttribute("d", path);
+        }
+
+        function getBezierY(t, p0, p1, p2, p3) {
+            const mt = 1 - t;
+            return Math.pow(mt, 3) * p0.y + 3 * Math.pow(mt, 2) * t * p1.y +
+                   3 * mt * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
+        }
+
+        function getDuneHeight(x) {
+            for (let i = 0; i < dunePoints.length - 3; i += 3) {
+                const p0 = dunePoints[i];
+                const p1 = dunePoints[i + 1];
+                const p2 = dunePoints[i + 2];
+                const p3 = dunePoints[i + 3];
+                if (x >= p0.x && x <= p3.x) {
+                    const t = (x - p0.x) / (p3.x - p0.x);
+                    return getBezierY(t, p0, p1, p2, p3);
+                }
+            }
+            return 250;
+        }
+
+        function getBusTimes() {
+            const currentSchedule = isGrosvenorToHQ ? grosvenorToHQSchedule.map(item => item.gros) : hqToGrosvenorSchedule;
+            const now = new Date();
+            const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
+            let previousBus = { time: currentSchedule[currentSchedule.length - 1], minutes: 0 };
+            let nextBus = { time: currentSchedule[0], minutes: 0 };
+
+            for (let i = 0; i < currentSchedule.length; i++) {
+                const [hours, minutes] = currentSchedule[i].split(':').map(Number);
+                const busTimeInMinutes = hours * 60 + minutes;
+
+                if (busTimeInMinutes > currentTimeInMinutes) {
+                    nextBus = { time: currentSchedule[i], minutes: busTimeInMinutes };
+                    previousBus = {
+                        time: currentSchedule[i-1] || currentSchedule[currentSchedule.length-1],
+                        minutes: (i-1 >= 0 ? currentSchedule[i-1] : currentSchedule[currentSchedule.length-1])
+                            .split(':').map(Number).reduce((h,m) => h*60 + m, 0)
+                    };
+                    break;
+                }
+            }
+
+            if (!nextBus.minutes) {
+                const [nextHours, nextMins] = currentSchedule[0].split(':').map(Number);
+                const [prevHours, prevMins] = currentSchedule[currentSchedule.length-1].split(':').map(Number);
+                nextBus = { time: currentSchedule[0], minutes: nextHours * 60 + nextMins + 1440 };
+                previousBus = { time: currentSchedule[currentSchedule.length-1], minutes: prevHours * 60 + prevMins };
+                if (currentTimeInMinutes >= previousBus.minutes) {
+                    nextBus.minutes = nextHours * 60 + nextMins + 1440;
+                } else {
+                    nextBus.minutes = nextHours * 60 + nextMins;
+                    const [lastBusHours, lastBusMins] = currentSchedule[currentSchedule.length-1].split(':').map(Number);
+                    previousBus.minutes = lastBusHours * 60 + lastBusMins;
+                }
+            }
+
+            return { previousBus, nextBus };
+        }
+
+        function updateSkyAndCelestial() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const totalMinutes = hours * 60 + minutes;
+
+            const celestial = document.getElementById('celestialBody');
+            const starsContainer = document.getElementById('starsContainer');
+            let gradient;
+
+            const dayLength = 12 * 60;
+            const sunrise = 6 * 60;
+            const sunset = 18 * 60;
+            const moonrise = sunset;
+            const moonset = sunrise + 1440;
+
+            const isDay = totalMinutes >= sunrise && totalMinutes < sunset;
+            if (isDay) {
+                gradient = 'linear-gradient(to bottom, #87cefa, #4682b4)';
+                celestial.textContent = '☀️';
+                starsContainer.style.display = 'none';
+            } else {
+                gradient = 'linear-gradient(to bottom, #191970, #000080)';
+                celestial.textContent = '🌙';
+                starsContainer.style.display = 'block';
+                if (!starsCreated) {
+                    createStars();
+                    starsCreated = true;
+                }
+            }
+            document.getElementById('background-container').style.background = gradient;
+
+            let progress;
+            if (isDay) {
+                progress = (totalMinutes - sunrise) / dayLength;
+            } else {
+                const adjustedMinutes = totalMinutes < sunrise ? totalMinutes + 1440 : totalMinutes;
+                progress = (adjustedMinutes - moonrise) / dayLength;
+            }
+            progress = Math.max(0, Math.min(1, progress));
+
+            const xPos = 5 + progress * 90;
+            const yPos = 10 + 80 * (1 - 4 * Math.pow(progress - 0.5, 2));
+            celestial.style.left = `${xPos}vw`;
+            celestial.style.top = `${yPos}vh`;
+            celestial.style.display = 'block';
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
+            const { previousBus, nextBus } = getBusTimes();
+
+            let timeDifference = nextBus.minutes - currentTimeInMinutes;
+            if (nextBus.minutes < currentTimeInMinutes && nextBus.minutes < 1440) {
+                timeDifference = (nextBus.minutes + 1440) - currentTimeInMinutes;
+            } else {
+                timeDifference = nextBus.minutes - currentTimeInMinutes;
+            }
+
+            const minutes = Math.floor(timeDifference);
+            const seconds = Math.floor((timeDifference * 60) % 60);
+
+            document.getElementById('countdown').textContent =
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
 
-            // Calculate total duration between previous and next bus
-            let totalDuration = nextBus.minutes - previousBus.minutes;
+            let totalDuration = (nextBus.minutes - previousBus.minutes);
             if (totalDuration <= 0) {
                 totalDuration += 1440;
             }
@@ -224,7 +676,7 @@
                 elapsed += 1440;
             }
 
-            const percentage = (elapsed / totalDuration) * 100;
+            const percentage = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0;
             const clampedPercentage = Math.min(Math.max(percentage, 0), 100);
 
             const progressFill = document.getElementById('progressFill');
@@ -232,12 +684,17 @@
 
             const remainingMinutes = timeDifference;
             if (remainingMinutes <= 3 && remainingMinutes > 0) {
+                progressFill.style.transition = 'background-color 5s linear';
                 progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
             } else if (remainingMinutes > 3) {
-                const colorValue = Math.round(204 - (204 - 51) * (clampedPercentage / 100));
+                const startColor = 204;
+                const endColor = 51;
+                const colorValue = Math.round(startColor - (startColor - endColor) * (clampedPercentage / 100));
                 progressFill.style.backgroundColor = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
+                progressFill.style.transition = 'background-color 0.5s linear, width 0.5s linear';
             } else {
                 progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
+                progressFill.style.transition = 'none';
             }
 
             const progressBarWidth = document.querySelector('.progress-bar').offsetWidth;
@@ -255,15 +712,19 @@
             for (let i = 0; i < numberOfStars; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
+
                 const x = Math.random() * 100;
                 const y = Math.random() * 75;
                 const size = Math.random() * 2 + 1;
+
                 star.style.left = `${x}vw`;
                 star.style.top = `${y}vh`;
                 star.style.width = `${size}px`;
                 star.style.height = `${size}px`;
+
                 const delay = Math.random() * 3;
                 star.style.animationDelay = `${delay}s`;
+
                 starsContainer.appendChild(star);
             }
             starsCreated = true;
@@ -271,8 +732,16 @@
 
         document.getElementById('toggleRoute').addEventListener('click', function() {
             isGrosvenorToHQ = !isGrosvenorToHQ;
-            document.getElementById('routeTitle').textContent = isGrosvenorToHQ ? "Grosvenor to HQ in" : "HQ to Grosvenor in";
-            document.getElementById('toggleRoute').textContent = "🔄";
+            const routeTitle = document.getElementById('routeTitle');
+            const toggleButton = document.getElementById('toggleRoute');
+
+            if (isGrosvenorToHQ) {
+                routeTitle.textContent = "Grosvenor to HQ in";
+                toggleButton.textContent = "🔄";
+            } else {
+                routeTitle.textContent = "HQ to Grosvenor in";
+                toggleButton.textContent = "🔄";
+            }
             updateCountdown();
         });
 
@@ -335,11 +804,13 @@
         document.getElementById('busTimeInput').addEventListener('change', function() {
             const input = document.getElementById('busTimeInput').value.trim();
             const closestTimesDiv = document.getElementById('closestTimes');
+
             if (!input) {
                 closestTimesDiv.textContent = '';
                 closestTimesDiv.style.display = 'none';
                 return;
             }
+
             const closestTimes = findClosestBusTimes(input);
             if (closestTimes.length === 0) {
                 closestTimesDiv.textContent = 'No suitable bus found.';
