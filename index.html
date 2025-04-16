@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Grosvenor</title>
+    <title>Grosvenor & Calendar</title> {/* Updated Title */}
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
     <style>
+        /* Styles from the second message (Bus Countdown App) */
         @font-face {
             font-family: 'Emirates Bold';
             src: url('https://c.ekstatic.net/shared/fonts/emirates/emirates-bold-v3.woff2') format('woff2');
@@ -232,86 +233,6 @@
         #eGateButton:hover {
             transform: scale(1.05);
         }
-
-        /* Estilos del calendario */
-        #calendar-window {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 300px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            z-index: 9999;
-            overflow: hidden;
-            user-select: none;
-        }
-
-        #title-bar {
-            background: #f8f9fa;
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            cursor: move;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #title {
-            font-weight: 600;
-            color: #333;
-            margin: 0;
-        }
-
-        #close-button {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: #666;
-            cursor: pointer;
-            padding: 0 5px;
-        }
-
-        #close-button:hover {
-            color: #333;
-        }
-
-        #events-container {
-            padding: 15px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .calendar-event {
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .calendar-event:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .calendar-event-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .calendar-event-time {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .calendar-date-header {
-            font-weight: 600;
-            color: #2196F3;
-            margin-bottom: 15px;
-        }
-
         /* Popup Styles */
         #firstVisitPopup {
             display: none;
@@ -354,9 +275,9 @@
             text-align: center;
         }
         #firstVisitPopup .icon {
-            height: 1em;
-            margin-right: 8px;
-            vertical-align: middle;
+            height: 1em; /* Ajusta la altura al tamaño de la línea de texto */
+            margin-right: 8px; /* Espaciado ajustado */
+            vertical-align: middle; /* Alineación vertical con el texto */
         }
         #closePopup {
             padding: 5px 15px;
@@ -371,6 +292,7 @@
         #closePopup:hover {
             background-color: #34495e;
         }
+        /* Black background when popup is active */
         .black-background::before {
             content: '';
             position: fixed;
@@ -383,24 +305,97 @@
             transition: opacity 0.3s ease;
         }
     </style>
+    <style>
+        /* Styles from the first message (Calendar Widget) */
+        #calendar-window {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            z-index: 9999;
+            overflow: hidden;
+            user-select: none; /* Previene la selección de texto al arrastrar */
+        }
+
+        #title-bar {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #title {
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            font-size: 1em; /* Adjusted font size for consistency */
+        }
+
+        #close-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        #close-button:hover {
+            color: #333;
+        }
+
+        #events-container {
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .event {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .event:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .event-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .date-header {
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
     <div id="background-container"></div>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png" 
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png"
          alt="Emirates Logo" class="emirates-logo">
-
-    <!-- Calendar Window -->
-    <div id="calendar-window">
-        <div id="title-bar">
-            <h3 id="title">Today's Events</h3>
-            <button id="close-button">×</button>
-        </div>
-        <div id="events-container">
-            <div class="calendar-date-header" id="calendar-current-date"></div>
-            <div id="events-list"></div>
-        </div>
-    </div>
-
     <div class="container">
         <h1 id="routeTitle">Grosvenor to HQ in</h1>
         <div id="countdown">00:00</div>
@@ -428,7 +423,6 @@
     </svg>
     <div class="stars-container" id="starsContainer"></div>
 
-    <!-- Popup for first visit -->
     <div id="firstVisitPopup">
         <h2>Add to Home Screen</h2>
         <p>To install this app on your iPhone:</p>
@@ -448,17 +442,22 @@
         <button id="closePopup">Close</button>
     </div>
 
+    <div id="calendar-window">
+        <div id="title-bar">
+            <h3 id="title">Today's Events</h3>
+            <button id="close-button">×</button>
+        </div>
+        <div id="events-container">
+            <div class="date-header" id="current-date"></div>
+            <div id="events-list">
+                </div>
+        </div>
+    </div>
     <script>
+        // Script from the second message (Bus Countdown App)
         let dunePoints = [];
         let isGrosvenorToHQ = true;
         let starsCreated = false;
-
-        // Calendar variables
-        let calendarIsDragging = false;
-        let calendarCurrentX;
-        let calendarCurrentY;
-        let calendarInitialX;
-        let calendarInitialY;
 
         const grosvenorToHQSchedule = [
             { gros: "00:43", hq: "01:03" }, { gros: "01:03", hq: "01:23" }, { gros: "01:23", hq: "01:43" },
@@ -484,14 +483,15 @@
         ];
 
         const hqToGrosvenorSchedule = [
-            "00:15", "00:35", "00:55", "01:15", "01:35", "01:55", "02:25", "02:55", "03:25", "03:55", 
-            "04:20", "04:40", "05:00", "05:25", "05:45", "06:05", "06:25", "06:45", "07:10", "07:35", 
-            "08:00", "08:25", "08:50", "09:20", "09:45", "10:10", "10:35", "11:00", "11:25", "11:50", 
-            "12:10", "12:30", "12:50", "13:10", "13:30", "13:50", "14:15", "14:40", "15:05", "15:30", 
-            "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40", 
+            "00:15", "00:35", "00:55", "01:15", "01:35", "01:55", "02:25", "02:55", "03:25", "03:55",
+            "04:20", "04:40", "05:00", "05:25", "05:45", "06:05", "06:25", "06:45", "07:10", "07:35",
+            "08:00", "08:25", "08:50", "09:20", "09:45", "10:10", "10:35", "11:00", "11:25", "11:50",
+            "12:10", "12:30", "12:50", "13:10", "13:30", "13:50", "14:15", "14:40", "15:05", "15:30",
+            "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40",
             "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
         ];
-                function generateRandomDune() {
+
+        function generateRandomDune() {
             const segments = 4;
             const width = 1000;
             const segmentWidth = width / segments;
@@ -516,7 +516,7 @@
 
         function getBezierY(t, p0, p1, p2, p3) {
             const mt = 1 - t;
-            return Math.pow(mt, 3) * p0.y + 3 * Math.pow(mt, 2) * t * p1.y + 
+            return Math.pow(mt, 3) * p0.y + 3 * Math.pow(mt, 2) * t * p1.y +
                    3 * mt * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
         }
 
@@ -547,21 +547,32 @@
 
                 if (busTimeInMinutes > currentTimeInMinutes) {
                     nextBus = { time: currentSchedule[i], minutes: busTimeInMinutes };
-                    previousBus = { 
-                        time: currentSchedule[i-1] || currentSchedule[currentSchedule.length-1], 
+                    previousBus = {
+                        time: currentSchedule[i-1] || currentSchedule[currentSchedule.length-1],
                         minutes: (i-1 >= 0 ? currentSchedule[i-1] : currentSchedule[currentSchedule.length-1])
-                            .split(':').map(Number).reduce((h,m) => h*60 + m)
+                            .split(':').map(Number).reduce((h,m) => h*60 + m, 0) // Added default 0 for reduce
                     };
                     break;
                 }
             }
 
-            if (!nextBus.minutes) {
-                nextBus = { time: currentSchedule[0], minutes: currentSchedule[0].split(':').map(Number)[0] * 60 + 
-                           currentSchedule[0].split(':').map(Number)[1] + 1440 };
-                previousBus = { time: currentSchedule[currentSchedule.length-1], 
-                              minutes: currentSchedule[currentSchedule.length-1].split(':').map(Number)[0] * 60 + 
-                              currentSchedule[currentSchedule.length-1].split(':').map(Number)[1] };
+            if (!nextBus.minutes) { // Handles wrap around midnight
+                 const [nextHours, nextMins] = currentSchedule[0].split(':').map(Number);
+                 const [prevHours, prevMins] = currentSchedule[currentSchedule.length-1].split(':').map(Number);
+
+                nextBus = { time: currentSchedule[0], minutes: nextHours * 60 + nextMins + 1440 };
+                previousBus = { time: currentSchedule[currentSchedule.length-1],
+                              minutes: prevHours * 60 + prevMins };
+
+                 // If current time is after last bus but before midnight, next bus is tomorrow
+                 if (currentTimeInMinutes >= previousBus.minutes) {
+                     nextBus.minutes = nextHours * 60 + nextMins + 1440;
+                 } else { // If current time is after midnight but before first bus
+                     nextBus.minutes = nextHours * 60 + nextMins;
+                     // Find the *actual* previous bus (which was yesterday)
+                     const [lastBusHours, lastBusMins] = currentSchedule[currentSchedule.length-1].split(':').map(Number);
+                     previousBus.minutes = lastBusHours * 60 + lastBusMins; // Keep it as yesterday's minutes
+                 }
             }
 
             return { previousBus, nextBus };
@@ -581,7 +592,7 @@
             const sunrise = 6 * 60;
             const sunset = 18 * 60;
             const moonrise = sunset;
-            const moonset = sunrise + 1440;
+            const moonset = sunrise + 1440; // Moon sets next morning
 
             const isDay = totalMinutes >= sunrise && totalMinutes < sunset;
             if (isDay) {
@@ -603,65 +614,94 @@
             if (isDay) {
                 progress = (totalMinutes - sunrise) / dayLength;
             } else {
+                // Night progress calculation needs adjustment for wrapping around midnight
                 const adjustedMinutes = totalMinutes < sunrise ? totalMinutes + 1440 : totalMinutes;
+                 // Use sunset (moonrise) as the start of night (0 progress)
                 progress = (adjustedMinutes - moonrise) / dayLength;
             }
-            progress = Math.max(0, Math.min(1, progress));
+            progress = Math.max(0, Math.min(1, progress)); // Clamp between 0 and 1
 
-            const xPos = 5 + progress * 90;
-            const yPos = 90 - 80 * 4 * progress * (1 - progress);
+            // Celestial body position calculation
+            const xPos = 5 + progress * 90; // Moves from 5% to 95% across the screen
+            // Y position follows a parabolic path: starts high, dips low at midpoint, rises again
+            const yPos = 10 + 80 * (1 - 4 * Math.pow(progress - 0.5, 2)); // Adjust Y path
 
             celestial.style.left = `${xPos}vw`;
             celestial.style.top = `${yPos}vh`;
             celestial.style.display = 'block';
         }
 
+
         function updateCountdown() {
             const now = new Date();
             const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
             const { previousBus, nextBus } = getBusTimes();
+
             let timeDifference = nextBus.minutes - currentTimeInMinutes;
+            // If timeDifference is negative, it means the next bus is tomorrow, add 24 hours (1440 minutes)
+            // This condition might be implicitly handled by the `getBusTimes` logic now, but double-checking is safe.
+             if (nextBus.minutes < currentTimeInMinutes && nextBus.minutes < 1440) {
+                 timeDifference = (nextBus.minutes + 1440) - currentTimeInMinutes;
+             } else {
+                timeDifference = nextBus.minutes - currentTimeInMinutes;
+             }
 
-            if (timeDifference < 0) {
-                timeDifference += 1440;
-            }
-
-            const minutes = Math.floor(timeDifference % 60);
+            const minutes = Math.floor(timeDifference); // Use floor instead of modulo for total minutes
             const seconds = Math.floor((timeDifference * 60) % 60);
 
-            document.getElementById('countdown').textContent = 
+            document.getElementById('countdown').textContent =
                 `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
 
-            const totalDuration = (nextBus.minutes - previousBus.minutes + 1440) % 1440;
-            const elapsed = (currentTimeInMinutes - previousBus.minutes + 1440) % 1440;
-            const percentage = (elapsed / totalDuration) * 100;
-            const busPosition = Math.min(Math.max(percentage, 0), 100) * 2.76;
+            // Calculate total duration between previous and next bus, handling wrap-around
+            let totalDuration = (nextBus.minutes - previousBus.minutes);
+            if (totalDuration <= 0) { // Handles crossing midnight
+                totalDuration += 1440;
+            }
+
+            // Calculate elapsed time since the previous bus, handling wrap-around
+            let elapsed = currentTimeInMinutes - previousBus.minutes;
+             if (elapsed < 0) { // Current time is past midnight, previous bus was yesterday
+                 elapsed += 1440;
+             }
+
+
+            const percentage = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0; // Avoid division by zero
+            const clampedPercentage = Math.min(Math.max(percentage, 0), 100); // Ensure percentage is between 0 and 100
 
             const progressFill = document.getElementById('progressFill');
-            progressFill.style.width = `${Math.min(Math.max(percentage, 0), 100)}%`;
+            progressFill.style.width = `${clampedPercentage}%`;
 
             const remainingMinutes = timeDifference;
-            if (remainingMinutes <= 3 && remainingMinutes > 2.9167) {
+             if (remainingMinutes <= 3 && remainingMinutes > 0) { // Changed condition slightly
                 progressFill.style.transition = 'background-color 5s linear';
                 progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
             } else if (remainingMinutes > 3) {
-                const startColor = 204;
-                const endColor = 51;
-                const colorValue = Math.round(startColor - (startColor - endColor) * (percentage / 100));
+                 // Adjust color calculation if needed, ensure it makes sense with potentially large durations
+                 const startColor = 204; // Light grey
+                 const endColor = 51;   // Darker grey
+                 // Map percentage (0-100) to color range (204-51)
+                 const colorValue = Math.round(startColor - (startColor - endColor) * (clampedPercentage / 100));
                 progressFill.style.backgroundColor = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
-                progressFill.style.transition = 'background-color 0.5s linear';
-            } else if (remainingMinutes <= 2.9167) {
-                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
-                progressFill.style.transition = 'none';
+                progressFill.style.transition = 'background-color 0.5s linear, width 0.5s linear'; // Add width transition back
+            } else { // Handle cases where remainingMinutes is 0 or less (bus arrived/departed)
+                 progressFill.style.backgroundColor = 'rgb(255, 0, 0)'; // Keep red if <= 0
+                 progressFill.style.transition = 'none'; // No transition when at extremes
             }
 
-            document.getElementById('busEmoji').style.left = `${busPosition}px`;
-            
+
+            // Update bus emoji position based on clamped percentage
+            const progressBarWidth = document.querySelector('.progress-bar').offsetWidth; // Get actual width
+            const busPosition = (progressBarWidth * clampedPercentage / 100) - (document.getElementById('busEmoji').offsetWidth / 2); // Center emoji approximately
+            document.getElementById('busEmoji').style.left = `${Math.min(Math.max(0, busPosition), progressBarWidth - document.getElementById('busEmoji').offsetWidth)}px`; // Keep within bounds
+
             updateSkyAndCelestial();
         }
-                function createStars() {
+
+
+        function createStars() {
             const starsContainer = document.getElementById('starsContainer');
+            starsContainer.innerHTML = ''; // Clear existing stars if any
             const numberOfStars = 50;
 
             for (let i = 0; i < numberOfStars; i++) {
@@ -669,8 +709,8 @@
                 star.className = 'star';
 
                 const x = Math.random() * 100;
-                const y = Math.random() * 75;
-                const size = Math.random() * 3 + 1;
+                const y = Math.random() * 75; // Keep within the 75vh height of the container
+                const size = Math.random() * 2 + 1; // Smaller stars
 
                 star.style.left = `${x}vw`;
                 star.style.top = `${y}vh`;
@@ -682,55 +722,14 @@
 
                 starsContainer.appendChild(star);
             }
-        }
-
-        // Calendar Functions
-        function startDragging(e) {
-            if (e.type === 'mousedown') {
-                calendarInitialX = e.clientX - calendarWindow.offsetLeft;
-                calendarInitialY = e.clientY - calendarWindow.offsetTop;
-            } else if (e.type === 'touchstart') {
-                calendarInitialX = e.touches[0].clientX - calendarWindow.offsetLeft;
-                calendarInitialY = e.touches[0].clientY - calendarWindow.offsetTop;
-            }
-
-            if (e.target === titleBar || e.target.parentElement === titleBar) {
-                calendarIsDragging = true;
-            }
-        }
-
-        function drag(e) {
-            if (calendarIsDragging) {
-                e.preventDefault();
-
-                if (e.type === 'mousemove') {
-                    calendarCurrentX = e.clientX - calendarInitialX;
-                    calendarCurrentY = e.clientY - calendarInitialY;
-                } else if (e.type === 'touchmove') {
-                    calendarCurrentX = e.touches[0].clientX - calendarInitialX;
-                    calendarCurrentY = e.touches[0].clientY - calendarInitialY;
-                }
-
-                const maxX = window.innerWidth - calendarWindow.offsetWidth;
-                const maxY = window.innerHeight - calendarWindow.offsetHeight;
-                
-                calendarCurrentX = Math.min(Math.max(0, calendarCurrentX), maxX);
-                calendarCurrentY = Math.min(Math.max(0, calendarCurrentY), maxY);
-
-                calendarWindow.style.left = calendarCurrentX + 'px';
-                calendarWindow.style.top = calendarCurrentY + 'px';
-            }
-        }
-
-        function stopDragging() {
-            calendarIsDragging = false;
+            starsCreated = true; // Set flag after creating
         }
 
         document.getElementById('toggleRoute').addEventListener('click', function() {
             isGrosvenorToHQ = !isGrosvenorToHQ;
             const routeTitle = document.getElementById('routeTitle');
             const toggleButton = document.getElementById('toggleRoute');
-            
+
             if (isGrosvenorToHQ) {
                 routeTitle.textContent = "Grosvenor to HQ in";
                 toggleButton.textContent = "🔄";
@@ -738,36 +737,76 @@
                 routeTitle.textContent = "HQ to Grosvenor in";
                 toggleButton.textContent = "🔄";
             }
-            updateCountdown();
+            updateCountdown(); // Immediately update display for the new route
         });
 
         function findClosestBusTimes(inputTime) {
+            if (!inputTime) return []; // Handle empty input
+
             const [inputHours, inputMinutes] = inputTime.split(':').map(Number);
+             if (isNaN(inputHours) || isNaN(inputMinutes)) return []; // Handle invalid input
+
             const targetTimeInMinutes = inputHours * 60 + inputMinutes;
-            const maxDelayMinutes = 50;
+            const maxDelayMinutes = 50; // Maximum time allowed between target arrival and actual HQ arrival
 
-            const schedule = grosvenorToHQSchedule.map(item => ({
-                gros: item.gros,
-                hq: item.hq,
-                grosMinutes: item.gros.split(':').map(Number)[0] * 60 + item.gros.split(':').map(Number)[1],
-                hqMinutes: item.hq.split(':').map(Number)[0] * 60 + item.hq.split(':').map(Number)[1]
-            }));
+             // Prepare schedule with minutes calculated for easier comparison
+            const schedule = grosvenorToHQSchedule.map(item => {
+                 const [grosH, grosM] = item.gros.split(':').map(Number);
+                 const [hqH, hqM] = item.hq.split(':').map(Number);
+                 let grosMinutes = grosH * 60 + grosM;
+                 let hqMinutes = hqH * 60 + hqM;
 
-            schedule.push({
-                gros: schedule[0].gros,
-                hq: schedule[0].hq,
-                grosMinutes: schedule[0].grosMinutes + 1440,
-                hqMinutes: schedule[0].hqMinutes + 1440
+                 // Handle HQ arrival time being on the next day (e.g., 23:53 -> 00:13)
+                 if (hqMinutes < grosMinutes) {
+                     hqMinutes += 1440; // Add 24 hours
+                 }
+
+                 return {
+                     gros: item.gros,
+                     hq: item.hq,
+                     grosMinutes: grosMinutes,
+                     hqMinutes: hqMinutes
+                 };
             });
 
+            // Add the first schedule item again but with times shifted by 24 hours to handle wrapping
+             const firstItem = schedule[0];
+             schedule.push({
+                 gros: firstItem.gros,
+                 hq: firstItem.hq,
+                 grosMinutes: firstItem.grosMinutes + 1440,
+                 hqMinutes: firstItem.hqMinutes + 1440 // Ensure this wraps correctly too
+             });
+
+
             const validTimes = schedule.filter(item => {
-                const diff = item.hqMinutes - targetTimeInMinutes;
+                // Calculate difference for target time on the same day
+                let diff = item.hqMinutes - targetTimeInMinutes;
+                // If target time is late (e.g., 23:00) and HQ arrival is early next day (e.g., 00:13), adjust
+                 if (diff < -maxDelayMinutes && item.hqMinutes < targetTimeInMinutes) {
+                      diff = (item.hqMinutes + 1440) - targetTimeInMinutes;
+                 }
+
+                 // Check if HQ arrival is within the allowed window *after* the target time
                 return diff >= 0 && diff <= maxDelayMinutes;
             });
 
+             // Sort by the departure time (Grosvenor)
             validTimes.sort((a, b) => a.grosMinutes - b.grosMinutes);
 
-            return validTimes.slice(0, 3).map(item => ({ gros: item.gros, hq: item.hq }));
+            // Return up to 3 closest matches, adjusting times back if they wrapped
+            return validTimes.slice(0, 3).map(item => {
+                // Format times back to HH:MM, handling potential wrap-around display
+                let displayGrosH = Math.floor((item.grosMinutes % 1440) / 60);
+                let displayGrosM = item.grosMinutes % 60;
+                let displayHqH = Math.floor((item.hqMinutes % 1440) / 60);
+                let displayHqM = item.hqMinutes % 60;
+
+                return {
+                    gros: `${String(displayGrosH).padStart(2, '0')}:${String(displayGrosM).padStart(2, '0')}`,
+                    hq: `${String(displayHqH).padStart(2, '0')}:${String(displayHqM).padStart(2, '0')}`
+                 };
+            });
         }
 
         document.getElementById('playButton').addEventListener('click', function() {
@@ -775,6 +814,7 @@
             document.getElementById('closestTimes').style.display = 'none';
             const eGateButton = document.getElementById('eGateButton');
             eGateButton.style.display = 'inline-block';
+            // Restore original styles if needed
             eGateButton.style.width = '100px';
             eGateButton.style.height = '24px';
             eGateButton.style.background = 'white';
@@ -792,68 +832,389 @@
 
             const closestTimes = findClosestBusTimes(input);
             if (closestTimes.length === 0) {
-                closestTimesDiv.textContent = '';
-                closestTimesDiv.style.display = 'none';
+                closestTimesDiv.textContent = 'No suitable bus found.';
+                closestTimesDiv.style.display = 'block'; // Show the message
             } else {
                 const result = closestTimes.map(item => `${item.gros} ➡️ ${item.hq}`).join(', ');
-                closestTimesDiv.textContent = result;
+                closestTimesDiv.textContent = `Closest: ${result}`; // Add label
                 closestTimesDiv.style.display = 'block';
             }
         });
+
 
         document.getElementById('eGateButton').addEventListener('click', function() {
             document.getElementById('eGateButton').style.display = 'none';
             document.querySelector('.input-container').style.display = 'flex';
         });
 
-        // Calendar event listeners
-        const calendarWindow = document.getElementById('calendar-window');
-        const titleBar = document.getElementById('title-bar');
-        const closeButton = document.getElementById('close-button');
-
-        titleBar.addEventListener('mousedown', startDragging);
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', stopDragging);
-        titleBar.addEventListener('touchstart', startDragging);
-        document.addEventListener('touchmove', drag);
-        document.addEventListener('touchend', stopDragging);
-
-        closeButton.addEventListener('click', () => {
-            calendarWindow.style.display = 'none';
-        });
-
-        function updateCalendarDate() {
-            const dateElement = document.getElementById('calendar-current-date');
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            dateElement.textContent = new Date().toLocaleDateString(navigator.language, options);
-        }
-
-        // Popup logic
+        // Popup logic with black background
         function showFirstVisitPopup() {
-            if (!localStorage.getItem('hasVisited')) {
+            // Check if running as a PWA
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            // Check if on iOS
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            if (!localStorage.getItem('hasVisited') && !isPWA && isIOS) { // Only show on iOS Safari if not installed
                 const popup = document.getElementById('firstVisitPopup');
                 popup.style.display = 'block';
-                document.body.classList.add('black-background');
+                document.body.classList.add('black-background'); // Add class to body
             }
         }
 
         document.getElementById('closePopup').addEventListener('click', function() {
             const popup = document.getElementById('firstVisitPopup');
             popup.style.display = 'none';
-            document.body.classList.remove('black-background');
+            document.body.classList.remove('black-background'); // Remove class from body
             localStorage.setItem('hasVisited', 'true');
         });
 
         window.onload = function() {
             generateRandomDune();
             window.scrollTo(0, 0);
-            updateSkyAndCelestial();
-            updateCountdown();
-            showFirstVisitPopup();
-            updateCalendarDate();
+            updateSkyAndCelestial(); // Initial sky setup
+            updateCountdown(); // Initial countdown
+            showFirstVisitPopup(); // Check if popup should be shown
+             // Ensure stars are created if it's night time on load
+             const now = new Date();
+             const hours = now.getHours();
+             if (hours < 6 || hours >= 18) {
+                 createStars();
+             }
         };
 
-        setInterval(updateCountdown, 100);
+        // Use requestAnimationFrame for smoother updates if possible, otherwise fallback to setInterval
+        let intervalId = null;
+        function startUpdateLoop() {
+            if (intervalId) clearInterval(intervalId); // Clear existing interval if any
+            intervalId = setInterval(updateCountdown, 100); // Update every 100ms
+        }
+
+        startUpdateLoop(); // Start the update loop
+
+
+        // Prevent pull-to-refresh and other gestures
+        document.body.addEventListener('touchmove', function(event) {
+            // Allow vertical scrolling if needed in specific elements (like the calendar)
+             if (!event.target.closest('#events-container')) {
+                 event.preventDefault();
+            }
+        }, { passive: false });
+
     </script>
-</body>
+
+    <script>
+        const calendarWindow = document.getElementById('calendar-window');
+        const calendarTitleBar = document.getElementById('title-bar'); // Renamed to avoid conflict
+        const calendarCloseButton = document.getElementById('close-button'); // Renamed to avoid conflict
+        const calendarEventsList = document.getElementById('events-list'); // Renamed to avoid conflict
+        const calendarCurrentDate = document.getElementById('current-date'); // Added ID reference
+
+        // Calendar URL - Make sure this is correct and accessible
+        const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
+
+        // Variables para el arrastre
+        let isCalendarDragging = false; // Renamed to avoid conflict
+        let currentCalendarX; // Renamed to avoid conflict
+        let currentCalendarY; // Renamed to avoid conflict
+        let initialCalendarX; // Renamed to avoid conflict
+        let initialCalendarY; // Renamed to avoid conflict
+
+        function initCalendarDraggable() { // Renamed to avoid conflict
+            // Eventos del mouse
+            calendarTitleBar.addEventListener('mousedown', startCalendarDragging); // Renamed
+            document.addEventListener('mousemove', dragCalendar); // Renamed
+            document.addEventListener('mouseup', stopCalendarDragging); // Renamed
+
+            // Eventos táctiles
+            calendarTitleBar.addEventListener('touchstart', startCalendarDragging, { passive: false }); // Renamed, added passive: false
+            document.addEventListener('touchmove', dragCalendar, { passive: false }); // Renamed, added passive: false
+            document.addEventListener('touchend', stopCalendarDragging); // Renamed
+
+            // Botón de cerrar
+            calendarCloseButton.addEventListener('click', () => {
+                calendarWindow.style.display = 'none';
+            });
+        }
+
+        function startCalendarDragging(e) { // Renamed
+             // Prevent dragging the whole page on touch devices when interacting with the title bar
+            if (e.type === 'touchstart') {
+                e.preventDefault();
+            }
+
+            if (e.type === 'mousedown') {
+                initialCalendarX = e.clientX - calendarWindow.offsetLeft;
+                initialCalendarY = e.clientY - calendarWindow.offsetTop;
+            } else if (e.type === 'touchstart' && e.touches.length === 1) { // Ensure only one finger touch
+                initialCalendarX = e.touches[0].clientX - calendarWindow.offsetLeft;
+                initialCalendarY = e.touches[0].clientY - calendarWindow.offsetTop;
+            } else {
+                return; // Ignore multi-touch or other event types
+            }
+
+            // Check if the event target is the title bar or its direct children (like the h3 title)
+            if (e.target === calendarTitleBar || e.target.parentElement === calendarTitleBar) {
+                isCalendarDragging = true;
+                 calendarWindow.style.cursor = 'move'; // Change cursor while dragging
+            }
+        }
+
+        function dragCalendar(e) { // Renamed
+            if (isCalendarDragging) {
+                 // Prevent default scrolling/page movement during drag
+                 e.preventDefault();
+
+                if (e.type === 'mousemove') {
+                    currentCalendarX = e.clientX - initialCalendarX;
+                    currentCalendarY = e.clientY - initialCalendarY;
+                } else if (e.type === 'touchmove' && e.touches.length === 1) { // Ensure only one finger touch
+                    currentCalendarX = e.touches[0].clientX - initialCalendarX;
+                    currentCalendarY = e.touches[0].clientY - initialCalendarY;
+                } else {
+                    return; // Ignore multi-touch or other event types
+                }
+
+                // Limitar el movimiento dentro de la ventana del navegador
+                const maxX = window.innerWidth - calendarWindow.offsetWidth;
+                const maxY = window.innerHeight - calendarWindow.offsetHeight;
+
+                // Ensure coordinates are within bounds
+                 currentCalendarX = Math.min(Math.max(0, currentCalendarX), maxX);
+                 currentCalendarY = Math.min(Math.max(0, currentCalendarY), maxY);
+
+
+                calendarWindow.style.left = currentCalendarX + 'px';
+                calendarWindow.style.top = currentCalendarY + 'px';
+            }
+        }
+
+        function stopCalendarDragging() { // Renamed
+             if (isCalendarDragging) {
+                isCalendarDragging = false;
+                 calendarWindow.style.cursor = 'default'; // Reset cursor
+            }
+        }
+
+        function updateCalendarDate() { // Renamed to avoid conflict
+             const dateElement = calendarCurrentDate; // Use stored reference
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            // Use 'en-US' or a specific locale for consistent formatting if navigator.language is unreliable
+            dateElement.textContent = new Date().toLocaleDateString(navigator.language || 'en-US', options);
+        }
+
+        function formatCalendarTime(date) { // Renamed to avoid conflict
+             if (!(date instanceof Date) || isNaN(date)) {
+                 return 'Invalid time'; // Handle invalid date objects
+             }
+            // Use 'en-US' or specific locale for consistency
+            return date.toLocaleTimeString(navigator.language || 'en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        async function fetchCalendarEvents() {
+            calendarEventsList.innerHTML = '<div class="loading">Loading events...</div>';
+
+            try {
+                // Using a CORS proxy - ensure it's reliable or consider alternatives
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const response = await fetch(proxyUrl + encodeURIComponent(calendarUrl));
+
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+                }
+
+                const icsData = await response.text();
+                if (!icsData) {
+                    throw new Error('Empty response received from proxy/calendar URL');
+                }
+                const events = parseICS(icsData);
+                displayCalendarEvents(events); // Renamed function call
+            } catch (error) {
+                console.error('Error fetching calendar:', error);
+                calendarEventsList.innerHTML = `<div class="loading">Unable to load events. Error: ${error.message}. Please check the calendar URL and CORS proxy.</div>`;
+            }
+        }
+
+        function parseICS(icsData) {
+            const events = [];
+             // More robust line splitting
+            const lines = icsData.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+            let currentEvent = null;
+             let currentLine = '';
+
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+
+                 // Handle folded lines (lines starting with space or tab)
+                if (line.startsWith(' ') || line.startsWith('\t')) {
+                     if (currentLine) { // Append to the previous line if it exists
+                        currentLine += line.substring(1);
+                     }
+                    continue; // Skip processing this folded part as a separate line
+                } else {
+                     // Process the completed line (previous currentLine) before starting a new one
+                     if (currentLine) {
+                        processICSLine(currentLine, currentEvent);
+                     }
+                    currentLine = line; // Start the new line
+                }
+
+                 // Special handling for BEGIN/END VEVENT
+                if (currentLine.toUpperCase() === 'BEGIN:VEVENT') {
+                    currentEvent = {}; // Initialize a new event object
+                    currentLine = ''; // Reset currentLine as this line is processed
+                } else if (currentLine.toUpperCase() === 'END:VEVENT') {
+                    if (currentEvent && currentEvent.dtstart && currentEvent.summary) {
+                        // Add default DTEND if missing (e.g., for all-day events)
+                         if (!currentEvent.dtend && currentEvent.dtstartIsDate) {
+                            // For all-day events, DTEND is typically the start of the *next* day.
+                            // Let's just use the start date for simplicity in display.
+                            currentEvent.dtend = currentEvent.dtstart;
+                         } else if (!currentEvent.dtend) {
+                             // If it's a timed event without an end, maybe default to 1 hour?
+                             // Or better, handle display appropriately (show only start time).
+                             // We'll handle this in display function. Let dtend be undefined.
+                         }
+                        events.push(currentEvent);
+                    }
+                    currentEvent = null; // Reset event object
+                    currentLine = ''; // Reset currentLine
+                }
+            }
+             // Process the last line if it wasn't empty or an END tag
+             if (currentLine) {
+                processICSLine(currentLine, currentEvent);
+             }
+
+            return events;
+        }
+
+        function processICSLine(line, eventObj) {
+             if (!eventObj || !line.includes(':')) return; // Only process if within VEVENT and line has a colon
+
+
+            const [keyPart, ...valueParts] = line.split(':');
+             const value = valueParts.join(':'); // Re-join value in case it contained colons
+             const keyParts = keyPart.split(';'); // Split key by parameters (e.g., DTSTART;TZID=...)
+             const key = keyParts[0].toUpperCase(); // Main key (e.g., DTSTART)
+
+
+            if (key === 'DTSTART') {
+                 const parsedDate = parseICSDate(value, keyPart);
+                eventObj.dtstart = parsedDate.date;
+                 eventObj.dtstartIsDate = parsedDate.isDate; // Mark if it's date-only
+            } else if (key === 'DTEND') {
+                 const parsedDate = parseICSDate(value, keyPart);
+                eventObj.dtend = parsedDate.date;
+                 eventObj.dtendIsDate = parsedDate.isDate; // Mark if it's date-only
+             } else if (key === 'SUMMARY') {
+                eventObj.summary = value.replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/g, '\n'); // Unescape common characters
+            }
+             // Add more properties as needed (LOCATION, DESCRIPTION, RRULE for recurring events, etc.)
+        }
+
+        function parseICSDate(dateStr, keyPart) {
+            // Check for VALUE=DATE parameter, indicating an all-day event date
+            const isDateOnly = keyPart.toUpperCase().includes('VALUE=DATE');
+
+             // Basic format: YYYYMMDD or YYYYMMDDTHHMMSSZ or YYYYMMDDTHHMMSS
+             const cleanStr = dateStr.replace('T', '').replace('Z', ''); // Remove T and Z for simplicity
+
+
+            const year = parseInt(cleanStr.substr(0, 4), 10);
+            const month = parseInt(cleanStr.substr(4, 2), 10) - 1; // Month is 0-indexed
+            const day = parseInt(cleanStr.substr(6, 2), 10);
+
+             if (isDateOnly) {
+                 // Create date object at midnight in local time for date-only events
+                 return { date: new Date(year, month, day), isDate: true };
+            } else {
+                 // Assume UTC if 'Z' was present or no timezone info provided (standard requires TZID otherwise)
+                 // For simplicity here, we parse assuming local time if 'Z' is absent.
+                 // A robust parser would handle TZID parameters.
+                const hour = parseInt(cleanStr.substr(8, 2) || '0', 10);
+                const minute = parseInt(cleanStr.substr(10, 2) || '0', 10);
+                const second = parseInt(cleanStr.substr(12, 2) || '0', 10);
+
+                 if (dateStr.endsWith('Z')) {
+                     // If 'Z' (UTC), create UTC date then rely on JS Date methods for local display
+                     return { date: new Date(Date.UTC(year, month, day, hour, minute, second)), isDate: false };
+                 } else {
+                     // Otherwise, create local time date
+                     return { date: new Date(year, month, day, hour, minute, second), isDate: false };
+                 }
+            }
+        }
+
+        function isCalendarDateToday(date) { // Renamed to avoid conflict
+             if (!(date instanceof Date) || isNaN(date)) {
+                return false; // Handle invalid date
+             }
+            const today = new Date();
+             // Reset time part for accurate date comparison
+             today.setHours(0, 0, 0, 0);
+             const compareDate = new Date(date);
+             compareDate.setHours(0, 0, 0, 0);
+            return compareDate.getTime() === today.getTime();
+        }
+
+        function displayCalendarEvents(events) { // Renamed to avoid conflict
+             // Filter for events starting today (handle all-day and timed events)
+             const todayEvents = events.filter(event => event.dtstart && isCalendarDateToday(event.dtstart));
+
+
+            if (todayEvents.length === 0) {
+                calendarEventsList.innerHTML = '<div class="loading">No events scheduled for today</div>';
+                return;
+            }
+
+            // Sort events: All-day events first, then timed events by start time
+            todayEvents.sort((a, b) => {
+                if (a.dtstartIsDate && !b.dtstartIsDate) return -1; // a is all-day, b is timed
+                if (!a.dtstartIsDate && b.dtstartIsDate) return 1;  // a is timed, b is all-day
+                 if (a.dtstartIsDate && b.dtstartIsDate) return 0; // Both are all-day (order doesn't matter much)
+                // Both are timed, sort by time
+                return a.dtstart.getTime() - b.dtstart.getTime();
+            });
+
+            calendarEventsList.innerHTML = todayEvents.map(event => {
+                 let timeString = '';
+                 if (event.dtstartIsDate) {
+                     timeString = 'All Day';
+                 } else {
+                     timeString = formatCalendarTime(event.dtstart);
+                     if (event.dtend && !event.dtendIsDate && event.dtend.getTime() !== event.dtstart.getTime()) {
+                         // Add end time only if it exists, is not date-only, and is different from start time
+                         timeString += ` - ${formatCalendarTime(event.dtend)}`;
+                     }
+                 }
+
+                 return `
+                    <div class="event">
+                        <div class="event-title">${event.summary || 'No Title'}</div>
+                        <div class="event-time">${timeString}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Inicialización del Calendario
+        initCalendarDraggable();
+        updateCalendarDate();
+        fetchCalendarEvents();
+
+        // Actualizaciones periódicas del Calendario
+        // Update every 5 minutes (300000 ms)
+        setInterval(() => {
+             console.log("Updating calendar..."); // Add log for debugging
+            updateCalendarDate();
+            fetchCalendarEvents();
+        }, 300000);
+
+    </script>
+    </body>
 </html>
