@@ -51,31 +51,6 @@
             padding-bottom: env(safe-area-inset-bottom);
             box-sizing: border-box;
         }
-        .calendar-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 10px;
-            text-align: center;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        #calendarDate, #calendarEvent {
-            font-size: 14px;
-            margin: 2px 0;
-            transition: opacity 0.3s ease;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        #calendarEvent {
-            color: #4CAF50;
-            font-weight: 500;
-        }
         .emirates-logo {
             position: absolute;
             bottom: calc(20px + env(safe-area-inset-bottom));
@@ -299,9 +274,9 @@
             text-align: center;
         }
         #firstVisitPopup .icon {
-            height: 1em;
-            margin-right: 8px;
-            vertical-align: middle;
+            height: 1em; /* Ajusta la altura al tamaño de la línea de texto */
+            margin-right: 8px; /* Espaciado ajustado */
+            vertical-align: middle; /* Alineación vertical con el texto */
         }
         #closePopup {
             padding: 5px 15px;
@@ -316,6 +291,7 @@
         #closePopup:hover {
             background-color: #34495e;
         }
+        /* Black background when popup is active */
         .black-background::before {
             content: '';
             position: fixed;
@@ -330,13 +306,19 @@
     </style>
 </head>
 <body>
-    <div class="calendar-container">
-        <div id="calendarDate"></div>
-        <div id="calendarEvent"></div>
-    </div>
     <div id="background-container"></div>
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png" 
          alt="Emirates Logo" class="emirates-logo">
+        <div id="calendar-window" style="position: fixed; top: 20px; right: 20px; width: 300px; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; z-index: 9999; overflow: hidden;">
+        <div id="title-bar" style="background: #f8f9fa; padding: 12px 15px; border-bottom: 1px solid #eee; cursor: move; display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="title" style="font-weight: 600; color: #333; margin: 0;">Today's Events</h3>
+            <button id="close-button" style="background: none; border: none; font-size: 20px; color: #666; cursor: pointer; padding: 0 5px;">×</button>
+        </div>
+        <div id="events-container" style="padding: 15px;">
+            <div class="date-header" id="current-date" style="font-weight: 600; color: #2196F3; margin-bottom: 15px;"></div>
+            <div id="events-list"></div>
+        </div>
+    </div>
     <div class="container">
         <h1 id="routeTitle">Grosvenor to HQ in</h1>
         <div id="countdown">00:00</div>
@@ -420,148 +402,6 @@
             "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40", 
             "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
         ];
-
-        async function fetchCalendarEvents() {
-            try {
-                const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-                
-                // Primero intentamos sin proxy
-                try {
-                    const response = await fetch(calendarUrl, {
-                        headers: {
-                            'Accept': 'text/calendar',
-                            'Content-Type': 'text/calendar'
-                        }
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const data = await response.text();
-                    console.log('Raw calendar data:', data);
-                    return parseICalData(data);
-                } catch (error) {
-                    console.log('Direct fetch failed, trying with proxy:', error);
-                    
-                    // Si falla, intentamos con el proxy
-                    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                    const proxyResponse = await fetch(proxyUrl + calendarUrl, {
-                        headers: {
-                            'Accept': 'text/calendar',
-                            'Content-Type': 'text/calendar',
-                            'Origin': window.location.origin
-                        }
-                    });
-                    
-                    if (!proxyResponse.ok) {
-                        throw new Error(`Proxy HTTP error! status: ${proxyResponse.status}`);
-                    }
-                    
-                    const proxyData = await proxyResponse.text();
-                    console.log('Raw calendar data from proxy:', proxyData);
-                    return parseICalData(proxyData);
-                }
-            } catch (error) {
-                console.error('Error fetching calendar:', error);
-                return null;
-            }
-        }
-
-        function parseICalData(icalData) {
-            const events = [];
-            const lines = icalData.split('\n');
-            let currentEvent = {};
-            let inEvent = false;
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                
-                if (line.startsWith('BEGIN:VEVENT')) {
-                    inEvent = true;
-                    currentEvent = {};
-                } else if (line.startsWith('END:VEVENT')) {
-                    inEvent = false;
-                    if (currentEvent.summary && currentEvent.start) {
-                        events.push(currentEvent);
-                    }
-                } else if (inEvent) {
-                    if (line.startsWith('SUMMARY:')) {
-                        currentEvent.summary = line.substring(8).replace(/\\,/g, ',');
-                    } else if (line.startsWith('DTSTART;TZID=')) {
-                        const timezone = line.substring(13, line.indexOf(':'));
-                        const dateStr = line.substring(line.indexOf(':') + 1);
-                        const [datePart, timePart] = dateStr.split('T');
-                        const year = parseInt(datePart.substring(0, 4));
-                        const month = parseInt(datePart.substring(4, 6)) - 1;
-                        const day = parseInt(datePart.substring(6, 8));
-                        const hour = timePart ? parseInt(timePart.substring(0, 2)) : 0;
-                        const minute = timePart ? parseInt(timePart.substring(2, 4)) : 0;
-                        currentEvent.start = new Date(year, month, day, hour, minute);
-                    } else if (line.startsWith('DTSTART:')) {
-                        const dateStr = line.substring(8);
-                        const [datePart, timePart] = dateStr.split('T');
-                        const year = parseInt(datePart.substring(0, 4));
-                        const month = parseInt(datePart.substring(4, 6)) - 1;
-                        const day = parseInt(datePart.substring(6, 8));
-                        const hour = timePart ? parseInt(timePart.substring(0, 2)) : 0;
-                        const minute = timePart ? parseInt(timePart.substring(2, 4)) : 0;
-                        currentEvent.start = new Date(year, month, day, hour, minute);
-                    }
-                }
-            }
-            
-            console.log('Parsed events:', events);
-            return events.sort((a, b) => a.start - b.start);
-        }
-
-        function updateCalendar() {
-            const now = new Date();
-            const tomorrow = new Date(now);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            
-            const dateElement = document.getElementById('calendarDate');
-            const eventElement = document.getElementById('calendarEvent');
-            
-            const todayStr = now.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
-            
-            fetchCalendarEvents().then(events => {
-                console.log('Events in updateCalendar:', events);
-                if (events && events.length > 0) {
-                    const todayEvents = events.filter(event => {
-                        const eventDate = new Date(event.start);
-                        return eventDate.toDateString() === now.toDateString();
-                    });
-                    
-                    const tomorrowEvents = events.filter(event => {
-                        const eventDate = new Date(event.start);
-                        return eventDate.toDateString() === tomorrow.toDateString();
-                    });
-                    
-                    console.log('Today events:', todayEvents);
-                    console.log('Tomorrow events:', tomorrowEvents);
-                    
-                    if (todayEvents.length > 0) {
-                        const nextEvent = todayEvents[0];
-                        const eventTime = nextEvent.start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                        eventElement.textContent = `${nextEvent.summary} - ${eventTime}`;
-                    } else if (tomorrowEvents.length > 0) {
-                        const nextEvent = tomorrowEvents[0];
-                        const eventTime = nextEvent.start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                        eventElement.textContent = `${nextEvent.summary} - ${eventTime}`;
-                    } else {
-                        eventElement.textContent = "No scheduled events";
-                    }
-                } else {
-                    eventElement.textContent = "No scheduled events";
-                }
-            }).catch(error => {
-                console.error('Error updating calendar:', error);
-                eventElement.textContent = "Error loading events";
-            });
-            
-            dateElement.textContent = todayStr;
-        }
 
         function generateRandomDune() {
             const segments = 4;
@@ -837,6 +677,7 @@
             document.querySelector('.input-container').style.display = 'flex';
         });
 
+        // Popup logic with black background
         function showFirstVisitPopup() {
             if (!localStorage.getItem('hasVisited')) {
                 const popup = document.getElementById('firstVisitPopup');
@@ -857,12 +698,72 @@
             window.scrollTo(0, 0);
             updateSkyAndCelestial();
             updateCountdown();
-            updateCalendar();
             showFirstVisitPopup();
         };
 
         setInterval(updateCountdown, 100);
-        setInterval(updateCalendar, 60000);
+                const calendarWindow = document.getElementById('calendar-window');
+        const titleBar = document.getElementById('title-bar');
+        const closeButton = document.getElementById('close-button');
+        const eventsList = document.getElementById('events-list');
+
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+
+        function startDragging(e) {
+            if (e.type === 'mousedown') {
+                initialX = e.clientX - calendarWindow.offsetLeft;
+                initialY = e.clientY - calendarWindow.offsetTop;
+            } else if (e.type === 'touchstart') {
+                initialX = e.touches[0].clientX - calendarWindow.offsetLeft;
+                initialY = e.touches[0].clientY - calendarWindow.offsetTop;
+            }
+
+            if (e.target === titleBar || e.target.parentElement === titleBar) {
+                isDragging = true;
+            }
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+
+                if (e.type === 'mousemove') {
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                } else if (e.type === 'touchmove') {
+                    currentX = e.touches[0].clientX - initialX;
+                    currentY = e.touches[0].clientY - initialY;
+                }
+
+                const maxX = window.innerWidth - calendarWindow.offsetWidth;
+                const maxY = window.innerHeight - calendarWindow.offsetHeight;
+                
+                currentX = Math.min(Math.max(0, currentX), maxX);
+                currentY = Math.min(Math.max(0, currentY), maxY);
+
+                calendarWindow.style.left = currentX + 'px';
+                calendarWindow.style.top = currentY + 'px';
+            }
+        }
+
+        function stopDragging() {
+            isDragging = false;
+        }
+
+        titleBar.addEventListener('mousedown', startDragging);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDragging);
+        titleBar.addEventListener('touchstart', startDragging);
+        document.addEventListener('touchmove', drag);
+        document.addEventListener('touchend', stopDragging);
+
+        closeButton.addEventListener('click', () => {
+            calendarWindow.style.display = 'none';
+        });
     </script>
 </body>
 </html>
