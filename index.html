@@ -232,6 +232,86 @@
         #eGateButton:hover {
             transform: scale(1.05);
         }
+
+        /* Estilos del calendario */
+        #calendar-window {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            z-index: 9999;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #title-bar {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #title {
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        #close-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        #close-button:hover {
+            color: #333;
+        }
+
+        #events-container {
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .calendar-event {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .calendar-event:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .calendar-event-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .calendar-event-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .calendar-date-header {
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
         /* Popup Styles */
         #firstVisitPopup {
             display: none;
@@ -274,9 +354,9 @@
             text-align: center;
         }
         #firstVisitPopup .icon {
-            height: 1em; /* Ajusta la altura al tamaño de la línea de texto */
-            margin-right: 8px; /* Espaciado ajustado */
-            vertical-align: middle; /* Alineación vertical con el texto */
+            height: 1em;
+            margin-right: 8px;
+            vertical-align: middle;
         }
         #closePopup {
             padding: 5px 15px;
@@ -291,7 +371,6 @@
         #closePopup:hover {
             background-color: #34495e;
         }
-        /* Black background when popup is active */
         .black-background::before {
             content: '';
             position: fixed;
@@ -309,16 +388,19 @@
     <div id="background-container"></div>
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png" 
          alt="Emirates Logo" class="emirates-logo">
-        <div id="calendar-window" style="position: fixed; top: 20px; right: 20px; width: 300px; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; z-index: 9999; overflow: hidden;">
-        <div id="title-bar" style="background: #f8f9fa; padding: 12px 15px; border-bottom: 1px solid #eee; cursor: move; display: flex; justify-content: space-between; align-items: center;">
-            <h3 id="title" style="font-weight: 600; color: #333; margin: 0;">Today's Events</h3>
-            <button id="close-button" style="background: none; border: none; font-size: 20px; color: #666; cursor: pointer; padding: 0 5px;">×</button>
+
+    <!-- Calendar Window -->
+    <div id="calendar-window">
+        <div id="title-bar">
+            <h3 id="title">Today's Events</h3>
+            <button id="close-button">×</button>
         </div>
-        <div id="events-container" style="padding: 15px;">
-            <div class="date-header" id="current-date" style="font-weight: 600; color: #2196F3; margin-bottom: 15px;"></div>
+        <div id="events-container">
+            <div class="calendar-date-header" id="calendar-current-date"></div>
             <div id="events-list"></div>
         </div>
     </div>
+
     <div class="container">
         <h1 id="routeTitle">Grosvenor to HQ in</h1>
         <div id="countdown">00:00</div>
@@ -371,6 +453,13 @@
         let isGrosvenorToHQ = true;
         let starsCreated = false;
 
+        // Calendar variables
+        let calendarIsDragging = false;
+        let calendarCurrentX;
+        let calendarCurrentY;
+        let calendarInitialX;
+        let calendarInitialY;
+
         const grosvenorToHQSchedule = [
             { gros: "00:43", hq: "01:03" }, { gros: "01:03", hq: "01:23" }, { gros: "01:23", hq: "01:43" },
             { gros: "01:43", hq: "02:03" }, { gros: "02:03", hq: "02:23" }, { gros: "02:23", hq: "02:43" },
@@ -402,8 +491,7 @@
             "15:55", "16:20", "16:45", "17:10", "17:35", "18:00", "18:25", "18:50", "19:15", "19:40", 
             "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
         ];
-
-        function generateRandomDune() {
+                function generateRandomDune() {
             const segments = 4;
             const width = 1000;
             const segmentWidth = width / segments;
@@ -572,8 +660,7 @@
             
             updateSkyAndCelestial();
         }
-
-        function createStars() {
+                function createStars() {
             const starsContainer = document.getElementById('starsContainer');
             const numberOfStars = 50;
 
@@ -595,6 +682,48 @@
 
                 starsContainer.appendChild(star);
             }
+        }
+
+        // Calendar Functions
+        function startDragging(e) {
+            if (e.type === 'mousedown') {
+                calendarInitialX = e.clientX - calendarWindow.offsetLeft;
+                calendarInitialY = e.clientY - calendarWindow.offsetTop;
+            } else if (e.type === 'touchstart') {
+                calendarInitialX = e.touches[0].clientX - calendarWindow.offsetLeft;
+                calendarInitialY = e.touches[0].clientY - calendarWindow.offsetTop;
+            }
+
+            if (e.target === titleBar || e.target.parentElement === titleBar) {
+                calendarIsDragging = true;
+            }
+        }
+
+        function drag(e) {
+            if (calendarIsDragging) {
+                e.preventDefault();
+
+                if (e.type === 'mousemove') {
+                    calendarCurrentX = e.clientX - calendarInitialX;
+                    calendarCurrentY = e.clientY - calendarInitialY;
+                } else if (e.type === 'touchmove') {
+                    calendarCurrentX = e.touches[0].clientX - calendarInitialX;
+                    calendarCurrentY = e.touches[0].clientY - calendarInitialY;
+                }
+
+                const maxX = window.innerWidth - calendarWindow.offsetWidth;
+                const maxY = window.innerHeight - calendarWindow.offsetHeight;
+                
+                calendarCurrentX = Math.min(Math.max(0, calendarCurrentX), maxX);
+                calendarCurrentY = Math.min(Math.max(0, calendarCurrentY), maxY);
+
+                calendarWindow.style.left = calendarCurrentX + 'px';
+                calendarWindow.style.top = calendarCurrentY + 'px';
+            }
+        }
+
+        function stopDragging() {
+            calendarIsDragging = false;
         }
 
         document.getElementById('toggleRoute').addEventListener('click', function() {
@@ -677,7 +806,29 @@
             document.querySelector('.input-container').style.display = 'flex';
         });
 
-        // Popup logic with black background
+        // Calendar event listeners
+        const calendarWindow = document.getElementById('calendar-window');
+        const titleBar = document.getElementById('title-bar');
+        const closeButton = document.getElementById('close-button');
+
+        titleBar.addEventListener('mousedown', startDragging);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDragging);
+        titleBar.addEventListener('touchstart', startDragging);
+        document.addEventListener('touchmove', drag);
+        document.addEventListener('touchend', stopDragging);
+
+        closeButton.addEventListener('click', () => {
+            calendarWindow.style.display = 'none';
+        });
+
+        function updateCalendarDate() {
+            const dateElement = document.getElementById('calendar-current-date');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = new Date().toLocaleDateString(navigator.language, options);
+        }
+
+        // Popup logic
         function showFirstVisitPopup() {
             if (!localStorage.getItem('hasVisited')) {
                 const popup = document.getElementById('firstVisitPopup');
@@ -699,71 +850,10 @@
             updateSkyAndCelestial();
             updateCountdown();
             showFirstVisitPopup();
+            updateCalendarDate();
         };
 
         setInterval(updateCountdown, 100);
-                const calendarWindow = document.getElementById('calendar-window');
-        const titleBar = document.getElementById('title-bar');
-        const closeButton = document.getElementById('close-button');
-        const eventsList = document.getElementById('events-list');
-
-        let isDragging = false;
-        let currentX;
-        let currentY;
-        let initialX;
-        let initialY;
-
-        function startDragging(e) {
-            if (e.type === 'mousedown') {
-                initialX = e.clientX - calendarWindow.offsetLeft;
-                initialY = e.clientY - calendarWindow.offsetTop;
-            } else if (e.type === 'touchstart') {
-                initialX = e.touches[0].clientX - calendarWindow.offsetLeft;
-                initialY = e.touches[0].clientY - calendarWindow.offsetTop;
-            }
-
-            if (e.target === titleBar || e.target.parentElement === titleBar) {
-                isDragging = true;
-            }
-        }
-
-        function drag(e) {
-            if (isDragging) {
-                e.preventDefault();
-
-                if (e.type === 'mousemove') {
-                    currentX = e.clientX - initialX;
-                    currentY = e.clientY - initialY;
-                } else if (e.type === 'touchmove') {
-                    currentX = e.touches[0].clientX - initialX;
-                    currentY = e.touches[0].clientY - initialY;
-                }
-
-                const maxX = window.innerWidth - calendarWindow.offsetWidth;
-                const maxY = window.innerHeight - calendarWindow.offsetHeight;
-                
-                currentX = Math.min(Math.max(0, currentX), maxX);
-                currentY = Math.min(Math.max(0, currentY), maxY);
-
-                calendarWindow.style.left = currentX + 'px';
-                calendarWindow.style.top = currentY + 'px';
-            }
-        }
-
-        function stopDragging() {
-            isDragging = false;
-        }
-
-        titleBar.addEventListener('mousedown', startDragging);
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', stopDragging);
-        titleBar.addEventListener('touchstart', startDragging);
-        document.addEventListener('touchmove', drag);
-        document.addEventListener('touchend', stopDragging);
-
-        closeButton.addEventListener('click', () => {
-            calendarWindow.style.display = 'none';
-        });
     </script>
 </body>
 </html>
