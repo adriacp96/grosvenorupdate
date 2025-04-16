@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Grosvenor & Calendar</title> {/* Updated Title */}
+    <title>Grosvenor & Calendar</title>
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
     <style>
@@ -310,8 +310,9 @@
         #calendar-window {
             position: fixed;
             top: 20px;
-            right: 20px;
-            transform: translateX(-50%);
+            /* right: 20px; */ /* <-- Eliminado */
+            left: 50%;      /* <-- Añadido */
+            transform: translateX(-50%); /* <-- Añadido */
             width: 300px;
             background: white;
             border-radius: 10px;
@@ -943,20 +944,28 @@
                 e.preventDefault();
             }
 
-            if (e.type === 'mousedown') {
-                initialCalendarX = e.clientX - calendarWindow.offsetLeft;
-                initialCalendarY = e.clientY - calendarWindow.offsetTop;
-            } else if (e.type === 'touchstart' && e.touches.length === 1) { // Ensure only one finger touch
-                initialCalendarX = e.touches[0].clientX - calendarWindow.offsetLeft;
-                initialCalendarY = e.touches[0].clientY - calendarWindow.offsetTop;
-            } else {
-                return; // Ignore multi-touch or other event types
-            }
+             let clientX, clientY;
+             if (e.type === 'mousedown') {
+                 clientX = e.clientX;
+                 clientY = e.clientY;
+             } else if (e.type === 'touchstart' && e.touches.length === 1) {
+                 clientX = e.touches[0].clientX;
+                 clientY = e.touches[0].clientY;
+             } else {
+                 return; // Ignore multi-touch or other event types
+             }
+
+            // IMPORTANT: Recalculate offsetLeft based on the current state, *including transform*
+            const rect = calendarWindow.getBoundingClientRect();
+            initialCalendarX = clientX - rect.left; // Use rect.left which accounts for transform
+            initialCalendarY = clientY - rect.top;  // Use rect.top
 
             // Check if the event target is the title bar or its direct children (like the h3 title)
             if (e.target === calendarTitleBar || e.target.parentElement === calendarTitleBar) {
                 isCalendarDragging = true;
                  calendarWindow.style.cursor = 'move'; // Change cursor while dragging
+                 // Temporarily remove transform during drag to use simple left/top positioning
+                 calendarWindow.style.transform = 'none';
             }
         }
 
@@ -965,15 +974,20 @@
                  // Prevent default scrolling/page movement during drag
                  e.preventDefault();
 
+                 let clientX, clientY;
                 if (e.type === 'mousemove') {
-                    currentCalendarX = e.clientX - initialCalendarX;
-                    currentCalendarY = e.clientY - initialCalendarY;
+                     clientX = e.clientX;
+                     clientY = e.clientY;
                 } else if (e.type === 'touchmove' && e.touches.length === 1) { // Ensure only one finger touch
-                    currentCalendarX = e.touches[0].clientX - initialCalendarX;
-                    currentCalendarY = e.touches[0].clientY - initialCalendarY;
+                     clientX = e.touches[0].clientX;
+                     clientY = e.touches[0].clientY;
                 } else {
                     return; // Ignore multi-touch or other event types
                 }
+
+                // Calculate new top/left based on initial mouse offset
+                currentCalendarX = clientX - initialCalendarX;
+                currentCalendarY = clientY - initialCalendarY;
 
                 // Limitar el movimiento dentro de la ventana del navegador
                 const maxX = window.innerWidth - calendarWindow.offsetWidth;
@@ -983,7 +997,7 @@
                  currentCalendarX = Math.min(Math.max(0, currentCalendarX), maxX);
                  currentCalendarY = Math.min(Math.max(0, currentCalendarY), maxY);
 
-
+                 // Set position using left/top directly (transform removed during drag)
                 calendarWindow.style.left = currentCalendarX + 'px';
                 calendarWindow.style.top = currentCalendarY + 'px';
             }
@@ -993,8 +1007,11 @@
              if (isCalendarDragging) {
                 isCalendarDragging = false;
                  calendarWindow.style.cursor = 'default'; // Reset cursor
+                 // We don't re-apply the transform here. The element stays where it was dragged using left/top.
+                 // If you wanted it to snap back to center after drag, you'd reset left/top and re-apply transform here.
             }
         }
+
 
         function updateCalendarDate() { // Renamed to avoid conflict
              const dateElement = calendarCurrentDate; // Use stored reference
