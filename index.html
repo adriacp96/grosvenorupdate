@@ -119,62 +119,6 @@
 .night-mode-overlay.active {
     opacity: 1;
 }
-        .radio-toggle {
-    position: fixed;
-    top: 70px;
-    left: 20px;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 30px;
-    background-color: #2c3e50;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.radio-toggle .toggle-slider {
-    position: absolute;
-    width: 26px;
-    height: 26px;
-    background-color: #fff;
-    border-radius: 50%;
-    left: 2px;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-}
-
-.radio-toggle.active {
-    background-color: #e74c3c;
-}
-
-.radio-toggle.active .toggle-slider {
-    transform: translateX(30px);
-}
-
-.volume-indicator {
-    position: fixed;
-    top: 110px;
-    left: 20px;
-    z-index: 1000;
-    width: 60px;
-    height: 20px;
-    font-size: 12px;
-    color: #2c3e50;
-    text-align: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.volume-indicator.active {
-    opacity: 1;
-}
         html {
             height: 100%;
             width: 100%;
@@ -671,57 +615,6 @@
             color: #666;
             font-style: italic;
         }
-        .airplane {
-    position: fixed;
-    width: 100px;
-    height: auto;
-    right: -150px; /* Empieza fuera de la pantalla */
-    top: 40%;
-    z-index: 1;
-    transition: transform 0.2s ease;
-    display: none; /* Inicialmente oculto */
-    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
-}
-
-@keyframes flyAcross {
-    0% {
-        right: -150px;
-        transform: translateY(0) rotate(0deg);
-    }
-    10% {
-        transform: translateY(-20px) rotate(-2deg);
-    }
-    20% {
-        transform: translateY(10px) rotate(2deg);
-    }
-    30% {
-        transform: translateY(-15px) rotate(-1deg);
-    }
-    40% {
-        transform: translateY(5px) rotate(1deg);
-    }
-    50% {
-        transform: translateY(-10px) rotate(-1deg);
-    }
-    60% {
-        transform: translateY(10px) rotate(1deg);
-    }
-    70% {
-        transform: translateY(-5px) rotate(-0.5deg);
-    }
-    80% {
-        transform: translateY(5px) rotate(0.5deg);
-    }
-    100% {
-        right: 100%;
-        transform: translateY(0) rotate(0deg);
-    }
-}
-
-.flying {
-    display: block;
-    animation: flyAcross 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
     </style>
 </head>
 <body>
@@ -732,18 +625,10 @@
         Tu navegador no soporta el elemento de audio.
     </audio>
 </div>
-    <img src="https://i.imghippo.com/files/TFaX3668iz.png" alt="Airplane" class="airplane" id="airplane">
     <div class="night-mode-toggle">
     <div class="toggle-slider">🌞</div>
 </div>
 <div class="night-mode-overlay"></div>
-    <div class="radio-toggle">
-    <div class="toggle-slider">📻</div>
-</div>
-<div class="volume-indicator">RAC1</div>
-<audio id="radioPlayer" style="display: none;">
-    <source src="https://streaming.rac1.cat/" type="audio/mpeg">
-</audio>
     <div id="background-container"></div>
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png"
          alt="Emirates Logo" class="emirates-logo">
@@ -987,83 +872,63 @@
             celestial.style.display = 'block';
         }
 
-// Función para hacer volar el avión
-function flyAirplane() {
-    const airplane = document.getElementById('airplane');
-    airplane.classList.remove('flying');
-    // Forzar un reflow
-    void airplane.offsetWidth;
-    airplane.classList.add('flying');
-    
-    // Remover la clase después de que termine la animación
-    setTimeout(() => {
-        airplane.classList.remove('flying');
-    }, 8000);
-}
+        function updateCountdown() {
+            const now = new Date();
+            const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
+            const { previousBus, nextBus } = getBusTimes();
 
-// Función updateCountdown actualizada
-function updateCountdown() {
-    const now = new Date();
-    const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
-    const { previousBus, nextBus } = getBusTimes();
+            let timeDifference = nextBus.minutes - currentTimeInMinutes;
+            if (nextBus.minutes < currentTimeInMinutes && nextBus.minutes < 1440) {
+                timeDifference = (nextBus.minutes + 1440) - currentTimeInMinutes;
+            } else {
+                timeDifference = nextBus.minutes - currentTimeInMinutes;
+            }
 
-    let timeDifference = nextBus.minutes - currentTimeInMinutes;
-    if (nextBus.minutes < currentTimeInMinutes && nextBus.minutes < 1440) {
-        timeDifference = (nextBus.minutes + 1440) - currentTimeInMinutes;
-    } else {
-        timeDifference = nextBus.minutes - currentTimeInMinutes;
-    }
+            const minutes = Math.floor(timeDifference);
+            const seconds = Math.floor((timeDifference * 60) % 60);
 
-    const minutes = Math.floor(timeDifference);
-    const seconds = Math.floor((timeDifference * 60) % 60);
+            document.getElementById('countdown').textContent =
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
 
-    document.getElementById('countdown').textContent =
-        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    
-    // Activar el avión cuando el contador llegue a cero
-    if (minutes === 0 && seconds === 0) {
-        flyAirplane();
-    }
+            let totalDuration = (nextBus.minutes - previousBus.minutes);
+            if (totalDuration <= 0) {
+                totalDuration += 1440;
+            }
 
-    document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
+            let elapsed = currentTimeInMinutes - previousBus.minutes;
+            if (elapsed < 0) {
+                elapsed += 1440;
+            }
 
-    let totalDuration = (nextBus.minutes - previousBus.minutes);
-    if (totalDuration <= 0) {
-        totalDuration += 1440;
-    }
+            const percentage = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0;
+            const clampedPercentage = Math.min(Math.max(percentage, 0), 100);
 
-    let elapsed = currentTimeInMinutes - previousBus.minutes;
-    if (elapsed < 0) {
-        elapsed += 1440;
-    }
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = `${clampedPercentage}%`;
 
-    const percentage = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0;
-    const clampedPercentage = Math.min(Math.max(percentage, 0), 100);
+            const remainingMinutes = timeDifference;
+            if (remainingMinutes <= 3 && remainingMinutes > 0) {
+                progressFill.style.transition = 'background-color 5s linear';
+                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
+            } else if (remainingMinutes > 3) {
+                const startColor = 204;
+                const endColor = 51;
+                const colorValue = Math.round(startColor - (startColor - endColor) * (clampedPercentage / 100));
+                progressFill.style.backgroundColor = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
+                progressFill.style.transition = 'background-color 0.5s linear, width 0.5s linear';
+            } else {
+                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
+                progressFill.style.transition = 'none';
+            }
 
-    const progressFill = document.getElementById('progressFill');
-    progressFill.style.width = `${clampedPercentage}%`;
+            const progressBarWidth = document.querySelector('.progress-bar').offsetWidth;
+            const busPosition = (progressBarWidth * clampedPercentage / 100) - (document.getElementById('busEmoji').offsetWidth / 2);
+            document.getElementById('busEmoji').style.left = `${Math.min(Math.max(0, busPosition), progressBarWidth - document.getElementById('busEmoji').offsetWidth)}px`;
 
-    const remainingMinutes = timeDifference;
-    if (remainingMinutes <= 3 && remainingMinutes > 0) {
-        progressFill.style.transition = 'background-color 5s linear';
-        progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
-    } else if (remainingMinutes > 3) {
-        const startColor = 204;
-        const endColor = 51;
-        const colorValue = Math.round(startColor - (startColor - endColor) * (clampedPercentage / 100));
-        progressFill.style.backgroundColor = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
-        progressFill.style.transition = 'background-color 0.5s linear, width 0.5s linear';
-    } else {
-        progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
-        progressFill.style.transition = 'none';
-    }
+            updateSkyAndCelestial();
+        }
 
-    const progressBarWidth = document.querySelector('.progress-bar').offsetWidth;
-    const busPosition = (progressBarWidth * clampedPercentage / 100) - (document.getElementById('busEmoji').offsetWidth / 2);
-    document.getElementById('busEmoji').style.left = `${Math.min(Math.max(0, busPosition), progressBarWidth - document.getElementById('busEmoji').offsetWidth)}px`;
-
-    updateSkyAndCelestial();
-}
         function createStars() {
             const starsContainer = document.getElementById('starsContainer');
             starsContainer.innerHTML = '';
@@ -1557,67 +1422,9 @@ nightModeToggle.addEventListener('click', () => {
     isNightMode = !isNightMode;
     nightModeToggle.classList.toggle('active');
     nightModeOverlay.classList.toggle('active');
-    document.body.classList.toggle('night-mode');
+    document.body.classList.toggle('night-mode'); // Añadida esta línea
     toggleSlider.innerHTML = isNightMode ? '🌚' : '🌞';
 });
-// Radio Toggle Functionality
-const radioToggle = document.querySelector('.radio-toggle');
-const radioSlider = radioToggle.querySelector('.toggle-slider');
-const volumeIndicator = document.querySelector('.volume-indicator');
-const radioPlayer = document.getElementById('radioPlayer');
-let isRadioPlaying = false;
-
-// Función para manejar errores de reproducción
-function handlePlayError(error) {
-    console.error('Error playing radio:', error);
-    alert('No se pudo conectar con RAC1. Por favor, inténtalo de nuevo más tarde.');
-    isRadioPlaying = false;
-    radioToggle.classList.remove('active');
-    radioSlider.innerHTML = '📻';
-    volumeIndicator.classList.remove('active');
-}
-
-radioToggle.addEventListener('click', () => {
-    if (!isRadioPlaying) {
-        // Intentar reproducir la radio
-        radioPlayer.load();
-        radioPlayer.play()
-            .then(() => {
-                isRadioPlaying = true;
-                radioToggle.classList.add('active');
-                radioSlider.innerHTML = '🎵';
-                volumeIndicator.classList.add('active');
-            })
-            .catch(handlePlayError);
-    } else {
-        // Detener la radio
-        radioPlayer.pause();
-        radioPlayer.currentTime = 0;
-        isRadioPlaying = false;
-        radioToggle.classList.remove('active');
-        radioSlider.innerHTML = '📻';
-        volumeIndicator.classList.remove('active');
-    }
-});
-
-// Manejar errores durante la reproducción
-radioPlayer.addEventListener('error', (e) => {
-    handlePlayError(e.error);
-});
-
-// Ajustar volumen con las teclas de flecha arriba/abajo cuando el radio está activo
-document.addEventListener('keydown', (e) => {
-    if (!isRadioPlaying) return;
-
-    if (e.key === 'ArrowUp') {
-        radioPlayer.volume = Math.min(1, radioPlayer.volume + 0.1);
-        volumeIndicator.textContent = `Vol: ${Math.round(radioPlayer.volume * 100)}%`;
-    } else if (e.key === 'ArrowDown') {
-        radioPlayer.volume = Math.max(0, radioPlayer.volume - 0.1);
-        volumeIndicator.textContent = `Vol: ${Math.round(radioPlayer.volume * 100)}%`;
-    }
-});
-function updateCountdown() {
     </script>
 </body>
 </html>
