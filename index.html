@@ -15,7 +15,7 @@
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 9999; /* Aumentado para asegurar que está por encima de todo */
+    z-index: 1000;
     background: rgba(255, 255, 255, 0.9);
     padding: 10px;
     border-radius: 10px;
@@ -23,9 +23,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 50px; /* Ancho inicial más pequeño */
-    transition: all 0.3s ease;
-    overflow: hidden; /* Asegurarse de que el contenido extra está oculto */
+    width: 300px;
+    overflow: hidden;
 }
 
 .radio-player img {
@@ -33,7 +32,6 @@
     width: auto;
     cursor: pointer;
     transition: transform 0.3s ease;
-    flex-shrink: 0; /* Evitar que la imagen se encoja */
 }
 
 .radio-player img:hover {
@@ -43,18 +41,14 @@
 .radio-player audio {
     width: 0;
     opacity: 0;
-    transition: all 0.3s ease;
-    pointer-events: none; /* Deshabilitar interacción cuando está oculto */
-}
-
-.radio-player.expanded {
-    width: 300px; /* Ancho cuando está expandido */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex: 0;
 }
 
 .radio-player.expanded audio {
     width: 240px;
     opacity: 1;
-    pointer-events: auto; /* Rehabilitar interacción */
+    flex: 1;
 }
 
 /* Ajuste para el night mode */
@@ -1441,26 +1435,6 @@ nightModeToggle.addEventListener('click', () => {
     nightModeOverlay.classList.toggle('active');
     document.body.classList.toggle('night-mode'); // Añadida esta línea
     toggleSlider.innerHTML = isNightMode ? '🌚' : '🌞';
-});
-        // Radio Player Toggle
-document.addEventListener('DOMContentLoaded', function() {
-    const radioToggle = document.getElementById('radioToggle');
-    const player = document.querySelector('.radio-player');
-    const audio = player.querySelector('audio');
-
-    radioToggle.addEventListener('click', function() {
-        player.classList.toggle('expanded');
-        
-        if (player.classList.contains('expanded')) {
-            setTimeout(() => {
-                audio.play().catch(function(error) {
-                    console.log("Error al reproducir: ", error);
-                });
-            }, 300);
-        } else {
-            audio.pause();
-        }
-    });
 });
     </script>
 </body>
