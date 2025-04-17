@@ -567,9 +567,61 @@
             color: #666;
             font-style: italic;
         }
+        .airplane {
+    position: fixed;
+    width: 100px;
+    height: auto;
+    right: -150px; /* Empieza fuera de la pantalla */
+    top: 40%;
+    z-index: 1;
+    transition: transform 0.2s ease;
+    display: none; /* Inicialmente oculto */
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+}
+
+@keyframes flyAcross {
+    0% {
+        right: -150px;
+        transform: translateY(0) rotate(0deg);
+    }
+    10% {
+        transform: translateY(-20px) rotate(-2deg);
+    }
+    20% {
+        transform: translateY(10px) rotate(2deg);
+    }
+    30% {
+        transform: translateY(-15px) rotate(-1deg);
+    }
+    40% {
+        transform: translateY(5px) rotate(1deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(-1deg);
+    }
+    60% {
+        transform: translateY(10px) rotate(1deg);
+    }
+    70% {
+        transform: translateY(-5px) rotate(-0.5deg);
+    }
+    80% {
+        transform: translateY(5px) rotate(0.5deg);
+    }
+    100% {
+        right: 100%;
+        transform: translateY(0) rotate(0deg);
+    }
+}
+
+.flying {
+    display: block;
+    animation: flyAcross 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
     </style>
 </head>
 <body>
+    <img src="https://i.imghippo.com/files/TFaX3668iz.png" alt="Airplane" class="airplane" id="airplane">
     <div class="night-mode-toggle">
     <div class="toggle-slider">🌞</div>
 </div>
@@ -817,63 +869,83 @@
             celestial.style.display = 'block';
         }
 
-        function updateCountdown() {
-            const now = new Date();
-            const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
-            const { previousBus, nextBus } = getBusTimes();
+// Función para hacer volar el avión
+function flyAirplane() {
+    const airplane = document.getElementById('airplane');
+    airplane.classList.remove('flying');
+    // Forzar un reflow
+    void airplane.offsetWidth;
+    airplane.classList.add('flying');
+    
+    // Remover la clase después de que termine la animación
+    setTimeout(() => {
+        airplane.classList.remove('flying');
+    }, 8000);
+}
 
-            let timeDifference = nextBus.minutes - currentTimeInMinutes;
-            if (nextBus.minutes < currentTimeInMinutes && nextBus.minutes < 1440) {
-                timeDifference = (nextBus.minutes + 1440) - currentTimeInMinutes;
-            } else {
-                timeDifference = nextBus.minutes - currentTimeInMinutes;
-            }
+// Función updateCountdown actualizada
+function updateCountdown() {
+    const now = new Date();
+    const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
+    const { previousBus, nextBus } = getBusTimes();
 
-            const minutes = Math.floor(timeDifference);
-            const seconds = Math.floor((timeDifference * 60) % 60);
+    let timeDifference = nextBus.minutes - currentTimeInMinutes;
+    if (nextBus.minutes < currentTimeInMinutes && nextBus.minutes < 1440) {
+        timeDifference = (nextBus.minutes + 1440) - currentTimeInMinutes;
+    } else {
+        timeDifference = nextBus.minutes - currentTimeInMinutes;
+    }
 
-            document.getElementById('countdown').textContent =
-                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
+    const minutes = Math.floor(timeDifference);
+    const seconds = Math.floor((timeDifference * 60) % 60);
 
-            let totalDuration = (nextBus.minutes - previousBus.minutes);
-            if (totalDuration <= 0) {
-                totalDuration += 1440;
-            }
+    document.getElementById('countdown').textContent =
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    
+    // Activar el avión cuando el contador llegue a cero
+    if (minutes === 0 && seconds === 0) {
+        flyAirplane();
+    }
 
-            let elapsed = currentTimeInMinutes - previousBus.minutes;
-            if (elapsed < 0) {
-                elapsed += 1440;
-            }
+    document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
 
-            const percentage = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0;
-            const clampedPercentage = Math.min(Math.max(percentage, 0), 100);
+    let totalDuration = (nextBus.minutes - previousBus.minutes);
+    if (totalDuration <= 0) {
+        totalDuration += 1440;
+    }
 
-            const progressFill = document.getElementById('progressFill');
-            progressFill.style.width = `${clampedPercentage}%`;
+    let elapsed = currentTimeInMinutes - previousBus.minutes;
+    if (elapsed < 0) {
+        elapsed += 1440;
+    }
 
-            const remainingMinutes = timeDifference;
-            if (remainingMinutes <= 3 && remainingMinutes > 0) {
-                progressFill.style.transition = 'background-color 5s linear';
-                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
-            } else if (remainingMinutes > 3) {
-                const startColor = 204;
-                const endColor = 51;
-                const colorValue = Math.round(startColor - (startColor - endColor) * (clampedPercentage / 100));
-                progressFill.style.backgroundColor = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
-                progressFill.style.transition = 'background-color 0.5s linear, width 0.5s linear';
-            } else {
-                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
-                progressFill.style.transition = 'none';
-            }
+    const percentage = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0;
+    const clampedPercentage = Math.min(Math.max(percentage, 0), 100);
 
-            const progressBarWidth = document.querySelector('.progress-bar').offsetWidth;
-            const busPosition = (progressBarWidth * clampedPercentage / 100) - (document.getElementById('busEmoji').offsetWidth / 2);
-            document.getElementById('busEmoji').style.left = `${Math.min(Math.max(0, busPosition), progressBarWidth - document.getElementById('busEmoji').offsetWidth)}px`;
+    const progressFill = document.getElementById('progressFill');
+    progressFill.style.width = `${clampedPercentage}%`;
 
-            updateSkyAndCelestial();
-        }
+    const remainingMinutes = timeDifference;
+    if (remainingMinutes <= 3 && remainingMinutes > 0) {
+        progressFill.style.transition = 'background-color 5s linear';
+        progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
+    } else if (remainingMinutes > 3) {
+        const startColor = 204;
+        const endColor = 51;
+        const colorValue = Math.round(startColor - (startColor - endColor) * (clampedPercentage / 100));
+        progressFill.style.backgroundColor = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
+        progressFill.style.transition = 'background-color 0.5s linear, width 0.5s linear';
+    } else {
+        progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
+        progressFill.style.transition = 'none';
+    }
 
+    const progressBarWidth = document.querySelector('.progress-bar').offsetWidth;
+    const busPosition = (progressBarWidth * clampedPercentage / 100) - (document.getElementById('busEmoji').offsetWidth / 2);
+    document.getElementById('busEmoji').style.left = `${Math.min(Math.max(0, busPosition), progressBarWidth - document.getElementById('busEmoji').offsetWidth)}px`;
+
+    updateSkyAndCelestial();
+}
         function createStars() {
             const starsContainer = document.getElementById('starsContainer');
             starsContainer.innerHTML = '';
@@ -1368,7 +1440,7 @@ nightModeToggle.addEventListener('click', () => {
     nightModeToggle.classList.toggle('active');
     nightModeOverlay.classList.toggle('active');
     document.body.classList.toggle('night-mode'); // Añadida esta línea
-    toggleSlider.innerHTML = isNightMode ? '🌚' : '🌞';
+    toggleSlider.innerHTML = isNightMode ? '🌙' : '🌞';
 });
     </script>
 </body>
