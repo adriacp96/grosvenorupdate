@@ -338,13 +338,13 @@
             transition: opacity 0.3s ease;
         }
         /* Calendar Widget Styles */
-        #calendar-window {
+       #calendar-window {
             position: fixed;
             top: 50px;
             left: 50%;
             transform: translateX(-50%);
             width: 300px;
-            background: rgba(255,255,255,0.8);
+            background: white;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -441,7 +441,7 @@
 
         .date-header {
             font-weight: 600;
-            color: #333;
+            color: #2196F3;
             margin-bottom: 15px;
         }
 
@@ -908,44 +908,6 @@
                 event.preventDefault();
             }
         }, { passive: false });
-        // Calendar JavaScript
-        const calendarWindow = document.getElementById('calendar-window');
-        const calendarTitleBar = document.getElementById('title-bar');
-        const calendarToggleDayButton = document.getElementById('toggle-day');
-        const calendarEventsList = document.getElementById('events-list');
-        const calendarCurrentDate = document.getElementById('current-date');
-        const calendarTitle = document.getElementById('title');
-
-        const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-
-        let isCalendarDragging = false;
-        let currentCalendarX;
-        let currentCalendarY;
-        let initialCalendarX;
-        let initialCalendarY;
-        let showingToday = true;
-
-        function initCalendarDraggable() {
-            calendarTitleBar.addEventListener('mousedown', startCalendarDragging);
-            document.addEventListener('mousemove', dragCalendar);
-            document.addEventListener('mouseup', stopCalendarDragging);
-            calendarTitleBar.addEventListener('touchstart', startCalendarDragging, { passive: false });
-            document.addEventListener('touchmove', dragCalendar, { passive: false });
-            document.addEventListener('touchend', stopCalendarDragging);
-            calendarToggleDayButton.addEventListener('click', toggleCalendarDay);
-        }
-
-        // [Resto del código del calendario que ya tenías...]
-
-        initCalendarDraggable();
-        updateCalendarDate();
-        fetchCalendarEvents();
-        startAutoCycle();
-
-        setInterval(() => {
-            console.log("Updating calendar...");
-            fetchCalendarEvents();
-        }, 300000);
     </script>
 </body>
 </html>
