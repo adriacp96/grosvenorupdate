@@ -374,7 +374,7 @@
         #calendar-window {
             position: fixed;
             top: 50px;
-            left: 50%;
+            left: 85%;
             transform: translateX(-50%);
             width: 300px;
             background: rgba(255,255,255,0.9);
@@ -1232,39 +1232,38 @@
         const viewBoxWidth = 1440;
 
         function updateCamelPosition(progress) {
-            const point = path.getPointAtLength(progress * pathLength);
-            const svgRect = svg.getBoundingClientRect();
-            const scaleX = svgRect.width / viewBoxWidth;
-            const scaleY = svgRect.height / duneHeight;
-            const x = point.x * scaleX;
-            const y = point.y;
-            const distanceFromSvgBottom = (duneHeight - y) * scaleY;
-            camel.style.left = `${x - camel.width / 2}px`;
-            camel.style.bottom = `${distanceFromSvgBottom - 13}px`;
-            const delta = 0.01;
-            const nextPoint = path.getPointAtLength(Math.min((progress + delta) * pathLength, pathLength));
-            const slope = (nextPoint.y - point.y) / (nextPoint.x - point.x);
-            const angle = Math.atan(slope) * (180 / Math.PI);
-            camel.style.transform = `rotate(${angle}deg)`;
-            if (x + camel.width / 2 > window.innerWidth) {
-                camel.style.display = 'none';
-            } else {
-                camel.style.display = 'block';
-            }
-        }
+    const point = path.getPointAtLength(progress * pathLength);
+    const svgRect = svg.getBoundingClientRect();
+    const scaleX = svgRect.width / viewBoxWidth;
+    const scaleY = svgRect.height / duneHeight;
+    const x = point.x * scaleX;
+    const y = point.y;
+    const distanceFromSvgBottom = (duneHeight - y) * scaleY;
+    camel.style.left = `${x - camel.width / 2}px`;
+    camel.style.bottom = `${distanceFromSvgBottom - 13}px`;
+    const delta = 0.01;
+    const nextPoint = path.getPointAtLength(Math.min((progress + delta) * pathLength, pathLength));
+    const slope = (nextPoint.y - point.y) / (nextPoint.x - point.x);
+    const angle = Math.atan(slope) * (180 / Math.PI);
+    camel.style.transform = `rotate(${angle}deg)`;
+    
+    // Solo ocultamos el camello cuando haya salido completamente de la pantalla
+    if (x - camel.width / 2 > window.innerWidth) {
+        camel.style.display = 'none';
+    } else {
+        camel.style.display = 'block';
+    }
+}
 
         let progress = 0;
-        function animate() {
-            progress += 0.0001;
-            if (progress >= 0.99) {
-                camel.style.display = 'none';
-            }
-            if (progress > 1) {
-                progress = 0;
-                camel.style.display = 'block';
-            }
-            updateCamelPosition(progress);
-            requestAnimationFrame(animate);
+function animate() {
+    progress += 0.0001;
+    if (progress > 1) {
+        progress = 0;
+        camel.style.display = 'block';
+    }
+    updateCamelPosition(progress);
+    requestAnimationFrame(animate);
         }
         animate();
 
