@@ -23,32 +23,17 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 300px;
-    overflow: hidden;
+    width: 300px; /* Mismo ancho que el contenedor de la cuenta atrás */
 }
 
 .radio-player img {
     height: 30px;
     width: auto;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.radio-player img:hover {
-    transform: scale(1.1);
 }
 
 .radio-player audio {
-    width: 0;
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    flex: 0;
-}
-
-.radio-player.expanded audio {
-    width: 240px;
-    opacity: 1;
     flex: 1;
+    height: 40px;
 }
 
 /* Ajuste para el night mode */
@@ -619,7 +604,7 @@
 <div class="radio-player">
     <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1">
     <audio controls autoplay>
-        <source src="https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3" type="audio/mpeg">
+        <source src="https://streaming.rac1.cat/live" type="audio/mp3">
         Tu navegador no soporta el elemento de audio.
     </audio>
 </div>
@@ -1410,19 +1395,6 @@ function animate() {
         animate();
 
         window.addEventListener('resize', () => updateCamelPosition(progress));
-        // Radio Player Toggle
-document.getElementById('radioToggle').addEventListener('click', function() {
-    const player = this.closest('.radio-player');
-    player.classList.toggle('expanded');
-    
-    // Iniciar reproducción cuando se expande
-    const audio = player.querySelector('audio');
-    if (player.classList.contains('expanded')) {
-        audio.play().catch(function(error) {
-            console.log("Error al reproducir: ", error);
-        });
-    }
-});
 // Night Mode Toggle Functionality
 const nightModeToggle = document.querySelector('.night-mode-toggle');
 const toggleSlider = document.querySelector('.toggle-slider');
