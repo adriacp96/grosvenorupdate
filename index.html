@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Grosvenor & Calendar</title>
+    <title>Grosvenor</title>
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
     <style>
@@ -302,6 +302,73 @@
             z-index: 999;
             transition: opacity 0.3s ease;
         }
+         <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fondo de Duna con Camello y Fondo en Movimiento</title>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            background: #f7e1a1;
+        }
+
+        .background {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background-image: url('https://i.imghippo.com/files/TOwh7858zhA.png');
+            background-repeat: repeat-x;
+            background-size: auto 100%;
+            opacity: 0.3;
+            z-index: 0;
+            animation: moveBackground 166.67s linear infinite;
+        }
+
+        /* Animación para mover el fondo de derecha a izquierda */
+        @keyframes moveBackground {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: -200% 0; /* Mover el fondo hacia la izquierda */
+            }
+        }
+
+        .dune {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 250px;
+            z-index: 1;
+        }
+
+        .dune svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+
+        .camel {
+            position: absolute;
+            width: 100px;
+            z-index: 3;
+            transform-origin: center bottom;
+        }
     </style>
     <style>
         /* Calendar Widget Styles */
@@ -444,9 +511,21 @@
         <div id="closestTimes"></div>
     </div>
     <div id="celestialBody">☀️</div>
-    <svg class="dunes" viewBox="0 0 1000 250" preserveAspectRatio="none">
-        <path id="dunePath" fill="rgba(237, 201, 175, 0.4)" />
-    </svg>
+  <div class="background"></div>
+    <div class="dune">
+        <svg viewBox="0 0 1440 250" preserveAspectRatio="none">
+            <path
+                id="dune-path"
+                fill="#e0c097"
+                d="M0,250 C200,150 400,200 600,100 C800,50 1000,150 1200,200 C1300,225 1400,200 1440,250"
+            />
+        </svg>
+    </div>
+    <img class="camel" id="camel" src="https://s6.gifyu.com/images/bpEd9.gif" alt="Camello caminando">
+    <div class="content">
+        <h1>¡Bienvenido a mi página!</h1>
+        <p>Este es un fondo con una duna que tiene picos y partes redondeadas.</p>
+    </div>
     <div class="stars-container" id="starsContainer"></div>
 
     <div id="firstVisitPopup">
@@ -1150,6 +1229,51 @@
             console.log("Updating calendar...");
             fetchCalendarEvents();
         }, 300000);
+        const camel = document.getElementById('camel');
+        const path = document.getElementById('dune-path');
+        const svg = path.closest('svg');
+        const pathLength = path.getTotalLength();
+        const duneHeight = 250;
+        const viewBoxWidth = 1440;
+
+        function updateCamelPosition(progress) {
+            const point = path.getPointAtLength(progress * pathLength);
+            const svgRect = svg.getBoundingClientRect();
+            const scaleX = svgRect.width / viewBoxWidth;
+            const scaleY = svgRect.height / duneHeight;
+            const x = point.x * scaleX;
+            const y = point.y;
+            const distanceFromSvgBottom = (duneHeight - y) * scaleY;
+            camel.style.left = `${x - camel.width / 2}px`;
+            camel.style.bottom = `${distanceFromSvgBottom + 30}px`;
+            const delta = 0.01;
+            const nextPoint = path.getPointAtLength(Math.min((progress + delta) * pathLength, pathLength));
+            const slope = (nextPoint.y - point.y) / (nextPoint.x - point.x);
+            const angle = Math.atan(slope) * (180 / Math.PI);
+            camel.style.transform = `rotate(${angle}deg)`;
+            if (x + camel.width / 2 > window.innerWidth) {
+                camel.style.display = 'none';
+            } else {
+                camel.style.display = 'block';
+            }
+        }
+
+        let progress = 0;
+        function animate() {
+            progress += 0.0001;
+            if (progress >= 0.99) {
+                camel.style.display = 'none';
+            }
+            if (progress > 1) {
+                progress = 0;
+                camel.style.display = 'block';
+            }
+            updateCamelPosition(progress);
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        window.addEventListener('resize', () => updateCamelPosition(progress));
     </script>
 </body>
 </html>
