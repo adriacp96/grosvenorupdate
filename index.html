@@ -908,6 +908,293 @@
                 event.preventDefault();
             }
         }, { passive: false });
+        // Calendar JavaScript
+        const calendarWindow = document.getElementById('calendar-window');
+        const calendarTitleBar = document.getElementById('title-bar');
+        const calendarToggleDayButton = document.getElementById('toggle-day');
+        const calendarEventsList = document.getElementById('events-list');
+        const calendarCurrentDate = document.getElementById('current-date');
+        const calendarTitle = document.getElementById('title');
+
+
+        const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
+
+
+        let isCalendarDragging = false;
+        let currentCalendarX;
+        let currentCalendarY;
+        let initialCalendarX;
+        let initialCalendarY;
+        let showingToday = true;
+
+
+        function initCalendarDraggable() {
+            calendarTitleBar.addEventListener('mousedown', startCalendarDragging);
+            document.addEventListener('mousemove', dragCalendar);
+            document.addEventListener('mouseup', stopCalendarDragging);
+            calendarTitleBar.addEventListener('touchstart', startCalendarDragging, { passive: false });
+            document.addEventListener('touchmove', dragCalendar, { passive: false });
+            document.addEventListener('touchend', stopCalendarDragging);
+            calendarToggleDayButton.addEventListener('click', toggleCalendarDay);
+        }
+
+
+        function startCalendarDragging(e) {
+            if (e.type === 'touchstart') {
+                e.preventDefault();
+            }
+            let clientX, clientY;
+            if (e.type === 'mousedown') {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            } else if (e.type === 'touchstart' && e.touches.length === 1) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                return;
+            }
+            const rect = calendarWindow.getBoundingClientRect();
+            initialCalendarX = clientX - rect.left;
+            initialCalendarY = clientY - rect.top;
+            if (e.target === calendarTitleBar || e.target === calendarTitle) {
+                isCalendarDragging = true;
+                calendarWindow.style.cursor = 'move';
+                calendarWindow.style.transform = 'none';
+            }
+        }
+
+
+        function dragCalendar(e) {
+            if (isCalendarDragging) {
+                e.preventDefault();
+                let clientX, clientY;
+                if (e.type === 'mousemove') {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                } else if (e.type === 'touchmove' && e.touches.length === 1) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    return;
+                }
+                currentCalendarX = clientX - initialCalendarX;
+                currentCalendarY = clientY - initialCalendarY;
+                const maxX = window.innerWidth - calendarWindow.offsetWidth;
+                const maxY = window.innerHeight - calendarWindow.offsetHeight;
+                currentCalendarX = Math.min(Math.max(0, currentCalendarX), maxX);
+                currentCalendarY = Math.min(Math.max(0, currentCalendarY), maxY);
+                calendarWindow.style.left = currentCalendarX + 'px';
+                calendarWindow.style.top = currentCalendarY + 'px';
+            }
+        }
+
+
+        function stopCalendarDragging() {
+            if (isCalendarDragging) {
+                isCalendarDragging = false;
+                calendarWindow.style.cursor = 'default';
+            }
+        }
+
+
+        function updateCalendarDate() {
+            const dateElement = calendarCurrentDate;
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const date = showingToday ? new Date() : new Date(Date.now() + 24 * 60 * 60 * 1000);
+            dateElement.textContent = date.toLocaleDateString(navigator.language || 'en-US', options);
+            calendarTitle.textContent = showingToday ? "Today's Events" : "Tomorrow's Events";
+            calendarToggleDayButton.textContent = showingToday ? "Tomorrow ➡️" : "Today ⬅️";
+        }
+
+
+        function formatCalendarTime(date) {
+            if (!(date instanceof Date) || isNaN(date)) {
+                return 'Invalid time';
+            }
+            return date.toLocaleTimeString(navigator.language || 'en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+
+        async function fetchCalendarEvents() {
+            calendarEventsList.innerHTML = '<div class="loading">Loading events...</div>';
+            try {
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const response = await fetch(proxyUrl + encodeURIComponent(calendarUrl));
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+                }
+                const icsData = await response.text();
+                if (!icsData) {
+                    throw new Error('Empty response received');
+                }
+                const events = parseICS(icsData);
+                displayCalendarEvents(events);
+            } catch (error) {
+                console.error('Error fetching calendar:', error);
+                calendarEventsList.innerHTML = `<div class="loading">Unable to load events: ${error.message}</div>`;
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            }
+            const compareDate = new Date(date);
+            compareDate.setHours(0, 0, 0, 0);
+            const refDate = new Date(referenceDate);
+            refDate.setHours(0, 0, 0, 0);
+            return compareDate.getTime() === refDate.getTime();
+        }
+
+
+        function displayCalendarEvents(events) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+            const targetDate = showingToday ? today : tomorrow;
+            const filteredEvents = events.filter(event => event.dtstart && isCalendarDateSameDay(event.dtstart, targetDate));
+            if (filteredEvents.length === 0) {
+                calendarEventsList.innerHTML = '<div class="loading">No events scheduled</div>';
+                return;
+            }
+            filteredEvents.sort((a, b) => {
+                if (a.dtstartIsDate && !b.dtstartIsDate) return -1;
+                if (!a.dtstartIsDate && b.dtstartIsDate) return 1;
+                if (a.dtstartIsDate && b.dtstartIsDate) return 0;
+                return a.dtstart.getTime() - b.dtstart.getTime();
+            });
+            calendarEventsList.innerHTML = filteredEvents.map(event => {
+                let timeString = '';
+                if (event.dtstartIsDate) {
+                    timeString = 'All Day';
+                } else {
+                    timeString = formatCalendarTime(event.dtstart);
+                    if (event.dtend && !event.dtendIsDate && event.dtend.getTime() !== event.dtstart.getTime()) {
+                        timeString += ` - ${formatCalendarTime(event.dtend)}`;
+                    }
+                }
+                return `
+                    <div class="event">
+                        <div class="event-title">${event.summary || 'No Title'}</div>
+                        <div class="event-time">${timeString}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+
+        function toggleCalendarDay() {
+            const eventsList = calendarEventsList;
+            eventsList.classList.add(showingToday ? 'slide-out-left' : 'slide-out-right');
+            setTimeout(() => {
+                showingToday = !showingToday;
+                updateCalendarDate();
+                fetchCalendarEvents();
+                eventsList.classList.remove(showingToday ? 'slide-out-right' : 'slide-out-left');
+                eventsList.classList.add(showingToday ? 'slide-in-right' : 'slide-in-left');
+                setTimeout(() => {
+                    eventsList.classList.remove('slide-in-left', 'slide-in-right');
+                }, 500);
+            }, 500);
+        }
+
+
+        function startAutoCycle() {
+            setInterval(toggleCalendarDay, 10000);
+        }
+
+
+        initCalendarDraggable();
+        updateCalendarDate();
+        fetchCalendarEvents();
+        startAutoCycle();
+
+
+        setInterval(() => {
+            console.log("Updating calendar...");
+            fetchCalendarEvents();
+        }, 300000);
     </script>
 </body>
 </html>
