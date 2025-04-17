@@ -9,6 +9,54 @@
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
     <style>
+        /* Radio Player Styles */
+.radio-player {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.radio-player audio {
+    width: 250px;
+    height: 40px;
+}
+
+.radio-player .radio-title {
+    font-size: 14px;
+    color: #2c3e50;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Ajuste para el night mode */
+.night-mode .radio-player {
+    background: rgba(44, 62, 80, 0.9);
+}
+
+.night-mode .radio-player .radio-title {
+    color: #ecf0f1;
+}
+
+@media (max-width: 768px) {
+    .radio-player {
+        width: 80%;
+        max-width: 300px;
+    }
+    
+    .radio-player audio {
+        width: 100%;
+    }
+}
         @font-face {
             font-family: 'Emirates Bold';
             src: url('https://c.ekstatic.net/shared/fonts/emirates/emirates-bold-v3.woff2') format('woff2');
@@ -677,6 +725,13 @@
     </style>
 </head>
 <body>
+    <div class="radio-player">
+    <p class="radio-title">RAC1 en directo</p>
+    <audio controls autoplay>
+        <source src="https://streaming.rac1.cat/" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+</div>
     <img src="https://i.imghippo.com/files/TFaX3668iz.png" alt="Airplane" class="airplane" id="airplane">
     <div class="night-mode-toggle">
     <div class="toggle-slider">🌞</div>
