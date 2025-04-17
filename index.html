@@ -15,7 +15,7 @@
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000;
+    z-index: 9999; /* Aumentado para asegurar que está por encima de todo */
     background: rgba(255, 255, 255, 0.9);
     padding: 10px;
     border-radius: 10px;
@@ -23,8 +23,9 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    width: auto;
+    width: 50px; /* Ancho inicial más pequeño */
     transition: all 0.3s ease;
+    overflow: hidden; /* Asegurarse de que el contenido extra está oculto */
 }
 
 .radio-player img {
@@ -32,6 +33,7 @@
     width: auto;
     cursor: pointer;
     transition: transform 0.3s ease;
+    flex-shrink: 0; /* Evitar que la imagen se encoja */
 }
 
 .radio-player img:hover {
@@ -39,20 +41,20 @@
 }
 
 .radio-player audio {
-    max-width: 0;
+    width: 0;
     opacity: 0;
-    visibility: hidden;
     transition: all 0.3s ease;
+    pointer-events: none; /* Deshabilitar interacción cuando está oculto */
 }
 
 .radio-player.expanded {
-    width: 300px;
+    width: 300px; /* Ancho cuando está expandido */
 }
 
 .radio-player.expanded audio {
-    max-width: 240px;
+    width: 240px;
     opacity: 1;
-    visibility: visible;
+    pointer-events: auto; /* Rehabilitar interacción */
 }
 
 /* Ajuste para el night mode */
