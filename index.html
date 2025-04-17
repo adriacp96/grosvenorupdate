@@ -65,7 +65,7 @@
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s ease;
-    z-index: 999;
+    z-index: 10000;
 }
 
 .night-mode-overlay.active {
@@ -423,6 +423,35 @@
             z-index: 3;
             transform-origin: center bottom;
         }
+        /* Estilos para el modo noche del calendario */
+.night-mode #calendar-window {
+    background: rgba(44, 62, 80, 0.9);
+}
+
+.night-mode #title-bar {
+    background: #34495e;
+    border-bottom-color: #2c3e50;
+}
+
+.night-mode #title,
+.night-mode .event-title,
+.night-mode .event-time,
+.night-mode .date-header {
+    color: #ecf0f1;
+}
+
+.night-mode .event {
+    border-bottom-color: #34495e;
+}
+
+.night-mode #toggle-day {
+    background: #2c3e50;
+    color: #ecf0f1;
+}
+
+.night-mode #toggle-day:hover {
+    background: #243342;
+}
     </style>
     <style>
         /* Calendar Widget Styles */
@@ -439,6 +468,7 @@
             z-index: 9999;
             overflow: hidden;
             user-select: none;
+            transition: background-color 0.3s ease;
         }
 
         #title-bar {
@@ -1327,7 +1357,7 @@ function animate() {
         animate();
 
         window.addEventListener('resize', () => updateCamelPosition(progress));
-        // Night Mode Toggle Functionality
+// Night Mode Toggle Functionality
 const nightModeToggle = document.querySelector('.night-mode-toggle');
 const toggleSlider = document.querySelector('.toggle-slider');
 const nightModeOverlay = document.querySelector('.night-mode-overlay');
@@ -1337,6 +1367,7 @@ nightModeToggle.addEventListener('click', () => {
     isNightMode = !isNightMode;
     nightModeToggle.classList.toggle('active');
     nightModeOverlay.classList.toggle('active');
+    document.body.classList.toggle('night-mode'); // Añadida esta línea
     toggleSlider.innerHTML = isNightMode ? '🌙' : '🌞';
 });
     </script>
