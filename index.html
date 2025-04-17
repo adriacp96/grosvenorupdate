@@ -1241,7 +1241,7 @@
             const y = point.y;
             const distanceFromSvgBottom = (duneHeight - y) * scaleY;
             camel.style.left = `${x - camel.width / 2}px`;
-            camel.style.bottom = `${distanceFromSvgBottom + 30}px`;
+            camel.style.bottom = `${distanceFromSvgBottom - 13}px`;
             const delta = 0.01;
             const nextPoint = path.getPointAtLength(Math.min((progress + delta) * pathLength, pathLength));
             const slope = (nextPoint.y - point.y) / (nextPoint.x - point.x);
