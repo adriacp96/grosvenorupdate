@@ -23,8 +23,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 300px;
-    overflow: hidden;
+    width: auto;
+    transition: all 0.3s ease;
 }
 
 .radio-player img {
@@ -39,16 +39,20 @@
 }
 
 .radio-player audio {
-    width: 0;
+    max-width: 0;
     opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    flex: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.radio-player.expanded {
+    width: 300px;
 }
 
 .radio-player.expanded audio {
-    width: 240px;
+    max-width: 240px;
     opacity: 1;
-    flex: 1;
+    visibility: visible;
 }
 
 /* Ajuste para el night mode */
@@ -1435,6 +1439,26 @@ nightModeToggle.addEventListener('click', () => {
     nightModeOverlay.classList.toggle('active');
     document.body.classList.toggle('night-mode'); // Añadida esta línea
     toggleSlider.innerHTML = isNightMode ? '🌚' : '🌞';
+});
+        // Radio Player Toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const radioToggle = document.getElementById('radioToggle');
+    const player = document.querySelector('.radio-player');
+    const audio = player.querySelector('audio');
+
+    radioToggle.addEventListener('click', function() {
+        player.classList.toggle('expanded');
+        
+        if (player.classList.contains('expanded')) {
+            setTimeout(() => {
+                audio.play().catch(function(error) {
+                    console.log("Error al reproducir: ", error);
+                });
+            }, 300);
+        } else {
+            audio.pause();
+        }
+    });
 });
     </script>
 </body>
