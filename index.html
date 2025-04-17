@@ -23,7 +23,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 300px; /* Mismo ancho que el contenedor de la cuenta atrás */
+    width: 300px;
 }
 
 .radio-player img {
@@ -31,9 +31,10 @@
     width: auto;
 }
 
-.radio-player audio {
+.radio-player iframe {
     flex: 1;
-    height: 40px;
+    border: none;
+    min-width: 200px;
 }
 
 /* Ajuste para el night mode */
@@ -603,11 +604,7 @@
 <body>
 <div class="radio-player">
     <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1">
-    <audio controls autoplay>
-        <source src="https://streaming.rac1.cat/live/rac1/playlist.m3u8" type="application/x-mpegURL">
-        <source src="https://streaming.rac1.cat/" type="audio/mpeg">
-        Tu navegador no soporta el elemento de audio.
-    </audio>
+    <iframe src="https://www.rac1.cat/embed/rac1" frameborder="0" scrolling="no" width="100%" height="40"></iframe>
 </div>
     <div class="night-mode-toggle">
     <div class="toggle-slider">🌞</div>
