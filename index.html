@@ -605,15 +605,18 @@
             const minutes = now.getMinutes();
             const totalMinutes = hours * 60 + minutes;
 
+
             const celestial = document.getElementById('celestialBody');
             const starsContainer = document.getElementById('starsContainer');
             let gradient;
+
 
             const dayLength = 12 * 60;
             const sunrise = 6 * 60;
             const sunset = 18 * 60;
             const moonrise = sunset;
             const moonset = sunrise + 1440;
+
 
             const isDay = totalMinutes >= sunrise && totalMinutes < sunset;
             if (isDay) {
@@ -631,6 +634,7 @@
             }
             document.getElementById('background-container').style.background = gradient;
 
+
             let progress;
             if (isDay) {
                 progress = (totalMinutes - sunrise) / dayLength;
@@ -640,8 +644,11 @@
             }
             progress = Math.max(0, Math.min(1, progress));
 
+
             const xPos = 5 + progress * 90;
-            const yPos = 10 + 80 * (1 - 4 * Math.pow(progress - 0.5, 2));
+            const yPos = 90 - 80 * 4 * progress * (1 - progress);
+
+
             celestial.style.left = `${xPos}vw`;
             celestial.style.top = `${yPos}vh`;
             celestial.style.display = 'block';
