@@ -682,7 +682,8 @@
             progress = Math.max(0, Math.min(1, progress));
 
             const xPos = 5 + progress * 90;
-            const yPos = 10 + 80 * (1 - 4 * Math.pow(progress - 0.5, 2));
+            const yPos = 90 - 80 * 4 * progress * (1 - progress);
+
             celestial.style.left = `${xPos}vw`;
             celestial.style.top = `${yPos}vh`;
             celestial.style.display = 'block';
