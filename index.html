@@ -24,17 +24,31 @@
     align-items: center;
     gap: 10px;
     width: 300px;
+    overflow: hidden;
 }
 
 .radio-player img {
     height: 30px;
     width: auto;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
-.radio-player iframe {
+.radio-player img:hover {
+    transform: scale(1.1);
+}
+
+.radio-player audio {
+    width: 0;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex: 0;
+}
+
+.radio-player.expanded audio {
+    width: 240px;
+    opacity: 1;
     flex: 1;
-    border: none;
-    min-width: 200px;
 }
 
 /* Ajuste para el night mode */
@@ -1396,6 +1410,19 @@ function animate() {
         animate();
 
         window.addEventListener('resize', () => updateCamelPosition(progress));
+        // Radio Player Toggle
+document.getElementById('radioToggle').addEventListener('click', function() {
+    const player = this.closest('.radio-player');
+    player.classList.toggle('expanded');
+    
+    // Iniciar reproducción cuando se expande
+    const audio = player.querySelector('audio');
+    if (player.classList.contains('expanded')) {
+        audio.play().catch(function(error) {
+            console.log("Error al reproducir: ", error);
+        });
+    }
+});
 // Night Mode Toggle Functionality
 const nightModeToggle = document.querySelector('.night-mode-toggle');
 const toggleSlider = document.querySelector('.toggle-slider');
