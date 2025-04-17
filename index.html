@@ -487,9 +487,9 @@
     <style>
         /* Calendar Widget Styles */
 #calendar-window {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    position: fixed;
+    top: 50px;
+    right: 20px;
     width: 300px;
     background: rgba(255,255,255,0.9);
     border-radius: 10px;
@@ -499,6 +499,8 @@
     overflow: hidden;
     user-select: none;
     transition: background-color 0.3s ease;
+    transform: none;
+    left: auto;
 }
 
         #title-bar {
@@ -1050,26 +1052,18 @@
             document.body.classList.remove('black-background');
             localStorage.setItem('hasVisited', 'true');
         });
-function positionCalendar() {
-    const container = document.querySelector('.container');
-    const calendar = document.getElementById('calendar-window');
-    const containerRect = container.getBoundingClientRect();
-    
-    calendar.style.left = `${containerRect.right + 20}px`;
-    calendar.style.top = `${containerRect.top + (containerRect.height / 2)}px`;
-}
-  window.onload = function() {
-    generateRandomDune();
-    window.scrollTo(0, 0);
-    updateSkyAndCelestial();
-    updateCountdown();
-    showFirstVisitPopup();
-    const now = new Date();
-    if (now.getHours() < 6 || now.getHours() >= 18) {
-        createStars();
-    }
-    positionCalendar();
-};
+
+        window.onload = function() {
+            generateRandomDune();
+            window.scrollTo(0, 0);
+            updateSkyAndCelestial();
+            updateCountdown();
+            showFirstVisitPopup();
+            const now = new Date();
+            if (now.getHours() < 6 || now.getHours() >= 18) {
+                createStars();
+            }
+        };
 
         let intervalId = null;
         function startUpdateLoop() {
@@ -1354,11 +1348,10 @@ function positionCalendar() {
         fetchCalendarEvents();
         startAutoCycle();
 
-setInterval(() => {
-    console.log("Updating calendar...");
-    fetchCalendarEvents();
-    positionCalendar();
-}, 300000);
+        setInterval(() => {
+            console.log("Updating calendar...");
+            fetchCalendarEvents();
+        }, 300000);
         const camel = document.getElementById('camel');
         const path = document.getElementById('dune-path');
         const svg = path.closest('svg');
@@ -1403,7 +1396,6 @@ function animate() {
         animate();
 
         window.addEventListener('resize', () => updateCamelPosition(progress));
-        window.addEventListener('resize', positionCalendar);
 // Night Mode Toggle Functionality
 const nightModeToggle = document.querySelector('.night-mode-toggle');
 const toggleSlider = document.querySelector('.toggle-slider');
