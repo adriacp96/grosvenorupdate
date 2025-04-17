@@ -1037,7 +1037,7 @@
             const dateElement = calendarCurrentDate;
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const date = showingToday ? new Date() : new Date(Date.now() + 24 * 60 * 60 * 1000);
-            dateElement.textContent = date.toLocaleDateString(navigator.language || 'en-US', options);
+            dateElement.textContent = date.toLocaleDateString('en-US', options);
             calendarTitle.textContent = showingToday ? "Today's Events" : "Tomorrow's Events";
             calendarToggleDayButton.textContent = showingToday ? "Tomorrow ➡️" : "Today ⬅️";
         }
