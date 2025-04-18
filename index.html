@@ -15,14 +15,14 @@
     bottom: 100%;
     left: 0;
     width: 100%;
-    height: 60px; /* Altura fija para el área del reproductor */
-    overflow: hidden; /* Oculta todo lo que sale de este contenedor */
+    height: 60px;
+    overflow: hidden;
 }
 
 /* Radio Player Styles */
 .radio-player {
     position: absolute;
-    bottom: -60px; /* Inicialmente oculto debajo del borde superior */
+    bottom: -65px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1;
@@ -1471,6 +1471,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const radioTab = document.getElementById('radioTab');
     const radioPlayer = document.getElementById('radioPlayer');
     let isPlayerVisible = false;
+    let hideTimeout;
 
     radioTab.addEventListener('click', function() {
         isPlayerVisible = !isPlayerVisible;
@@ -1479,6 +1480,27 @@ document.addEventListener('DOMContentLoaded', function() {
         // Animación suave de la pestaña
         radioTab.style.opacity = isPlayerVisible ? '0' : '1';
         radioTab.style.pointerEvents = isPlayerVisible ? 'none' : 'auto';
+
+        // Si el reproductor está visible, configurar el temporizador para ocultarlo
+        if (isPlayerVisible) {
+            // Limpiar cualquier temporizador existente
+            if (hideTimeout) {
+                clearTimeout(hideTimeout);
+            }
+            
+            // Configurar nuevo temporizador para ocultar después de 30 segundos
+            hideTimeout = setTimeout(() => {
+                isPlayerVisible = false;
+                radioPlayer.classList.remove('visible');
+                radioTab.style.opacity = '1';
+                radioTab.style.pointerEvents = 'auto';
+            }, 30000); // 30 segundos
+        } else {
+            // Si se está ocultando manualmente, limpiar el temporizador
+            if (hideTimeout) {
+                clearTimeout(hideTimeout);
+            }
+        }
     });
 });
     </script>
