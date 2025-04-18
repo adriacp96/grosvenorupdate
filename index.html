@@ -533,9 +533,9 @@
 /* Calendar Widget Styles */
 #calendar-window {
     position: fixed;
-    top: 70px;
-    right: 50%;
-    transform: translateX(50%);
+    top: 39.1%;
+    left: calc(40% - 400px);
+    transform: translateY(-50%);
     width: 340px;
     background: rgba(255,255,255,0.9);
     border-radius: 10px;
@@ -683,61 +683,73 @@
 .moving-bus.animate {
     animation: busCurve 20s linear forwards;  /* Movimiento constante */
 }
-        /* Weather Box Styles */
-        .weather-box {
-            position: fixed;
-            top: 70px;
-            left: 80%;
-            transform: translateX(-50%);
-            width: 300px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
-            z-index: 1000;
-            transition: background-color 0.3s ease;
-        }
+/* Weather Box Styles */
+.weather-box {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    left: auto;
+    transform: none;
+    width: 200px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
 
-        .weather-box.night-mode {
-            background: rgba(44, 62, 80, 0.9);
-            color: #ecf0f1;
-        }
+.weather-box.night-mode {
+    background: rgba(44, 62, 80, 0.9);
+    color: #ecf0f1;
+}
 
-        .weather-title {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            text-align: center;
-            color: #2c3e50;
-        }
+.weather-title {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #2c3e50;
+}
 
-        .night-mode .weather-title {
-            color: #ecf0f1;
-        }
+.night-mode .weather-title {
+    color: #ecf0f1;
+}
 
-        .weather-data {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            font-size: 0.9em;
-        }
+.weather-data {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 0.9em;
+}
 
-        .weather-icon {
-            font-size: 1.2em;
-            margin-right: 5px;
-        }
+.weather-icon {
+    font-size: 1.2em;
+    margin-right: 8px;
+    width: 20px;
+    display: inline-block;
+}
 
-        .weather-item {
-            display: flex;
-            align-items: center;
-            margin: 5px 0;
-        }
+.weather-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
 
-        .temp-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+.weather-item:last-child {
+    border-bottom: none;
+}
+
+.night-mode .weather-item {
+    border-bottom-color: rgba(255,255,255,0.1);
+}
+
+.temp-group {
+    display: flex;
+    align-items: center;
+}
     </style>
 </head>
 <body>
