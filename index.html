@@ -1585,7 +1585,35 @@ function startAutoCycle() {
         toggleCalendarDay();
     }, 15000); // Cambiado a 15 segundos para dar más tiempo a leer
 }
+// Función para extraer la ciudad de los eventos
+function getEventCity(events) {
+    if (!events || events.length === 0) return null;
+    
+    for (let event of events) {
+        const summary = event.summary.toLowerCase();
+        // Ignorar eventos que contengan "dubai"
+        if (!summary.includes('dubai')) {
+            // Buscar una ciudad en el título del evento
+            const cities = {
+                'london': { lat: 51.5074, lon: -0.1278, timezone: 'Europe/London' },
+                'paris': { lat: 48.8566, lon: 2.3522, timezone: 'Europe/Paris' },
+                'madrid': { lat: 40.4168, lon: -3.7038, timezone: 'Europe/Madrid' },
+                'rome': { lat: 41.9028, lon: 12.4964, timezone: 'Europe/Rome' },
+                'berlin': { lat: 52.5200, lon: 13.4050, timezone: 'Europe/Berlin' }
+            };
 
+            for (let city in cities) {
+                if (summary.includes(city)) {
+                    return {
+                        name: city.charAt(0).toUpperCase() + city.slice(1),
+                        ...cities[city]
+                    };
+                }
+            }
+        }
+    }
+    return null;
+}
 function displayCalendarEvents(events) {
     const eventsList = document.getElementById('events-list');
     
@@ -1639,6 +1667,7 @@ function displayCalendarEvents(events) {
         eventsList.style.opacity = '1';
         eventsList.style.transform = 'translateX(0)';
     }, 300);
+    updateWeather(events);
 }
 
 function updateCalendarDate() {
@@ -1813,6 +1842,79 @@ const weatherBoxes = document.querySelectorAll('.weather-box');
 document.querySelector('.night-mode-toggle').addEventListener('click', () => {
     weatherBoxes.forEach(box => box.classList.toggle('night-mode'));
 });
+// Función para actualizar el tiempo de Dubai
+function updateDubaiWeather(data) {
+    document.getElementById('dubaiTempMax').textContent = `${Math.round(data.daily.temperature_2m_max[0])}°C`;
+    document.getElementById('dubaiTempMin').textContent = `${Math.round(data.daily.temperature_2m_min[0])}°C`;
+    document.getElementById('dubaiHumidity').textContent = `${Math.round(data.current_weather.temperature)}°C`;
+
+    const sunrise = new Date(data.daily.sunrise[0]);
+    const sunset = new Date(data.daily.sunset[0]);
+
+    document.getElementById('dubaiSunrise').textContent = sunrise.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+    document.getElementById('dubaiSunset').textContent = sunset.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+}
+
+// Función para actualizar el tiempo de la ciudad local
+function updateLocalWeather(data) {
+    document.getElementById('localTempMax').textContent = `${Math.round(data.daily.temperature_2m_max[0])}°C`;
+    document.getElementById('localTempMin').textContent = `${Math.round(data.daily.temperature_2m_min[0])}°C`;
+    document.getElementById('localHumidity').textContent = `${Math.round(data.current_weather.temperature)}°C`;
+
+    const sunrise = new Date(data.daily.sunrise[0]);
+    const sunset = new Date(data.daily.sunset[0]);
+
+    document.getElementById('localSunrise').textContent = sunrise.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+    document.getElementById('localSunset').textContent = sunset.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+}
+
+// Función principal de actualización del tiempo
+async function updateWeather(events) {
+    try {
+        // Dubai Weather
+        const dubaiResponse = await fetch('https://api.open-meteo.com/v1/forecast?latitude=25.2048&longitude=55.2708&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timezone=Asia%2FDubai');
+        const dubaiData = await dubaiResponse.json();
+        updateDubaiWeather(dubaiData);
+
+        // Obtener la ciudad del evento
+        const eventCity = getEventCity(events);
+        const localWeatherBox = document.getElementById('localWeatherBox');
+        
+        if (eventCity) {
+            // Actualizar el título con el nombre de la ciudad
+            document.querySelector('#localWeatherBox .weather-title').textContent = `${eventCity.name} Weather`;
+            
+            // Obtener el tiempo para la ciudad del evento
+            const localResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${eventCity.lat}&longitude=${eventCity.lon}&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timezone=${eventCity.timezone}`);
+            const localData = await localResponse.json();
+            updateLocalWeather(localData);
+            
+            localWeatherBox.style.display = 'block';
+        } else {
+            // Si no hay ciudad en los eventos, ocultar la cajetilla
+            localWeatherBox.style.display = 'none';
+        }
+
+    } catch (error) {
+        console.error('Error fetching weather data:', error);
+    }
+}
     </script>
 </body>
 </html>
