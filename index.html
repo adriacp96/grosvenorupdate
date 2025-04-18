@@ -9,21 +9,39 @@
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
     <style>
+/* Contenedor para el reproductor y la pestaña */
+.radio-container {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    height: 60px; /* Altura fija para el área del reproductor */
+    overflow: hidden; /* Oculta todo lo que sale de este contenedor */
+}
+
 /* Radio Player Styles */
 .radio-player {
-    position: fixed;
-    top: 20px;
+    position: absolute;
+    bottom: -60px; /* Inicialmente oculto debajo del borde superior */
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000;
+    z-index: 1;
     background: rgba(255, 255, 255, 0.9);
     padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 300px; /* Mismo ancho que el contenedor de la cuenta atrás */
+    width: 300px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-bottom: none;
+    transition: bottom 0.3s ease-out;
+}
+
+/* Clase para cuando está visible */
+.radio-player.visible {
+    bottom: 0;
 }
 
 .radio-player img {
@@ -36,9 +54,36 @@
     height: 40px;
 }
 
-/* Ajuste para el night mode */
-.night-mode .radio-player {
+/* Estilo para la pestaña */
+.radio-tab {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px 15px;
+    border-radius: 10px 10px 0 0;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-bottom: none;
+    cursor: pointer;
+    z-index: 1;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+    transition: opacity 0.3s;
+}
+
+.radio-tab:hover {
+    background: rgba(245, 245, 245, 0.9);
+}
+
+/* Ajustes para modo nocturno */
+.night-mode .radio-player,
+.night-mode .radio-tab {
     background: rgba(44, 62, 80, 0.9);
+    border-color: rgba(255,255,255,0.1);
+}
+
+.night-mode .radio-tab:hover {
+    background: rgba(52, 73, 94, 0.9);
 }
         @font-face {
             font-family: 'Emirates Bold';
@@ -617,6 +662,18 @@
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png"
          alt="Emirates Logo" class="emirates-logo">
     <div class="container">
+        <div class="radio-container">
+            <div class="radio-tab" id="radioTab">
+                📻 Radio
+            </div>
+            <div class="radio-player" id="radioPlayer">
+                <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1" id="radioToggle">
+                <audio controls>
+                    <source src="https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3" type="audio/mpeg">
+                    Tu navegador no soporta el elemento de audio.
+                </audio>
+            </div>
+        </div>
         <h1 id="routeTitle">Grosvenor to HQ in</h1>
         <div id="countdown">00:00</div>
         <div id="nextBus">Next bus at: --:--</div>
@@ -1408,6 +1465,21 @@ nightModeToggle.addEventListener('click', () => {
     nightModeOverlay.classList.toggle('active');
     document.body.classList.toggle('night-mode'); // Añadida esta línea
     toggleSlider.innerHTML = isNightMode ? '🌚' : '🌞';
+});
+// Funcionalidad del reproductor de radio
+document.addEventListener('DOMContentLoaded', function() {
+    const radioTab = document.getElementById('radioTab');
+    const radioPlayer = document.getElementById('radioPlayer');
+    let isPlayerVisible = false;
+
+    radioTab.addEventListener('click', function() {
+        isPlayerVisible = !isPlayerVisible;
+        radioPlayer.classList.toggle('visible');
+        
+        // Animación suave de la pestaña
+        radioTab.style.opacity = isPlayerVisible ? '0' : '1';
+        radioTab.style.pointerEvents = isPlayerVisible ? 'none' : 'auto';
+    });
 });
     </script>
 </body>
