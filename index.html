@@ -683,6 +683,69 @@
 .moving-bus.animate {
     animation: busCurve 20s linear forwards;  /* Movimiento constante */
 }
+/* Estilos compartidos para ambas weather boxes */
+.weather-box {
+    position: fixed;
+    top: 70px;
+    width: 400px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+/* Posicionamiento específico para Dubai */
+#dubaiWeatherBox {
+    left: 20px;
+}
+
+/* Posicionamiento específico para la segunda ciudad */
+#localWeatherBox {
+    right: 20px;
+}
+
+.weather-box.night-mode {
+    background: rgba(44, 62, 80, 0.9);
+    color: #ecf0f1;
+}
+
+.weather-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #2c3e50;
+}
+
+.night-mode .weather-title {
+    color: #ecf0f1;
+}
+
+.weather-data {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    font-size: 0.9em;
+}
+
+.weather-icon {
+    font-size: 1.2em;
+    margin-right: 5px;
+}
+
+.weather-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.temp-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
     </style>
 </head>
 <body>
@@ -774,7 +837,51 @@
             <div id="events-list" class="events-list"></div>
         </div>
     </div>
+<!-- Dubai Weather Box -->
+<div class="weather-box" id="dubaiWeatherBox">
+    <div class="weather-title">Dubai Weather</div>
+    <div class="weather-data">
+        <div class="weather-item temp-group">
+            <span class="weather-icon">🌡️</span>
+            <span>H: <span id="dubaiTempMax">Loading...</span> / L: <span id="dubaiTempMin">Loading...</span></span>
+        </div>
+        <div class="weather-item">
+            <span class="weather-icon">🌅</span>
+            <span>Sunrise: <span id="dubaiSunrise">Loading...</span></span>
+        </div>
+        <div class="weather-item">
+            <span class="weather-icon">💧</span>
+            <span>Current: <span id="dubaiHumidity">Loading...</span></span>
+        </div>
+        <div class="weather-item">
+            <span class="weather-icon">🌇</span>
+            <span>Sunset: <span id="dubaiSunset">Loading...</span></span>
+        </div>
+    </div>
+</div>
 
+<!-- Local Weather Box -->
+<div class="weather-box" id="localWeatherBox">
+    <div class="weather-title">Local Weather</div>
+    <div class="weather-data">
+        <div class="weather-item temp-group">
+            <span class="weather-icon">🌡️</span>
+            <span>H: <span id="localTempMax">Loading...</span> / L: <span id="localTempMin">Loading...</span></span>
+        </div>
+        <div class="weather-item">
+            <span class="weather-icon">🌅</span>
+            <span>Sunrise: <span id="localSunrise">Loading...</span></span>
+        </div>
+        <div class="weather-item">
+            <span class="weather-icon">💧</span>
+            <span>Current: <span id="localHumidity">Loading...</span></span>
+        </div>
+        <div class="weather-item">
+            <span class="weather-icon">🌇</span>
+            <span>Sunset: <span id="localSunset">Loading...</span></span>
+        </div>
+    </div>
+</div>
     <script>
         // Bus Countdown and Calendar JavaScript
         let dunePoints = [];
@@ -1642,6 +1749,69 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+});
+// Weather Update Function for both cities
+async function updateWeather() {
+    try {
+        // Dubai Weather
+        const dubaiResponse = await fetch('https://api.open-meteo.com/v1/forecast?latitude=25.2048&longitude=55.2708&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timezone=Asia%2FDubai');
+        const dubaiData = await dubaiResponse.json();
+
+        // Update Dubai weather
+        document.getElementById('dubaiTempMax').textContent = `${Math.round(dubaiData.daily.temperature_2m_max[0])}°C`;
+        document.getElementById('dubaiTempMin').textContent = `${Math.round(dubaiData.daily.temperature_2m_min[0])}°C`;
+        document.getElementById('dubaiHumidity').textContent = `${Math.round(dubaiData.current_weather.temperature)}°C`;
+
+        const dubaiSunrise = new Date(dubaiData.daily.sunrise[0]);
+        const dubaiSunset = new Date(dubaiData.daily.sunset[0]);
+
+        document.getElementById('dubaiSunrise').textContent = dubaiSunrise.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        document.getElementById('dubaiSunset').textContent = dubaiSunset.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        // Local Weather (London coordinates as example - adjust as needed)
+        const localResponse = await fetch('https://api.open-meteo.com/v1/forecast?latitude=51.5074&longitude=-0.1278&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timezone=Europe%2FLondon');
+        const localData = await localResponse.json();
+
+        // Update Local weather
+        document.getElementById('localTempMax').textContent = `${Math.round(localData.daily.temperature_2m_max[0])}°C`;
+        document.getElementById('localTempMin').textContent = `${Math.round(localData.daily.temperature_2m_min[0])}°C`;
+        document.getElementById('localHumidity').textContent = `${Math.round(localData.current_weather.temperature)}°C`;
+
+        const localSunrise = new Date(localData.daily.sunrise[0]);
+        const localSunset = new Date(localData.daily.sunset[0]);
+
+        document.getElementById('localSunrise').textContent = localSunrise.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        document.getElementById('localSunset').textContent = localSunset.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+
+    } catch (error) {
+        console.error('Error fetching weather data:', error);
+    }
+}
+
+// Update weather every 30 minutes
+updateWeather();
+setInterval(updateWeather, 30 * 60 * 1000);
+
+// Add night mode support for both weather boxes
+const weatherBoxes = document.querySelectorAll('.weather-box');
+document.querySelector('.night-mode-toggle').addEventListener('click', () => {
+    weatherBoxes.forEach(box => box.classList.toggle('night-mode'));
 });
     </script>
 </body>
