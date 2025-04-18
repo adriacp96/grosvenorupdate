@@ -530,120 +530,117 @@
 }
     </style>
     <style>
-        /* Calendar Widget Styles */
+/* Calendar Widget Styles */
 #calendar-window {
     position: fixed;
     top: 50px;
-    right: 20px;
-    width: 300px;
+    right: 50%;
+    transform: translateX(50%);
+    width: 340px;
     background: rgba(255,255,255,0.9);
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
     z-index: 9999;
     overflow: hidden;
     user-select: none;
     transition: background-color 0.3s ease;
-    transform: none;
-    left: auto;
+    box-sizing: border-box;
 }
 
-        #title-bar {
-            background: #f8f9fa;
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            cursor: move;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+#events-container {
+    padding: 15px 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+}
 
-        #title {
-            font-weight: 600;
-            color: #333;
-            margin: 0;
-            font-size: 1em;
-        }
+.events-list {
+    width: 100%;
+    box-sizing: border-box;
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
 
-        #toggle-day {
-            background: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+.events-list.fade-out {
+    opacity: 0;
+    transform: translateX(-20px);
+}
 
-        #toggle-day:hover {
-            background: #34495e;
-        }
+.events-list.fade-in {
+    opacity: 1;
+    transform: translateX(0);
+}
 
-        #events-container {
-            padding: 15px;
-            max-height: 400px;
-            overflow-y: auto;
-            position: relative;
-        }
+.date-header {
+    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.1em;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
 
-        .events-list {
-            transition: transform 0.5s ease, opacity 0.5s ease;
-        }
+.date-header.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+}
 
-        .events-list.slide-out-left {
-            transform: translateX(-100%);
-            opacity: 0;
-        }
+.date-header.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
 
-        .events-list.slide-in-right {
-            transform: translateX(0);
-            opacity: 1;
-        }
+/* Spinner de carga */
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    margin: 15px auto;
+    border: 2px solid rgba(44, 62, 80, 0.1);
+    border-radius: 50%;
+    border-top: 2px solid #2c3e50;
+    animation: constant-spin 0.8s linear infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        .events-list.slide-out-right {
-            transform: translateX(100%);
-            opacity: 0;
-        }
+@keyframes constant-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 
-        .events-list.slide-in-left {
-            transform: translateX(0);
-            opacity: 1;
-        }
+/* Versión modo nocturno del spinner */
+.night-mode .loading-spinner {
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid #ecf0f1;
+}
 
-        .event {
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
+/* Estilos para el modo noche del calendario */
+.night-mode #calendar-window {
+    background: rgba(44, 62, 80, 0.9);
+}
 
-        .event:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
+.night-mode .event-title,
+.night-mode .event-time,
+.night-mode .date-header {
+    color: #ecf0f1;
+}
 
-        .event-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .event-time {
-            color: #333;
-            font-size: 0.9em;
-        }
-
-        .date-header {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .loading {
-            color: #666;
-            font-style: italic;
-        }
+.night-mode .event {
+    border-bottom-color: #34495e;
+}
     </style>
 </head>
 <body>
@@ -728,10 +725,6 @@
     </div>
 
     <div id="calendar-window">
-        <div id="title-bar">
-            <h3 id="title">Today's Events</h3>
-            <button id="toggle-day">Tomorrow ➡️</button>
-        </div>
         <div id="events-container">
             <div class="date-header" id="current-date"></div>
             <div id="events-list" class="events-list"></div>
@@ -1138,11 +1131,8 @@
 
         // Calendar JavaScript
         const calendarWindow = document.getElementById('calendar-window');
-        const calendarTitleBar = document.getElementById('title-bar');
-        const calendarToggleDayButton = document.getElementById('toggle-day');
         const calendarEventsList = document.getElementById('events-list');
         const calendarCurrentDate = document.getElementById('current-date');
-        const calendarTitle = document.getElementById('title');
 
         const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
 
@@ -1153,15 +1143,6 @@
         let initialCalendarY;
         let showingToday = true;
 
-        function initCalendarDraggable() {
-            calendarTitleBar.addEventListener('mousedown', startCalendarDragging);
-            document.addEventListener('mousemove', dragCalendar);
-            document.addEventListener('mouseup', stopCalendarDragging);
-            calendarTitleBar.addEventListener('touchstart', startCalendarDragging, { passive: false });
-            document.addEventListener('touchmove', dragCalendar, { passive: false });
-            document.addEventListener('touchend', stopCalendarDragging);
-            calendarToggleDayButton.addEventListener('click', toggleCalendarDay);
-        }
 
         function startCalendarDragging(e) {
             if (e.type === 'touchstart') {
@@ -1219,13 +1200,11 @@
         }
 
         function updateCalendarDate() {
-            const dateElement = calendarCurrentDate;
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const date = showingToday ? new Date() : new Date(Date.now() + 24 * 60 * 60 * 1000);
-            dateElement.textContent = date.toLocaleDateString('en-US', options);
-            calendarTitle.textContent = showingToday ? "Today's Events" : "Tomorrow's Events";
-            calendarToggleDayButton.textContent = showingToday ? "Tomorrow ➡️" : "Today ⬅️";
-        }
+    const dateElement = document.getElementById('current-date');
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const date = showingToday ? new Date() : new Date(Date.now() + 24 * 60 * 60 * 1000);
+    dateElement.textContent = date.toLocaleDateString('en-US', options);
+}
 
         function formatCalendarTime(date) {
             if (!(date instanceof Date) || isNaN(date)) {
@@ -1239,7 +1218,7 @@
         }
 
         async function fetchCalendarEvents() {
-            calendarEventsList.innerHTML = '<div class="loading">Loading events...</div>';
+            calendarEventsList.innerHTML = '<div class="loading-spinner"></div>';
             try {
                 const proxyUrl = 'https://api.allorigins.win/raw?url=';
                 const response = await fetch(proxyUrl + encodeURIComponent(calendarUrl));
@@ -1382,25 +1361,108 @@
         }
 
         function toggleCalendarDay() {
-            const eventsList = calendarEventsList;
-            eventsList.classList.add(showingToday ? 'slide-out-left' : 'slide-out-right');
-            setTimeout(() => {
-                showingToday = !showingToday;
-                updateCalendarDate();
-                fetchCalendarEvents();
-                eventsList.classList.remove(showingToday ? 'slide-out-right' : 'slide-out-left');
-                eventsList.classList.add(showingToday ? 'slide-in-right' : 'slide-in-left');
-                setTimeout(() => {
-                    eventsList.classList.remove('slide-in-left', 'slide-in-right');
-                }, 500);
-            }, 500);
-        }
+    const eventsList = document.getElementById('events-list');
+    const dateHeader = document.getElementById('current-date');
+    
+    // Añadir clases de fade out
+    eventsList.classList.add('fade-out');
+    dateHeader.classList.add('fade-out');
+    
+    // Esperar a que termine la animación de fade out
+    setTimeout(() => {
+        // Cambiar el día
+        showingToday = !showingToday;
+        
+        // Actualizar el contenido
+        updateCalendarDate();
+        fetchCalendarEvents();
+        
+        // Forzar un reflow
+        void eventsList.offsetWidth;
+        void dateHeader.offsetWidth;
+        
+        // Quitar las clases de fade out y añadir fade in
+        eventsList.classList.remove('fade-out');
+        dateHeader.classList.remove('fade-out');
+        eventsList.classList.add('fade-in');
+        dateHeader.classList.add('fade-in');
+        
+        // Limpiar las clases de fade in después de la animación
+        setTimeout(() => {
+            eventsList.classList.remove('fade-in');
+            dateHeader.classList.remove('fade-in');
+        }, 500);
+    }, 500);
+}
 
-        function startAutoCycle() {
-            setInterval(toggleCalendarDay, 10000);
-        }
+function startAutoCycle() {
+    setInterval(() => {
+        toggleCalendarDay();
+    }, 15000); // Cambiado a 15 segundos para dar más tiempo a leer
+}
 
-        initCalendarDraggable();
+function displayCalendarEvents(events) {
+    const eventsList = document.getElementById('events-list');
+    
+    // Preparar el nuevo contenido
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+    const targetDate = showingToday ? today : tomorrow;
+    const filteredEvents = events.filter(event => event.dtstart && isCalendarDateSameDay(event.dtstart, targetDate));
+    
+    let newContent = '';
+    if (filteredEvents.length === 0) {
+        newContent = '<div class="loading-spinner"></div>';
+    } else {
+        filteredEvents.sort((a, b) => {
+            if (a.dtstartIsDate && !b.dtstartIsDate) return -1;
+            if (!a.dtstartIsDate && b.dtstartIsDate) return 1;
+            if (a.dtstartIsDate && b.dtstartIsDate) return 0;
+            return a.dtstart.getTime() - b.dtstart.getTime();
+        });
+        
+        newContent = filteredEvents.map(event => {
+            let timeString = '';
+            if (event.dtstartIsDate) {
+                timeString = 'All Day';
+            } else {
+                timeString = formatCalendarTime(event.dtstart);
+                if (event.dtend && !event.dtendIsDate && event.dtend.getTime() !== event.dtstart.getTime()) {
+                    timeString += ` - ${formatCalendarTime(event.dtend)}`;
+                }
+            }
+            return `
+                <div class="event">
+                    <div class="event-title">${event.summary || 'No Title'}</div>
+                    <div class="event-time">${timeString}</div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // Actualizar el contenido con la transición
+    eventsList.style.opacity = '0';
+    eventsList.style.transform = 'translateX(-20px)';
+    
+    setTimeout(() => {
+        eventsList.innerHTML = newContent;
+        
+        // Forzar un reflow
+        void eventsList.offsetWidth;
+        
+        eventsList.style.opacity = '1';
+        eventsList.style.transform = 'translateX(0)';
+    }, 300);
+}
+
+function updateCalendarDate() {
+    const dateElement = document.getElementById('current-date');
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const date = showingToday ? new Date() : new Date(Date.now() + 24 * 60 * 60 * 1000);
+    dateElement.textContent = date.toLocaleDateString('en-US', options);
+}
+
         updateCalendarDate();
         fetchCalendarEvents();
         startAutoCycle();
