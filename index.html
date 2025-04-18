@@ -187,7 +187,7 @@
             bottom: calc(20px + env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
-            z-index: 3;
+            z-index: 4;
             width: 60px;
             height: 60px;
             object-fit: cover;
@@ -476,7 +476,7 @@
             left: 0;
             width: 100%;
             height: 250px;
-            z-index: 1;
+            z-index: 2;
         }
 
         .dune svg {
@@ -651,10 +651,22 @@
     display: none;
     transition: left 30s linear;
 }
+.moving-bus {
+    position: fixed;
+    bottom: 0;  /* En la parte inferior */
+    left: 50%;
+    width: 280px;  /* Tamaño fijo de 300px */
+    height: auto;
+    z-index: 1;  /* Detrás de las dunas */
+    display: none;
+    transition: left 20s linear;  /* Solo transición del movimiento */
+    transform: translateX(-50%);  /* Para centrarlo */
+}
     </style>
 </head>
 <body>
     <img src="https://s6.gifyu.com/images/bpIpP.gif" alt="Running Person" class="running-person" id="runningPerson">
+    <img src="https://i.imghippo.com/files/CNZA1634zls.png" alt="Moving Bus" class="moving-bus" id="movingBus">
 <div class="radio-player">
     <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1" id="radioToggle">
     <audio controls>
@@ -946,6 +958,25 @@ if (totalSeconds <= 30 && totalSeconds > 0) {
 } else {
     runningPerson.style.display = 'none';
     runningPerson.style.left = '-100px';
+}
+// Bus animation control
+const movingBus = document.getElementById('movingBus');
+if (totalSeconds <= 20 && totalSeconds > 0) {
+    if (movingBus.style.display !== 'block') {
+        // Configuración inicial
+        movingBus.style.display = 'block';
+        movingBus.style.left = '50%';
+        
+        // Force reflow
+        void movingBus.offsetWidth;
+        
+        // Inicia la animación
+        movingBus.style.left = '120%';  // Se mueve hacia la derecha
+    }
+} else {
+    // Reset
+    movingBus.style.display = 'none';
+    movingBus.style.left = '50%';
 }
             document.getElementById('countdown').textContent =
                 `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
