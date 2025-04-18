@@ -651,16 +651,37 @@
     display: none;
     transition: left 30s linear;
 }
+@keyframes busCurve {
+    0% {
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+    }
+    85% {  /* Movimiento horizontal hasta casi el final */
+        left: 95%;
+        bottom: 0;
+        transform: translateX(-50%);
+    }
+    100% {  /* Solo curva en el último tramo */
+        left: 120%;
+        bottom: -20%;
+        transform: translateX(-50%);
+    }
+}
+
 .moving-bus {
     position: fixed;
-    bottom: 0;  /* En la parte inferior */
+    bottom: 0;
     left: 50%;
-    width: 280px;  /* Tamaño fijo de 300px */
+    width: 300px;
     height: auto;
-    z-index: 1;  /* Detrás de las dunas */
+    z-index: 1;
     display: none;
-    transition: left 20s linear;  /* Solo transición del movimiento */
-    transform: translateX(-50%);  /* Para centrarlo */
+    animation: none;
+}
+
+.moving-bus.animate {
+    animation: busCurve 20s linear forwards;  /* Movimiento constante */
 }
     </style>
 </head>
@@ -965,18 +986,18 @@ if (totalSeconds <= 20 && totalSeconds > 0) {
     if (movingBus.style.display !== 'block') {
         // Configuración inicial
         movingBus.style.display = 'block';
-        movingBus.style.left = '50%';
+        movingBus.classList.remove('animate');
         
         // Force reflow
         void movingBus.offsetWidth;
         
         // Inicia la animación
-        movingBus.style.left = '120%';  // Se mueve hacia la derecha
+        movingBus.classList.add('animate');
     }
 } else {
     // Reset
     movingBus.style.display = 'none';
-    movingBus.style.left = '50%';
+    movingBus.classList.remove('animate');
 }
             document.getElementById('countdown').textContent =
                 `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
