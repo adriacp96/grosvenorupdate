@@ -641,9 +641,20 @@
 .night-mode .event {
     border-bottom-color: #34495e;
 }
+.running-person {
+    position: fixed;
+    bottom: -12px;
+    left: -100px;
+    width: 100px;
+    height: auto;
+    z-index: 1000;
+    display: none;
+    transition: left 30s linear;
+}
     </style>
 </head>
 <body>
+    <img src="https://s6.gifyu.com/images/bpIpP.gif" alt="Running Person" class="running-person" id="runningPerson">
 <div class="radio-player">
     <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1" id="radioToggle">
     <audio controls>
@@ -920,7 +931,22 @@
 
             const minutes = Math.floor(timeDifference);
             const seconds = Math.floor((timeDifference * 60) % 60);
+            const totalSeconds = minutes * 60 + seconds;
 
+// Running person animation control
+const runningPerson = document.getElementById('runningPerson');
+if (totalSeconds <= 30 && totalSeconds > 0) {
+    if (runningPerson.style.display !== 'block') {
+        runningPerson.style.display = 'block';
+        runningPerson.style.left = '-100px';
+        // Force reflow
+        void runningPerson.offsetWidth;
+        runningPerson.style.left = 'calc(100vw + 100px)';
+    }
+} else {
+    runningPerson.style.display = 'none';
+    runningPerson.style.left = '-100px';
+}
             document.getElementById('countdown').textContent =
                 `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
