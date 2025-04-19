@@ -690,10 +690,10 @@
     right: 20px;
     left: auto;
     transform: none;
-    width: 200px;
+    width: auto;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
-    padding: 15px;
+    padding: 10px 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
     z-index: 1000;
@@ -705,54 +705,65 @@
     color: #ecf0f1;
 }
 
-.weather-title {
-    font-size: 1.2em;
-    margin-bottom: 15px;
-    text-align: center;
-    color: #2c3e50;
-}
-
-.night-mode .weather-title {
-    color: #ecf0f1;
-}
-
 .weather-data {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
     font-size: 0.9em;
 }
 
 .weather-icon {
-    font-size: 1.2em;
-    margin-right: 8px;
-    width: 20px;
-    display: inline-block;
+    font-size: 1em;
+    margin-right: 4px;
+    margin-left: 8px;
 }
 
 .weather-item {
     display: flex;
     align-items: center;
-    margin: 5px 0;
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    white-space: nowrap;
 }
 
-.weather-item:last-child {
-    border-bottom: none;
+.weather-item:first-child .weather-icon {
+    margin-left: 0;
+}
+/* Time Box Styles */
+.time-box {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 10px 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
 }
 
-.night-mode .weather-item {
-    border-bottom-color: rgba(255,255,255,0.1);
+.time-box.night-mode {
+    background: rgba(44, 62, 80, 0.9);
+    color: #ecf0f1;
 }
 
-.temp-group {
+.time-data {
     display: flex;
     align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+}
+
+#currentTime {
+    font-size: 1.1em;
+    font-weight: bold;
 }
     </style>
 </head>
 <body>
+    <div class="time-box" id="currentTimeBox">
+        <div class="time-data">
+            <span id="currentTime">00:00:00</span>
+        </div>
+    </div>
     <img src="https://s6.gifyu.com/images/bpIpP.gif" alt="Running Person" class="running-person" id="runningPerson">
     <img src="https://i.imghippo.com/files/CNZA1634zls.png" alt="Moving Bus" class="moving-bus" id="movingBus">
 <div class="radio-player">
@@ -841,28 +852,20 @@
             <div id="events-list" class="events-list"></div>
         </div>
     </div>
-    <!-- Dubai Weather Box -->
-    <div class="weather-box" id="dubaiWeatherBox">
-        <div class="weather-title">Dubai Weather</div>
-        <div class="weather-data">
-            <div class="weather-item temp-group">
-                <span class="weather-icon">🌡️</span>
-                <span>H: <span id="dubaiTempMax">Loading...</span> / L: <span id="dubaiTempMin">Loading...</span></span>
-            </div>
-            <div class="weather-item">
-                <span class="weather-icon">🌅</span>
-                <span>Sunrise: <span id="dubaiSunrise">Loading...</span></span>
-            </div>
-            <div class="weather-item">
-                <span class="weather-icon">💧</span>
-                <span>Humidity: <span id="dubaiHumidity">Loading...</span></span>
-            </div>
-            <div class="weather-item">
-                <span class="weather-icon">🌇</span>
-                <span>Sunset: <span id="dubaiSunset">Loading...</span></span>
-            </div>
+<!-- Dubai Weather Box -->
+<div class="weather-box" id="dubaiWeatherBox">
+    <div class="weather-data">
+        <div class="weather-item">
+            <span class="weather-icon">🌡️</span>
+            <span>H: <span id="dubaiTempMax">Loading...</span> / L: <span id="dubaiTempMin">Loading...</span> | 
+            <span class="weather-icon">💧</span>
+            <span id="dubaiHumidity">Loading...</span> | 
+            <span class="weather-icon">🌅</span>
+            <span>SR: <span id="dubaiSunrise">Loading...</span> | SS: <span id="dubaiSunset">Loading...</span></span>
+            </span>
         </div>
     </div>
+</div>
     <script>
         // Bus Countdown and Calendar JavaScript
         let dunePoints = [];
@@ -1799,6 +1802,26 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.night-mode-toggle').addEventListener('click', () => {
             document.getElementById('dubaiWeatherBox').classList.toggle('night-mode');
         });
+        // Current Time Update Function
+function updateCurrentTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-US', {
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    document.getElementById('currentTime').textContent = timeString;
+}
+
+// Update time every second
+updateCurrentTime();
+setInterval(updateCurrentTime, 1000);
+
+// Add night mode support for time box
+document.querySelector('.night-mode-toggle').addEventListener('click', () => {
+    document.getElementById('currentTimeBox').classList.toggle('night-mode');
+});
     </script>
 </body>
 </html>
