@@ -271,26 +271,24 @@
     color: #ecf0f1 !important;
 }
 .night-mode-toggle {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 30px;
+    width: 40px;
+    height: 24px;
     background-color: #2c3e50;
-    border-radius: 15px;
+    border-radius: 12px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-right: 10px;
 }
 
 .night-mode-toggle .toggle-slider {
     position: absolute;
-    width: 26px;
-    height: 26px;
+    width: 20px;
+    height: 20px;
     background-color: #fff;
     border-radius: 50%;
     left: 2px;
@@ -298,7 +296,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .night-mode-toggle.active {
@@ -306,7 +304,7 @@
 }
 
 .night-mode-toggle.active .toggle-slider {
-    transform: translateX(30px);
+    transform: translateX(18px);
 }
 
 /* Night Mode Overlay */
@@ -866,6 +864,9 @@
 </head>
 <body>
     <div class="top-boxes-container">
+        <div class="night-mode-toggle">
+            <div class="toggle-slider">🌞</div>
+        </div>
         <div class="radio-box box-base" id="radioBox">
             <div class="radio-content">
                 <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1" id="radioToggle">
@@ -909,9 +910,6 @@
     </div>
     <img src="https://s6.gifyu.com/images/bpIpP.gif" alt="Running Person" class="running-person" id="runningPerson">
     <img src="https://i.imghippo.com/files/CNZA1634zls.png" alt="Moving Bus" class="moving-bus" id="movingBus">
-    <div class="night-mode-toggle">
-    <div class="toggle-slider">🌞</div>
-</div>
 <div class="night-mode-overlay"></div>
     <div id="background-container"></div>
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png"
@@ -1381,7 +1379,10 @@ if (totalSeconds <= 20 && totalSeconds > 0) {
             document.body.classList.remove('black-background');
             localStorage.setItem('hasVisited', 'true');
         });
-
+        function showCalendarOnLoad() {
+    const calendarWindow = document.getElementById('calendar-window');
+    calendarWindow.classList.add('visible');
+}
         window.onload = function() {
         generateRandomDune();
         window.scrollTo(0, 0);
@@ -1392,7 +1393,20 @@ if (totalSeconds <= 20 && totalSeconds > 0) {
         const now = new Date();
         if (now.getHours() < 6 || now.getHours() >= 18) {
             createStars();
-        }  
+        } 
+        window.onload = function() {
+    generateRandomDune();
+    window.scrollTo(0, 0);
+    updateSkyAndCelestial();
+    updateCountdown();
+    updateCurrentDate();
+    showFirstVisitPopup();
+    showCalendarOnLoad(); // Añadir esta línea
+    const now = new Date();
+    if (now.getHours() < 6 || now.getHours() >= 18) {
+        createStars();
+    }
+}; 
     };
 
         let intervalId = null;
