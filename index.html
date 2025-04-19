@@ -24,6 +24,197 @@
             font-weight: bold;
             font-style: normal;
         }
+/* Contenedor para todas las cajetillas */
+.top-boxes-container {
+    position: fixed;
+    top: 45px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    z-index: 1000;
+    padding: 0 20px;
+}
+
+/* Estilos base compartidos para todas las cajetillas */
+.box-base {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 8px 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+    transition: all 0.3s ease;
+    margin: 0;
+    height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+/* Radio Box Styles */
+.radio-box {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 24px !important;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.radio-box.expanded {
+    width: 300px;
+}
+
+.radio-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.radio-content img {
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+    margin: 0;
+}
+
+.radio-content audio {
+    flex: 1;
+    height: 20px;
+    display: none;
+    margin: 0;
+}
+
+.radio-box.expanded .radio-content audio {
+    display: block;
+}
+
+/* Time Box Styles */
+.time-box {
+    flex: 0 0 auto;
+}
+
+.time-data {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* Date Box Styles */
+.date-box {
+    flex: 0 0 auto;
+}
+
+.date-data {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* Weather Box Styles */
+.weather-box {
+    flex: 0 0 auto;
+}
+
+.weather-data {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* Night Mode Styles */
+.box-base.night-mode {
+    background: rgba(44, 62, 80, 0.95) !important;
+    color: #ecf0f1 !important;
+}
+
+.container.night-mode {
+    background-color: rgba(44, 62, 80, 0.95) !important;
+    color: #ecf0f1 !important;
+}
+
+/* Countdown specific night mode styles */
+.night-mode #countdown {
+    color: #ecf0f1 !important;
+}
+
+.night-mode #nextBus {
+    color: #bdc3c7 !important;
+}
+
+/* Date box night mode styles */
+.date-box.night-mode,
+.date-box.night-mode .date-data {
+    background: rgba(44, 62, 80, 0.95) !important;
+}
+
+.date-box.night-mode .date-data,
+.date-box.night-mode #currentDate {
+    color: #ecf0f1 !important;
+}
+
+/* Radio box night mode styles */
+.radio-box.night-mode {
+    background: rgba(44, 62, 80, 0.95) !important;
+}
+
+.radio-box.night-mode .radio-content {
+    color: #ecf0f1 !important;
+}
+
+.radio-box.night-mode .radio-content img {
+    filter: brightness(2);
+}
+
+.radio-box.night-mode .radio-content audio {
+    filter: invert(1);
+}
+
+/* Progress bar night mode styles */
+.night-mode .progress-bar {
+    background-color: #34495e !important;
+}
+
+.night-mode .progress-fill {
+    background-color: #2ecc71 !important;
+}
+
+/* Time box night mode styles */
+.time-box.night-mode,
+.time-box.night-mode .time-data,
+.time-box.night-mode #currentTime {
+    color: #ecf0f1 !important;
+    background: rgba(44, 62, 80, 0.95) !important;
+}
+
+/* Weather box night mode styles */
+.weather-box.night-mode {
+    background: rgba(44, 62, 80, 0.95) !important;
+    color: #ecf0f1 !important;
+}
+
+/* Button night mode styles */
+.night-mode #toggleRoute,
+.night-mode #eGateButton {
+    background: #34495e !important;
+    color: #ecf0f1 !important;
+}
+
+/* Audio controls night mode */
+.night-mode audio::-webkit-media-controls-panel {
+    background-color: rgba(44, 62, 80, 0.95) !important;
+}
+
+.night-mode audio::-webkit-media-controls-current-time-display,
+.night-mode audio::-webkit-media-controls-time-remaining-display,
+.night-mode audio::-webkit-media-controls-timeline {
+    color: #ecf0f1 !important;
+}
 .night-mode-toggle {
     position: fixed;
     top: 20px;
@@ -616,187 +807,41 @@
 .moving-bus.animate {
     animation: busCurve 20s linear forwards;  /* Movimiento constante */
 }
-/* Weather Box Styles */
-.weather-box {
-    position: fixed;
-    top: 45px;
-    right: 20px;
-    left: auto;
-    transform: none;
-    width: auto;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    padding: 10px 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
-    z-index: 1000;
-    transition: background-color 0.3s ease;
-    margin-top: 0; 
-}
-
-.weather-box.night-mode {
-    background: rgba(44, 62, 80, 0.9);
-    color: #ecf0f1;
-}
-
-.weather-data {
-    display: flex;
-    font-size: 0.9em;
-}
-
-.weather-icon {
-    font-size: 1em;
-    margin-right: 4px;
-    margin-left: 8px;
-}
-
-.weather-item {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-}
-
-.weather-item:first-child .weather-icon {
-    margin-left: 0;
-}
-
-/* Radio Box Styles */
-.radio-box {
-    position: fixed;
-    top: 45px;
-    left: 190px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
-    z-index: 1000;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 0; 
-}
-
-.radio-box.expanded {
-    width: 300px;
-    padding: 10px 15px;
-}
-
-.radio-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    height: auto;
-    width: 100%;
-}
-
-.radio-content img {
-    height: 20px;
-    width: 20px;
-    cursor: pointer;
-    margin: 0;
-}
-
-.radio-content audio {
-    flex: 1;
-    height: 20px;
-    display: none;
-    margin: 0;
-}
-
-.radio-box.expanded .radio-content audio {
-    display: block;
-}
-
-/* Time Box Styles */
-.time-box {
-    position: fixed;
-    top: 45px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    padding: 10px 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
-    z-index: 1000;
-    transition: background-color 0.3s ease;
-    margin-top: 0;
-}
-
-.time-box.night-mode {
-    background: rgba(44, 62, 80, 0.9);
-    color: #ecf0f1;
-}
-
-.time-data {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9em;
-}
-
-#currentTime {
-    font-size: 1.1em;
-    font-weight: bold;
-}
-
-/* Date Box Styles */
-.date-box {
-    position: fixed;
-    top: 45px;
-    left: calc(50% + 150px);
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    padding: 10px 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
-    z-index: 1000;
-    transition: background-color 0.3s ease;
-}
-
-.date-box.night-mode {
-    background: rgba(44, 62, 80, 0.9);
-    color: #ecf0f1;
-}
-
-.date-data {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9em;
-}
-
-#currentDate {
-    font-size: 1.1em;
-    font-weight: bold;
-}
     </style>
 </head>
 <body>
-    <!-- Radio Box -->
-    <div class="radio-box" id="radioBox">
-        <div class="radio-content">
-            <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1" id="radioToggle">
-            <audio controls>
-                <source src="https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3" type="audio/mpeg">
-                Tu navegador no soporta el elemento de audio.
-            </audio>
+    <div class="top-boxes-container">
+        <div class="radio-box box-base" id="radioBox">
+            <div class="radio-content">
+                <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1" id="radioToggle">
+                <audio controls>
+                    <source src="https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3" type="audio/mpeg">
+                    Tu navegador no soporta el elemento de audio.
+                </audio>
+            </div>
+        </div>    
+        <div class="time-box box-base" id="currentTimeBox">
+            <div class="time-data">
+                <span id="currentTime">00:00:00</span>
+            </div>
         </div>
-    </div>    
-    <div class="time-box" id="currentTimeBox">
-        <div class="time-data">
-            <span id="currentTime">00:00:00</span>
+        <div class="date-box box-base" id="dateBox">
+            <div class="date-data">
+                <span id="currentDate">01 Jan 2024</span>
+            </div>
         </div>
-    </div>
-    <div class="date-box" id="dateBox">
-        <div class="date-data">
-            <span id="currentDate">01 Jan 2024</span>
+        <div class="weather-box box-base" id="dubaiWeatherBox">
+            <div class="weather-data">
+                <div class="weather-item">
+                    <span class="weather-icon">🌡️</span>
+                    <span>H: <span id="dubaiTempMax">Loading...</span> / L: <span id="dubaiTempMin">Loading...</span> | 
+                    <span class="weather-icon">💧</span>
+                    <span id="dubaiHumidity">Loading...</span> | 
+                    <span class="weather-icon">🌅</span>
+                    <span>SR: <span id="dubaiSunrise">Loading...</span> | SS: <span id="dubaiSunset">Loading...</span></span>
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
     <img src="https://s6.gifyu.com/images/bpIpP.gif" alt="Running Person" class="running-person" id="runningPerson">
@@ -868,20 +913,6 @@
             <div id="events-list" class="events-list"></div>
         </div>
     </div>
-<!-- Dubai Weather Box -->
-<div class="weather-box" id="dubaiWeatherBox">
-    <div class="weather-data">
-        <div class="weather-item">
-            <span class="weather-icon">🌡️</span>
-            <span>H: <span id="dubaiTempMax">Loading...</span> / L: <span id="dubaiTempMin">Loading...</span> | 
-            <span class="weather-icon">💧</span>
-            <span id="dubaiHumidity">Loading...</span> | 
-            <span class="weather-icon">🌅</span>
-            <span>SR: <span id="dubaiSunrise">Loading...</span> | SS: <span id="dubaiSunset">Loading...</span></span>
-            </span>
-        </div>
-    </div>
-</div>
     <script>
         // Bus Countdown and Calendar JavaScript
         let dunePoints = [];
@@ -1738,15 +1769,135 @@ let isNightMode = false;
 
 nightModeToggle.addEventListener('click', () => {
     isNightMode = !isNightMode;
+    
+    // Toggle classes for night mode
     nightModeToggle.classList.toggle('active');
     nightModeOverlay.classList.toggle('active');
+    
+    // Elementos principales
     document.body.classList.toggle('night-mode');
-    document.getElementById('dubaiWeatherBox').classList.toggle('night-mode');
-    document.getElementById('currentTimeBox').classList.toggle('night-mode');
-    document.getElementById('radioBox').classList.toggle('night-mode');
-    document.getElementById('dateBox').classList.toggle('night-mode');
+    document.querySelector('.container').classList.toggle('night-mode');
+    
+    // Todas las cajas superiores
+    document.querySelectorAll('.box-base').forEach(box => {
+        box.classList.toggle('night-mode');
+    });
+    
+    // Elementos específicos del tiempo (weather)
+    const weatherElements = [
+        '.weather-box',
+        '.weather-data',
+        '.weather-item',
+        '#dubaiTempMax',
+        '#dubaiTempMin',
+        '#dubaiHumidity',
+        '#dubaiSunrise',
+        '#dubaiSunset'
+    ];
+    
+    weatherElements.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.classList.toggle('night-mode');
+        });
+    });
+    
+    // Elementos de tiempo (hora)
+    const timeElements = [
+        '.time-box',
+        '.time-data',
+        '#currentTime'
+    ];
+    
+    timeElements.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.classList.toggle('night-mode');
+        });
+    });
+    
+    // Elementos de fecha
+    const dateElements = [
+        '.date-box',
+        '.date-data',
+        '#currentDate'
+    ];
+    
+    dateElements.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.classList.toggle('night-mode');
+        });
+    });
+    
+    // Radio y audio
+    const radioElements = [
+        '.radio-box',
+        '.radio-content',
+        'audio'
+    ];
+    
+    radioElements.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.classList.toggle('night-mode');
+        });
+    });
+    
+    // Cuenta regresiva y elementos relacionados
+    const countdownElements = [
+        '#countdown',
+        '#nextBus',
+        '.progress-bar',
+        '.progress-fill'
+    ];
+    
+    countdownElements.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.classList.toggle('night-mode');
+        });
+    });
+    
+    // Botones
+    const buttonElements = [
+        '#toggleRoute',
+        '#eGateButton'
+    ];
+    
+    buttonElements.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.classList.toggle('night-mode');
+        });
+    });
+    
+    // Actualizar el audio si está presente
+    const audioElement = document.querySelector('audio');
+    if (audioElement) {
+        const isPlaying = !audioElement.paused;
+        audioElement.load();
+        if (isPlaying) {
+            audioElement.play();
+        }
+    }
+    
+    // Actualizar el ícono del toggle
     toggleSlider.innerHTML = isNightMode ? '🌚' : '🌞';
+    
+    // Guardar preferencia
+    localStorage.setItem('nightMode', isNightMode);
 });
+
+// Restaurar preferencia al cargar
+document.addEventListener('DOMContentLoaded', () => {
+    const savedNightMode = localStorage.getItem('nightMode') === 'true';
+    if (savedNightMode) {
+        nightModeToggle.click();
+    }
+});
+
+// Restaurar preferencia de modo nocturno
         // Weather Update Function for Dubai only
         async function updateWeather() {
             try {
