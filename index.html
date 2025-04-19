@@ -18,73 +18,6 @@
     height: 60px;
     overflow: hidden;
 }
-
-/* Radio Player Styles */
-.radio-player {
-    position: absolute;
-    bottom: -65px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 10px;
-    border-radius: 10px 10px 0 0;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 300px;
-    border: 1px solid rgba(0,0,0,0.1);
-    border-bottom: none;
-    transition: bottom 0.3s ease-out;
-}
-
-/* Clase para cuando está visible */
-.radio-player.visible {
-    bottom: 0;
-}
-
-.radio-player img {
-    height: 30px;
-    width: auto;
-}
-
-.radio-player audio {
-    flex: 1;
-    height: 40px;
-}
-
-/* Estilo para la pestaña */
-.radio-tab {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    padding: 5px 15px;
-    border-radius: 10px 10px 0 0;
-    border: 1px solid rgba(0,0,0,0.1);
-    border-bottom: none;
-    cursor: pointer;
-    z-index: 1;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-    transition: opacity 0.3s;
-}
-
-.radio-tab:hover {
-    background: rgba(245, 245, 245, 0.9);
-}
-
-/* Ajustes para modo nocturno */
-.night-mode .radio-player,
-.night-mode .radio-tab {
-    background: rgba(44, 62, 80, 0.9);
-    border-color: rgba(255,255,255,0.1);
-}
-
-.night-mode .radio-tab:hover {
-    background: rgba(52, 73, 94, 0.9);
-}
         @font-face {
             font-family: 'Emirates Bold';
             src: url('https://c.ekstatic.net/shared/fonts/emirates/emirates-bold-v3.woff2') format('woff2');
@@ -686,7 +619,7 @@
 /* Weather Box Styles */
 .weather-box {
     position: fixed;
-    top: 20px;
+    top: 45px;
     right: 20px;
     left: auto;
     transform: none;
@@ -698,6 +631,7 @@
     font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
     z-index: 1000;
     transition: background-color 0.3s ease;
+    margin-top: 0; 
 }
 
 .weather-box.night-mode {
@@ -725,10 +659,63 @@
 .weather-item:first-child .weather-icon {
     margin-left: 0;
 }
+
+/* Radio Box Styles */
+.radio-box {
+    position: fixed;
+    top: 45px;
+    left: 190px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0; 
+}
+
+.radio-box.expanded {
+    width: 300px;
+    padding: 10px 15px;
+}
+
+.radio-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: auto;
+    width: 100%;
+}
+
+.radio-content img {
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+    margin: 0;
+}
+
+.radio-content audio {
+    flex: 1;
+    height: 20px;
+    display: none;
+    margin: 0;
+}
+
+.radio-box.expanded .radio-content audio {
+    display: block;
+}
+
 /* Time Box Styles */
 .time-box {
     position: fixed;
-    top: 20px;
+    top: 45px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(255, 255, 255, 0.9);
@@ -738,6 +725,7 @@
     font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
     z-index: 1000;
     transition: background-color 0.3s ease;
+    margin-top: 0;
 }
 
 .time-box.night-mode {
@@ -756,23 +744,63 @@
     font-size: 1.1em;
     font-weight: bold;
 }
+
+/* Date Box Styles */
+.date-box {
+    position: fixed;
+    top: 45px;
+    left: calc(50% + 150px);
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 10px 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.date-box.night-mode {
+    background: rgba(44, 62, 80, 0.9);
+    color: #ecf0f1;
+}
+
+.date-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+}
+
+#currentDate {
+    font-size: 1.1em;
+    font-weight: bold;
+}
     </style>
 </head>
 <body>
+    <!-- Radio Box -->
+    <div class="radio-box" id="radioBox">
+        <div class="radio-content">
+            <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1" id="radioToggle">
+            <audio controls>
+                <source src="https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3" type="audio/mpeg">
+                Tu navegador no soporta el elemento de audio.
+            </audio>
+        </div>
+    </div>    
     <div class="time-box" id="currentTimeBox">
         <div class="time-data">
             <span id="currentTime">00:00:00</span>
         </div>
     </div>
+    <div class="date-box" id="dateBox">
+        <div class="date-data">
+            <span id="currentDate">01 Jan 2024</span>
+        </div>
+    </div>
     <img src="https://s6.gifyu.com/images/bpIpP.gif" alt="Running Person" class="running-person" id="runningPerson">
     <img src="https://i.imghippo.com/files/CNZA1634zls.png" alt="Moving Bus" class="moving-bus" id="movingBus">
-<div class="radio-player">
-    <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1" id="radioToggle">
-    <audio controls>
-        <source src="https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3" type="audio/mpeg">
-        Tu navegador no soporta el elemento de audio.
-    </audio>
-</div>
     <div class="night-mode-toggle">
     <div class="toggle-slider">🌞</div>
 </div>
@@ -781,18 +809,6 @@
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/1200px-Emirates_logo.svg.png"
          alt="Emirates Logo" class="emirates-logo">
     <div class="container">
-        <div class="radio-container">
-            <div class="radio-tab" id="radioTab">
-                📻 Radio
-            </div>
-            <div class="radio-player" id="radioPlayer">
-                <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1" id="radioToggle">
-                <audio controls>
-                    <source src="https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3" type="audio/mpeg">
-                    Tu navegador no soporta el elemento de audio.
-                </audio>
-            </div>
-        </div>
         <h1 id="routeTitle">Grosvenor to HQ in</h1>
         <div id="countdown">00:00</div>
         <div id="nextBus">Next bus at: --:--</div>
@@ -1273,16 +1289,17 @@ if (totalSeconds <= 20 && totalSeconds > 0) {
         });
 
         window.onload = function() {
-            generateRandomDune();
-            window.scrollTo(0, 0);
-            updateSkyAndCelestial();
-            updateCountdown();
-            showFirstVisitPopup();
-            const now = new Date();
-            if (now.getHours() < 6 || now.getHours() >= 18) {
-                createStars();
-            }
-        };
+        generateRandomDune();
+        window.scrollTo(0, 0);
+        updateSkyAndCelestial();
+        updateCountdown();
+        updateCurrentDate();
+        showFirstVisitPopup();
+        const now = new Date();
+        if (now.getHours() < 6 || now.getHours() >= 18) {
+            createStars();
+        }  
+    };
 
         let intervalId = null;
         function startUpdateLoop() {
@@ -1723,45 +1740,12 @@ nightModeToggle.addEventListener('click', () => {
     isNightMode = !isNightMode;
     nightModeToggle.classList.toggle('active');
     nightModeOverlay.classList.toggle('active');
-    document.body.classList.toggle('night-mode'); // Añadida esta línea
+    document.body.classList.toggle('night-mode');
+    document.getElementById('dubaiWeatherBox').classList.toggle('night-mode');
+    document.getElementById('currentTimeBox').classList.toggle('night-mode');
+    document.getElementById('radioBox').classList.toggle('night-mode');
+    document.getElementById('dateBox').classList.toggle('night-mode');
     toggleSlider.innerHTML = isNightMode ? '🌚' : '🌞';
-});
-// Funcionalidad del reproductor de radio
-document.addEventListener('DOMContentLoaded', function() {
-    const radioTab = document.getElementById('radioTab');
-    const radioPlayer = document.getElementById('radioPlayer');
-    let isPlayerVisible = false;
-    let hideTimeout;
-
-    radioTab.addEventListener('click', function() {
-        isPlayerVisible = !isPlayerVisible;
-        radioPlayer.classList.toggle('visible');
-        
-        // Animación suave de la pestaña
-        radioTab.style.opacity = isPlayerVisible ? '0' : '1';
-        radioTab.style.pointerEvents = isPlayerVisible ? 'none' : 'auto';
-
-        // Si el reproductor está visible, configurar el temporizador para ocultarlo
-        if (isPlayerVisible) {
-            // Limpiar cualquier temporizador existente
-            if (hideTimeout) {
-                clearTimeout(hideTimeout);
-            }
-            
-            // Configurar nuevo temporizador para ocultar después de 30 segundos
-            hideTimeout = setTimeout(() => {
-                isPlayerVisible = false;
-                radioPlayer.classList.remove('visible');
-                radioTab.style.opacity = '1';
-                radioTab.style.pointerEvents = 'auto';
-            }, 30000); // 30 segundos
-        } else {
-            // Si se está ocultando manualmente, limpiar el temporizador
-            if (hideTimeout) {
-                clearTimeout(hideTimeout);
-            }
-        }
-    });
 });
         // Weather Update Function for Dubai only
         async function updateWeather() {
@@ -1813,7 +1797,27 @@ function updateCurrentTime() {
     });
     document.getElementById('currentTime').textContent = timeString;
 }
+function updateCurrentDate() {
+    const now = new Date();
+    const options = { 
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    };
+    
+    const dateString = now.toLocaleDateString('en-EN', options)
+        .replace('.', '');
+    
+    document.getElementById('currentDate').textContent = dateString;
+}
 
+// Actualizamos la fecha inmediatamente
+updateCurrentDate();
+
+// Actualizamos la fecha cada día a la medianoche
+setInterval(() => {
+    updateCurrentDate();
+}, 1000 * 60 * 60 * 24); // 24 horas en milisegundos
 // Update time every second
 updateCurrentTime();
 setInterval(updateCurrentTime, 1000);
@@ -1821,6 +1825,17 @@ setInterval(updateCurrentTime, 1000);
 // Add night mode support for time box
 document.querySelector('.night-mode-toggle').addEventListener('click', () => {
     document.getElementById('currentTimeBox').classList.toggle('night-mode');
+});
+// Radio Box Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const radioBox = document.getElementById('radioBox');
+    const radioToggle = document.getElementById('radioToggle');
+    let isExpanded = false;
+
+    radioToggle.addEventListener('click', function() {
+        isExpanded = !isExpanded;
+        radioBox.classList.toggle('expanded');
+    });
 });
     </script>
 </body>
