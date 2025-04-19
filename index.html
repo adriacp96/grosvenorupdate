@@ -1855,6 +1855,12 @@ nightModeToggle.addEventListener('click', () => {
     document.body.classList.toggle('night-mode');
     document.querySelector('.container').classList.toggle('night-mode');
     
+    // Asegurarse de que la radio, fecha y calendario cambien
+    document.querySelector('.radio-box').classList.toggle('night-mode');
+    document.querySelector('.date-box').classList.toggle('night-mode');
+    document.querySelector('.calendar-box').classList.toggle('night-mode');
+    document.querySelector('#calendar-window').classList.toggle('night-mode');
+
     // Todas las cajas superiores
     document.querySelectorAll('.box-base').forEach(box => {
         box.classList.toggle('night-mode');
