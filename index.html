@@ -9,6 +9,44 @@
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
     <style>
+/* Calendar Box Styles */
+.calendar-box {
+    flex: 0 0 auto;
+    cursor: pointer;
+}
+
+.calendar-content {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Calendar Window Styles */
+#calendar-window {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 340px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+    z-index: 998;
+    overflow: hidden;
+    user-select: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#calendar-window.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
 /* Contenedor para el reproductor y la pestaña */
 .radio-container {
     position: absolute;
@@ -841,6 +879,12 @@
                     <span>SR: <span id="dubaiSunrise">Loading...</span> | SS: <span id="dubaiSunset">Loading...</span></span>
                     </span>
                 </div>
+            </div>
+        </div>
+        <div class="calendar-box box-base" id="calendarBox">
+            <div class="calendar-content">
+                <span>📅</span>
+                <span>Calendar</span>
             </div>
         </div>
     </div>
@@ -1987,6 +2031,26 @@ document.addEventListener('DOMContentLoaded', function() {
         isExpanded = !isExpanded;
         radioBox.classList.toggle('expanded');
     });
+});
+// Calendar Toggle Functionality
+document.getElementById('calendarBox').addEventListener('click', function() {
+    const calendarWindow = document.getElementById('calendar-window');
+    calendarWindow.classList.toggle('visible');
+});
+
+// Close calendar when clicking outside
+document.addEventListener('click', function(event) {
+    const calendarBox = document.getElementById('calendarBox');
+    const calendarWindow = document.getElementById('calendar-window');
+    
+    if (!calendarBox.contains(event.target) && !calendarWindow.contains(event.target)) {
+        calendarWindow.classList.remove('visible');
+    }
+});
+
+// Night mode support for calendar box
+document.querySelector('.night-mode-toggle').addEventListener('click', () => {
+    document.getElementById('calendarBox').classList.toggle('night-mode');
 });
     </script>
 </body>
