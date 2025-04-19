@@ -831,16 +831,21 @@
 }
 @keyframes busCurve {
     0% {
-        left: 50%;
+        left: 40%;
+        bottom: -100px;
+        transform: translateX(-50%);
+    }
+    15% {
+        left: 60%; /* Aumentado el movimiento horizontal para crear un ángulo más pronunciado */
         bottom: 0;
         transform: translateX(-50%);
     }
-    85% {  /* Movimiento horizontal hasta casi el final */
+    85% {
         left: 95%;
         bottom: 0;
         transform: translateX(-50%);
     }
-    100% {  /* Solo curva en el último tramo */
+    100% {
         left: 120%;
         bottom: -20%;
         transform: translateX(-50%);
@@ -849,8 +854,8 @@
 
 .moving-bus {
     position: fixed;
-    bottom: 0;
-    left: 50%;
+    bottom: -100px;
+    left: 40%;
     width: 300px;
     height: auto;
     z-index: 1;
@@ -859,7 +864,23 @@
 }
 
 .moving-bus.animate {
-    animation: busCurve 20s linear forwards;  /* Movimiento constante */
+    animation: busCurve 20s linear forwards;
+}
+
+.moving-bus {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    width: 300px;
+    height: auto;
+    z-index: 1;
+    display: none;
+    animation: none;
+    transition: opacity 0.3s ease;
+}
+
+.moving-bus.animate {
+    animation: busCurve 20s linear forwards;
 }
     </style>
 </head>
