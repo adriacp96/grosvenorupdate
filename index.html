@@ -717,6 +717,8 @@
     transform: translateY(-50%);
     left: calc(50% + 200px);
     width: 340px;
+    min-height: 200px;
+    max-height: 70vh;
     background: rgba(255,255,255,0.9);
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -724,11 +726,13 @@
     z-index: 9999;
     overflow: hidden;
     user-select: none;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-sizing: border-box;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 #calendar-window.visible {
@@ -739,52 +743,91 @@
 
 #events-container {
     padding: 15px 20px;
-    max-height: 400px;
+    max-height: calc(70vh - 40px);
     overflow-y: auto;
     position: relative;
     width: 100%;
     box-sizing: border-box;
     font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .events-list {
     width: 100%;
     box-sizing: border-box;
     opacity: 1;
-    transform: translateX(0);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateY(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .events-list.fade-out {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateY(-10px);
 }
 
 .events-list.fade-in {
     opacity: 1;
-    transform: translateX(0);
-}
-
-.date-header {
-    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 15px;
-    text-align: center;
-    font-size: 1.1em;
-    opacity: 1;
     transform: translateY(0);
-    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.date-header.fade-out {
-    opacity: 0;
-    transform: translateY(-10px);
+.event {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.2s ease;
+    transform-origin: top;
+    animation: eventAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.date-header.fade-in {
-    opacity: 1;
-    transform: translateY(0);
+.event:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes eventAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Estilizado del scrollbar para el contenedor de eventos */
+#events-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#events-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+#events-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    transition: background 0.3s ease;
+}
+
+#events-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos para el modo noche */
+.night-mode #calendar-window {
+    background: rgba(26, 32, 44, 0.9);
+}
+
+.night-mode .event {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.night-mode .event:hover {
+    background: rgba(0, 0, 0, 0.3);
 }
 
 /* Spinner de carga */
