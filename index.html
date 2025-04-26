@@ -711,7 +711,7 @@
 @media (max-width: 600px) {
   .top-boxes-container {
     flex-direction: column !important;
-    align-items: stretch !important;
+    align-items: center !important;
     gap: 10px !important;
     width: 100vw !important;
     left: 0 !important;
@@ -719,12 +719,13 @@
     padding: 0 !important;
   }
   .top-boxes-container > * {
-    width: 100vw !important;
+    width: auto !important;         /* Solo el ancho de su contenido */
     min-width: 0 !important;
+    max-width: 95vw !important;     /* Opcional: para que no sobresalga en pantallas pequeñas */
     box-sizing: border-box !important;
     justify-content: flex-start !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
+    border-radius: 10px !important;
+    margin: 0 auto !important;      /* Centra las cajetillas */
   }
 }
 @media (max-width: 600px) {
