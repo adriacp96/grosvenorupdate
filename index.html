@@ -713,10 +713,31 @@
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 10px !important;
+    width: 100vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    padding: 0 !important;
   }
   .top-boxes-container > * {
-    width: 100% !important;
+    width: 100vw !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     justify-content: flex-start !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+}
+@media (max-width: 600px) {
+  .background {
+    animation: moveBackgroundMobile 166.67s linear infinite;
+  }
+  @keyframes moveBackgroundMobile {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 0 0;
+    }
   }
 }
     </style>
