@@ -1233,12 +1233,10 @@
             const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
             const { previousBus, nextBus } = getBusTimes();
 
-            let timeDifference = nextBus.minutes - currentTimeInMinutes;
-            if (nextBus.minutes < currentTimeInMinutes && nextBus.minutes < 1440) {
-                timeDifference = (nextBus.minutes + 1440) - currentTimeInMinutes;
-            } else {
-                timeDifference = nextBus.minutes - currentTimeInMinutes;
-            }
+let timeDifference = nextBus.minutes - currentTimeInMinutes;
+if (timeDifference < 0) {
+    timeDifference += 1440;
+}
 
             const minutes = Math.floor(timeDifference);
             const seconds = Math.floor((timeDifference * 60) % 60);
