@@ -9,6 +9,137 @@
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
     <style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hue Floating Control</title>
+  <style>
+    @font-face {
+      font-family: 'Emirates Bold';
+      src: url('https://c.ekstatic.net/shared/fonts/emirates/emirates-bold-v3.woff2') format('woff2');
+      font-weight: bold;
+      font-style: normal;
+    }
+    body { font-family: Arial, sans-serif; }
+    #hue-float-btn {
+      position: fixed;
+      bottom: 32px;
+      left: 32px; /* Cambiado de right a left */
+      background: #4B5C6B;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      font-size: 2rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 1000;
+      transition: background 0.2s;
+    }
+    #hue-float-btn:hover { background: #2d3741; }
+    #hue-float-window {
+      display: none;
+      position: fixed;
+      bottom: 110px;
+      left: 32px; /* Cambiado de right a left */
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      padding: 24px 24px 16px 24px;
+      min-width: 340px;
+      z-index: 1001;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hue-lights-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px 20px;
+      justify-content: flex-start;
+    }
+    .hue-light-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 72px;
+    }
+    .hue-light-label {
+      font-family: 'Emirates Bold', Arial, sans-serif;
+      font-size: 0.72rem;
+      font-weight: bold;
+      color: #444;
+      margin-bottom: 4px;
+      text-align: center;
+      width: 100%;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.1;
+      user-select: none;
+      pointer-events: none;
+    }
+    .hue-light-btn {
+      background: #f7f7f7;
+      border-radius: 12px;
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: none;
+      border: 1px solid #e0e0e0;
+      padding: 0;
+      cursor: pointer;
+      transition: filter 0.15s;
+      outline: none;
+      overflow: hidden;
+    }
+    .hue-light-btn:active {
+      filter: brightness(0.85);
+    }
+    .hue-light-img-stack, .hue-light-emoji-stack {
+      position: relative;
+      width: 56px;
+      height: 56px;
+      display: block;
+    }
+    .hue-light-img-stack img,
+    .hue-light-emoji-stack span {
+      position: absolute;
+      top: 0; left: 0;
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      font-size: 2.2rem;
+      text-align: center;
+      line-height: 56px;
+      user-select: none;
+      pointer-events: none;
+      transition: opacity 0.35s;
+      opacity: 0;
+      border: none;
+      background: none;
+      margin: 0;
+      padding: 0;
+      display: block;
+    }
+    .hue-light-img-stack img.visible,
+    .hue-light-emoji-stack span.visible {
+      opacity: 1;
+      z-index: 2;
+    }
+    .hue-light-img-stack img.hidden,
+    .hue-light-emoji-stack span.hidden {
+      opacity: 0;
+      z-index: 1;
+    }
+  </style>
+
 /* Calendar Box Styles */
 .calendar-box {
     flex: 0 0 auto;
@@ -979,125 +1110,6 @@
     animation: busCurve 20s linear forwards;
 }
     </style>
-    #hue-float-btn {
-      position: fixed;
-      bottom: 32px;
-      left: 32px; /* Cambiado de right a left */
-      background: #4B5C6B;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 64px;
-      height: 64px;
-      font-size: 2rem;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-      cursor: pointer;
-      z-index: 2147483647;
-      transition: background 0.2s;
-    }
-    #hue-float-btn:hover { background: #2d3741; }
-    #hue-float-window {
-      display: none;
-      position: fixed;
-      bottom: 110px;
-      left: 32px; /* Cambiado de right a left */
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-      padding: 24px 24px 16px 24px;
-      min-width: 340px;
-      z-index: 20001;
-      animation: fadeIn 0.2s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .hue-lights-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 24px 20px;
-      justify-content: flex-start;
-    }
-    .hue-light-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 72px;
-    }
-    .hue-light-label {
-      font-family: 'Emirates Bold', Arial, sans-serif;
-      font-size: 0.72rem;
-      font-weight: bold;
-      color: #444;
-      margin-bottom: 4px;
-      text-align: center;
-      width: 100%;
-      letter-spacing: 0.01em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.1;
-      user-select: none;
-      pointer-events: none;
-    }
-    .hue-light-btn {
-      background: #f7f7f7;
-      border-radius: 12px;
-      width: 72px;
-      height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-shadow: none;
-      border: 1px solid #e0e0e0;
-      padding: 0;
-      cursor: pointer;
-      transition: filter 0.15s;
-      outline: none;
-      overflow: hidden;
-    }
-    .hue-light-btn:active {
-      filter: brightness(0.85);
-    }
-    .hue-light-img-stack, .hue-light-emoji-stack {
-      position: relative;
-      width: 56px;
-      height: 56px;
-      display: block;
-    }
-    .hue-light-img-stack img,
-    .hue-light-emoji-stack span {
-      position: absolute;
-      top: 0; left: 0;
-      width: 56px;
-      height: 56px;
-      object-fit: contain;
-      font-size: 2.2rem;
-      text-align: center;
-      line-height: 56px;
-      user-select: none;
-      pointer-events: none;
-      transition: opacity 0.35s;
-      opacity: 0;
-      border: none;
-      background: none;
-      margin: 0;
-      padding: 0;
-      display: block;
-    }
-    .hue-light-img-stack img.visible,
-    .hue-light-emoji-stack span.visible {
-      opacity: 1;
-      z-index: 2;
-    }
-    .hue-light-img-stack img.hidden,
-    .hue-light-emoji-stack span.hidden {
-      opacity: 0;
-      z-index: 1;
-    }
-  </style>
 </head>
 <body>
     <div class="top-boxes-container">
@@ -2326,7 +2338,8 @@ document.addEventListener('click', function(event) {
 document.querySelector('.night-mode-toggle').addEventListener('click', () => {
     document.getElementById('calendarBox').classList.toggle('night-mode');
 });
- <script>
+
+  <script>
     const HUE_BRIDGE_IP = '192.168.86.245';
     const HUE_USERNAME = '2aqcjMamLfsgepRg7tsWzvK18TSNiP-SJVXDevim';
     // Light config: id, name, offImg, onImg (ORDERED as requested)
