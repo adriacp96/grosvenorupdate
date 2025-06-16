@@ -9,364 +9,52 @@
     <link rel="apple-touch-icon" href="https://i.imghippo.com/files/tEG3031vlA.png">
     <link rel="apple-touch-startup-image" href="https://example.com/splash.png">
     <style>
-/* Calendar Box Styles */
-.calendar-box {
-    flex: 0 0 auto;
-    cursor: pointer;
-}
-
-.calendar-content {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-/* Calendar Window Styles */
-#calendar-window {
-    position: fixed;
-    top: 90px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 300px;
-    background: rgba(255,255,255,0.9);
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
-    z-index: 998;
-    overflow: hidden;
-    user-select: none;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-#calendar-window.visible {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-/* Contenedor para el reproductor y la pestaña */
-.radio-container {
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    overflow: hidden;
-}
         @font-face {
             font-family: 'Emirates Bold';
             src: url('https://c.ekstatic.net/shared/fonts/emirates/emirates-bold-v3.woff2') format('woff2');
             font-weight: bold;
             font-style: normal;
         }
-/* Contenedor para todas las cajetillas */
-.top-boxes-container {
-    position: fixed;
-    top: 45px;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    z-index: 1000;
-    padding: 0 20px;
-}
 
-/* Estilos base compartidos para todas las cajetillas */
-.box-base {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    padding: 8px 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
-    transition: all 0.3s ease;
-    margin: 0;
-    height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-/* Radio Box Styles */
-.radio-box {
-    flex: 0 0 auto;
-    width: 20px;
-    height: 24px !important;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.radio-box.expanded {
-    width: 200px;
-}
-
-.radio-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    height: 100%;
-}
-
-.radio-content img {
-    height: 20px;
-    width: 20px;
-    cursor: pointer;
-    margin: 0;
-}
-
-.radio-content audio {
-    flex: 1;
-    height: 20px;
-    display: none;
-    margin: 0;
-    max-width: 160px;
-}
-
-.radio-box.expanded .radio-content audio {
-    display: block;
-}
-
-/* Time Box Styles */
-.time-box {
-    flex: 0 0 auto;
-    width: 85px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 8px 15px;
-}
-
-.time-data {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-}
-
-#currentTime {
-    font-family: 'Emirates Bold', monospace;
-    text-align: center;
-    width: 100%;
-    display: block;
-    margin: 0;
-    padding: 0;
-    line-height: 24px; /* Igual que la altura del box-base */
-}
-
-/* Date Box Styles */
-.date-box {
-    flex: 0 0 auto;
-}
-
-.date-data {
-    display: flex;
-    align-items: center;
-    height: 100%;
-}
-
-/* Weather Box Styles */
-.weather-box {
-    flex: 0 0 auto;
-}
-
-.weather-data {
-    display: flex;
-    align-items: center;
-    height: 100%;
-}
-
-/* Night Mode Styles */
-.box-base.night-mode {
-    background: rgba(44, 62, 80, 0.95) !important;
-    color: #ecf0f1 !important;
-}
-
-.container.night-mode {
-    background-color: rgba(44, 62, 80, 0.95) !important;
-    color: #ecf0f1 !important;
-}
-
-/* Countdown specific night mode styles */
-.night-mode #countdown {
-    color: #ecf0f1 !important;
-}
-
-.night-mode #nextBus {
-    color: #bdc3c7 !important;
-}
-
-/* Date box night mode styles */
-.date-box.night-mode,
-.date-box.night-mode .date-data {
-    background: rgba(44, 62, 80, 0.95) !important;
-}
-
-.date-box.night-mode .date-data,
-.date-box.night-mode #currentDate {
-    color: #ecf0f1 !important;
-}
-
-/* Radio box night mode styles */
-.radio-box.night-mode {
-    background: rgba(44, 62, 80, 0.95) !important;
-}
-
-.radio-box.night-mode .radio-content {
-    color: #ecf0f1 !important;
-}
-
-.radio-box.night-mode .radio-content img {
-    filter: brightness(2);
-}
-
-.radio-box.night-mode .radio-content audio {
-    filter: invert(1);
-}
-
-/* Progress bar night mode styles */
-.night-mode .progress-bar {
-    background-color: #34495e !important;
-}
-
-.night-mode .progress-fill {
-    background-color: #ecf0f1 !important;
-}
-
-/* Time box night mode styles */
-.time-box.night-mode,
-.time-box.night-mode .time-data,
-.time-box.night-mode #currentTime {
-    color: #ecf0f1 !important;
-    background: rgba(44, 62, 80, 0.95) !important;
-}
-
-/* Weather box night mode styles */
-.weather-box.night-mode {
-    background: rgba(44, 62, 80, 0.95) !important;
-    color: #ecf0f1 !important;
-}
-
-/* Button night mode styles */
-.night-mode #toggleRoute,
-.night-mode #eGateButton {
-    background: #34495e !important;
-    color: #ecf0f1 !important;
-}
-
-/* Audio controls night mode */
-.night-mode audio::-webkit-media-controls-panel {
-    background-color: rgba(44, 62, 80, 0.95) !important;
-}
-
-.night-mode audio::-webkit-media-controls-current-time-display,
-.night-mode audio::-webkit-media-controls-time-remaining-display,
-.night-mode audio::-webkit-media-controls-timeline {
-    color: #ecf0f1 !important;
-}
-.night-mode-toggle {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 24px;
-    background-color: rgba(255, 255, 255, 0.9); /* Mismo color que las cajetillas */
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    margin-right: 10px;
-}
-
-.night-mode-toggle .toggle-slider {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: #20af47; /* Color oscuro para el slider en modo día */
-    border-radius: 50%;
-    left: 2px;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-}
-
-.night-mode-toggle.active {
-    background-color: #34495e; /* Color oscuro para el fondo en modo noche */
-}
-
-.night-mode-toggle.active .toggle-slider {
-    transform: translateX(18px);
-    background-color: #fff; /* Color claro para el slider en modo noche */
-}
-
-/* Night Mode Overlay */
-.night-mode-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.95);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 10000;
-}
-
-.night-mode-overlay.active {
-    opacity: 1;
-}
+        /* Asegurar que el HTML base cubra todo y tenga un color de fondo para evitar el "flash blanco" */
         html {
             height: 100%;
             width: 100%;
             margin: 0;
             padding: 0;
             overflow: hidden;
+            touch-action: none;
+            background-color: #191970; /* Color base del gradiente para evitar el flash */
         }
-        #background-container {
-            position: fixed;
-            top: 0;
-            left: 0;
+
+        body {
+            font-family: 'Emirates Bold';
+            margin: 0;
+            padding: 0;
+            /* El body ahora ocupa toda la altura y tiene el fondo */
             width: 100%;
-            min-height: 100vh;
+            min-height: 100vh; /* Asegura que cubra toda la altura visible */
             background: linear-gradient(to bottom, #191970, #000080);
             background-size: cover;
             background-attachment: fixed;
-            z-index: 0;
-        }
-        body {
-            font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            width: 100%;
+
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            
             position: relative;
-            z-index: 1;
             overflow: hidden;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
+            touch-action: none;
             box-sizing: border-box;
         }
+
         .emirates-logo {
             position: absolute;
             bottom: calc(20px + env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
-            z-index: 4;
+            z-index: 3;
             width: 60px;
             height: 60px;
             object-fit: cover;
@@ -375,6 +63,7 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
+
         .container {
             text-align: center;
             background-color: rgba(255, 255, 255, 0.9);
@@ -383,8 +72,11 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
             z-index: 2;
             position: relative;
-            width: 300px;
+            /* Eliminamos los márgenes para que el fondo cubra completamente el área de la pantalla */
+            /* margin-top: env(safe-area-inset-top); */
+            /* margin-bottom: env(safe-area-inset-bottom); */
         }
+
         #countdown {
             font-size: 2.5em;
             color: #2c3e50;
@@ -422,21 +114,25 @@
             transform: scaleX(-1);
             transition: left 0.5s linear;
         }
+        .dune {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 25vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .dune-gradient {
+            fill: url(#duneGradient);
+        }
         #celestialBody {
             font-size: 60px;
             position: absolute;
             transition: none;
             z-index: 1;
             opacity: 1;
-            pointer-events: none;
-        }
-        .dunes {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 25vh;
-            z-index: 1;
             pointer-events: none;
         }
         .button-container {
@@ -473,7 +169,7 @@
         }
         .star {
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             animation: fade 3s infinite;
         }
@@ -490,7 +186,7 @@
             gap: 10px;
         }
         .input-container span {
-            font-family: 'Emirates Bold', sans-serif;
+            font-family: 'Emirates Bold';
             font-size: 1.2em;
             color: #2c3e50;
         }
@@ -527,7 +223,7 @@
         #eGateButton {
             padding: 0 20px;
             font-size: 1.2em;
-            font-family: 'Emirates Bold', sans-serif;
+            font-family: 'Emirates Bold';
             background: white;
             color: #2c3e50;
             border: none;
@@ -612,426 +308,12 @@
             z-index: 999;
             transition: opacity 0.3s ease;
         }
-         <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fondo de Duna con Camello y Fondo en Movimiento</title>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-            background: #f7e1a1;
-        }
 
-        .background {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 40%;
-            background-image: url('https://i.imghippo.com/files/TOwh7858zhA.png');
-            background-repeat: repeat-x;
-            background-size: auto 100%;
-            opacity: 0.3;
-            z-index: 0;
-            animation: moveBackground 166.67s linear infinite;
-        }
-
-        /* Animación para mover el fondo de derecha a izquierda */
-        @keyframes moveBackground {
-            0% {
-                background-position: 0 0;
-            }
-            100% {
-                background-position: -200% 0; /* Mover el fondo hacia la izquierda */
-            }
-        }
-
-        .dune {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 250px;
-            z-index: 2;
-        }
-
-        .dune svg {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: #333;
-            font-family: Arial, sans-serif;
-        }
-
-        .camel {
-            position: absolute;
-            width: 100px;
-            z-index: 3;
-            transform-origin: center bottom;
-        }
-        /* Estilos para el modo noche del calendario */
-.night-mode #calendar-window {
-    background: rgba(44, 62, 80, 0.9);
-}
-
-.night-mode #title-bar {
-    background: #34495e;
-    border-bottom-color: #2c3e50;
-}
-
-.night-mode #title,
-.night-mode .event-title,
-.night-mode .event-time,
-.night-mode .date-header {
-    color: #ecf0f1;
-}
-
-.night-mode .event {
-    border-bottom-color: #34495e;
-}
-
-.night-mode #toggle-day {
-    background: #2c3e50;
-    color: #ecf0f1;
-}
-
-.night-mode #toggle-day:hover {
-    background: #243342;
-}
-@media (max-width: 600px) {
-  .top-boxes-container {
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 10px !important;
-    width: 100vw !important;
-    height: 32px !important;
-    left: 0 !important;
-    right: 0 !important;
-    padding: 10px 14px !important;
-  }
-  .top-boxes-container > * {
-    width: auto !important;         /* Solo el ancho de su contenido */
-    min-width: 0 !important;
-    max-width: 95vw !important;     /* Opcional: para que no sobresalga en pantallas pequeñas */
-    box-sizing: border-box !important;
-    justify-content: flex-start !important;
-    border-radius: 10px !important;
-    margin: 0 auto !important;      /* Centra las cajetillas */
-  }
-}
-@media (max-width: 600px) {
-  .background {
-    animation: moveBackgroundMobile 166.67s linear infinite;
-  }
-  @keyframes moveBackgroundMobile {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 0 0;
-    }
-  }
-}
-@media (max-width: 600px) {
-  .humidity-block {
-    display: none !important;
-  }
-}
-    </style>
-    <style>
-/* Calendar Widget Styles */
-#calendar-window {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    left: calc(50% + 200px);
-    width: 340px;
-    min-height: 200px;
-    max-height: 70vh;
-    background: rgba(255,255,255,0.9);
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-family: 'Emirates Bold', Helvetica, Arial, sans-serif;
-    z-index: 9999;
-    overflow: hidden;
-    user-select: none;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    box-sizing: border-box;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 20px;
-}
-
-#current-date {
-    text-align: center;
-    width: 100%;
-    padding: 10px 0;
-    margin-bottom: 15px;
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-#calendar-window.visible {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.events-list {
-    width: 100%;
-    box-sizing: border-box;
-    opacity: 1;
-    transform: translateY(0);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.events-list.fade-out {
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.events-list.fade-in {
-    opacity: 1;
-    transform: translateY(0);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.event {
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.5);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-origin: top;
-    animation: eventAppear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.event:hover {
-    background: rgba(255, 255, 255, 0.8);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes eventAppear {
-    from {
-        opacity: 0;
-        transform: translateY(5px) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Estilizado del scrollbar para el contenedor de eventos */
-#events-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-#events-container::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 3px;
-}
-
-#events-container::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-    transition: background 0.3s ease;
-}
-
-#events-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.3);
-}
-
-/* Estilos para el modo noche */
-.night-mode #calendar-window {
-    background: rgba(26, 32, 44, 0.9);
-}
-
-.night-mode .event {
-    background: rgba(0, 0, 0, 0.2);
-}
-
-.night-mode .event:hover {
-    background: rgba(0, 0, 0, 0.3);
-}
-
-/* Spinner de carga */
-.loading-spinner {
-    width: 20px;
-    height: 20px;
-    margin: 15px auto;
-    border: 2px solid rgba(44, 62, 80, 0.1);
-    border-radius: 50%;
-    border-top: 2px solid #2c3e50;
-    animation: constant-spin 0.8s linear infinite;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-@keyframes constant-spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-/* Versión modo nocturno del spinner */
-.night-mode .loading-spinner {
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-top: 2px solid #ecf0f1;
-}
-
-/* Estilos para el modo noche del calendario */
-.night-mode #calendar-window {
-    background: rgba(44, 62, 80, 0.9);
-}
-
-.night-mode .event-title,
-.night-mode .event-time,
-.night-mode .date-header {
-    color: #ecf0f1;
-}
-
-.night-mode .event {
-    border-bottom-color: #34495e;
-}
-.running-person {
-    position: fixed;
-    bottom: -12px;
-    left: -100px;
-    width: 100px;
-    height: auto;
-    z-index: 1000;
-    display: none;
-    transition: left 30s linear;
-}
-@keyframes busCurve {
-    0% {
-        left: 40%;
-        bottom: -100px;
-        transform: translateX(-50%);
-    }
-    15% {
-        left: 60%; /* Aumentado el movimiento horizontal para crear un ángulo más pronunciado */
-        bottom: 0;
-        transform: translateX(-50%);
-    }
-    85% {
-        left: 95%;
-        bottom: 0;
-        transform: translateX(-50%);
-    }
-    100% {
-        left: 120%;
-        bottom: -20%;
-        transform: translateX(-50%);
-    }
-}
-
-.moving-bus {
-    position: fixed;
-    bottom: -100px;
-    left: 40%;
-    width: 300px;
-    height: auto;
-    z-index: 1;
-    display: none;
-    animation: none;
-}
-
-.moving-bus.animate {
-    animation: busCurve 20s linear forwards;
-}
-
-.moving-bus {
-    position: fixed;
-    bottom: -100px;
-    left: 50%;
-    width: 300px;
-    height: auto;
-    z-index: 1;
-    display: none;
-    animation: none;
-    transition: opacity 0.3s ease;
-}
-
-.moving-bus.animate {
-    animation: busCurve 20s linear forwards;
-}
     </style>
 </head>
 <body>
-    <div class="top-boxes-container">
-        <div class="night-mode-toggle">
-            <div class="toggle-slider">🌞</div>
-        </div>
-        <div class="radio-box box-base" id="radioBox">
-            <div class="radio-content">
-                <img src="https://i.imghippo.com/files/XmUm8528avM.png" alt="RAC1" id="radioToggle">
-                <audio controls>
-                    <source src="https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3" type="audio/mpeg">
-                    Tu navegador no soporta el elemento de audio.
-                </audio>
-            </div>
-        </div>    
-        <div class="time-box box-base" id="currentTimeBox">
-            <div class="time-data">
-                <span id="currentTime">00:00:00</span>
-            </div>
-        </div>
-        <div class="date-box box-base" id="dateBox">
-            <div class="date-data">
-                <span id="currentDate">01 Jan 2024</span>
-            </div>
-        </div>
-        <div class="weather-box box-base" id="dubaiWeatherBox">
-            <div class="weather-data">
-                <div class="weather-item">
-                    <span class="weather-icon">🌡️</span>
-                    <span>H: <span id="dubaiTempMax">Loading...</span> / L: <span id="dubaiTempMin">Loading...</span> | 
-                    <span class="weather-icon">💧</span>
-                    <span id="dubaiHumidity">Loading...</span> | 
-                    <span class="weather-icon">🌅</span>
-                    <span>SR: <span id="dubaiSunrise">Loading...</span> | 
-                    <span class="weather-icon">🌇</span>
-                    SS: <span id="dubaiSunset">Loading...</span></span>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="calendar-box box-base" id="calendarBox">
-            <div class="calendar-content">
-                <span>📅</span>
-                <span>Calendar</span>
-            </div>
-        </div>
-    </div>
-    <img src="https://s6.gifyu.com/images/bpIpP.gif" alt="Running Person" class="running-person" id="runningPerson">
-    <img src="https://i.imghippo.com/files/CNZA1634zls.png" alt="Moving Bus" class="moving-bus" id="movingBus">
-<div class="night-mode-overlay"></div>
-    <div id="background-container"></div>
     <img src="https://upload.wikimedia.org/wikipedia/commons/archive/d/d0/20250508163912%21Emirates_logo.svg"
-         alt="Emirates Logo" class="emirates-logo">
+            alt="Emirates Logo" class="emirates-logo">
     <div class="container">
         <h1 id="routeTitle">Grosvenor to HQ in</h1>
         <div id="countdown">00:00</div>
@@ -1054,17 +336,6 @@
         <div id="closestTimes"></div>
     </div>
     <div id="celestialBody">☀️</div>
-  <div class="background"></div>
-    <div class="dune">
-        <svg viewBox="0 0 1440 250" preserveAspectRatio="none">
-            <path
-                id="dune-path"
-                fill="#e0c097"
-                d="M0,250 C200,150 400,200 600,100 C800,50 1000,150 1200,200 C1300,225 1400,200 1440,250"
-            />
-        </svg>
-    </div>
-    <img class="camel" id="camel" src="https://s6.gifyu.com/images/bpEd9.gif" alt="Camello caminando">
     <div class="stars-container" id="starsContainer"></div>
 
     <div id="firstVisitPopup">
@@ -1080,21 +351,15 @@
                 Select "Add to Home Screen"
             </li>
             <li>
+                <img src="https://cdn-icons-png.flaticon.com/128/3161/3161837.png" alt="Add to Home Screen Icon" class="icon">
                 Tap "Add" in the top-right corner
             </li>
         </ul>
         <button id="closePopup">Close</button>
     </div>
 
-    <div id="calendar-window">
-        <div id="events-container">
-            <div class="date-header" id="current-date"></div>
-            <div id="events-list" class="events-list"></div>
-        </div>
-    </div>
     <script>
-        // Bus Countdown and Calendar JavaScript
-        let dunePoints = [];
+        // Tu JavaScript no necesita cambios
         let isGrosvenorToHQ = true;
         let starsCreated = false;
 
@@ -1130,48 +395,6 @@
             "20:05", "20:30", "20:55", "21:20", "21:45", "22:10", "22:35", "23:00", "23:25", "23:50"
         ];
 
-        function generateRandomDune() {
-            const segments = 4;
-            const width = 1000;
-            const segmentWidth = width / segments;
-            let path = "M0,250";
-            dunePoints = [{ x: 0, y: 250 }];
-
-            for (let i = 1; i <= segments; i++) {
-                const x1 = (i - 0.66) * segmentWidth;
-                const y1 = 250 - Math.random() * 130;
-                const x2 = (i - 0.33) * segmentWidth;
-                const y2 = 250 - Math.random() * 130;
-                const x3 = i * segmentWidth;
-                const y3 = i === segments ? 250 : 250 - Math.random() * 130;
-
-                path += ` C${x1},${y1} ${x2},${y2} ${x3},${y3}`;
-                dunePoints.push({ x: x1, y: y1 }, { x: x2, y: y2 }, { x: x3, y: y3 });
-            }
-
-            path += " L0,250 Z";
-            document.getElementById("dunePath").setAttribute("d", path);
-        }
-
-        function getBezierY(t, p0, p1, p2, p3) {
-            const mt = 1 - t;
-            return Math.pow(mt, 3) * p0.y + 3 * Math.pow(mt, 2) * t * p1.y +
-                   3 * mt * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
-        }
-
-        function getDuneHeight(x) {
-            for (let i = 0; i < dunePoints.length - 3; i += 3) {
-                const p0 = dunePoints[i];
-                const p1 = dunePoints[i + 1];
-                const p2 = dunePoints[i + 2];
-                const p3 = dunePoints[i + 3];
-                if (x >= p0.x && x <= p3.x) {
-                    const t = (x - p0.x) / (p3.x - p0.x);
-                    return getBezierY(t, p0, p1, p2, p3);
-                }
-            }
-            return 250;
-        }
 
         function getBusTimes() {
             const currentSchedule = isGrosvenorToHQ ? grosvenorToHQSchedule.map(item => item.gros) : hqToGrosvenorSchedule;
@@ -1189,1024 +412,124 @@
                     previousBus = {
                         time: currentSchedule[i-1] || currentSchedule[currentSchedule.length-1],
                         minutes: (i-1 >= 0 ? currentSchedule[i-1] : currentSchedule[currentSchedule.length-1])
-                            .split(':').map(Number).reduce((h,m) => h*60 + m, 0)
+                            .split(':').map(Number).reduce((h,m) => h*60 + m)
                     };
                     break;
                 }
             }
 
             if (!nextBus.minutes) {
-                const [nextHours, nextMins] = currentSchedule[0].split(':').map(Number);
-                const [prevHours, prevMins] = currentSchedule[currentSchedule.length-1].split(':').map(Number);
-                nextBus = { time: currentSchedule[0], minutes: nextHours * 60 + nextMins + 1440 };
-                previousBus = { time: currentSchedule[currentSchedule.length-1], minutes: prevHours * 60 + prevMins };
-                if (currentTimeInMinutes >= previousBus.minutes) {
-                    nextBus.minutes = nextHours * 60 + nextMins + 1440;
-                } else {
-                    nextBus.minutes = nextHours * 60 + nextMins;
-                    const [lastBusHours, lastBusMins] = currentSchedule[currentSchedule.length-1].split(':').map(Number);
-                    previousBus.minutes = lastBusHours * 60 + lastBusMins;
-                }
+                nextBus = { time: currentSchedule[0], minutes: currentSchedule[0].split(':').map(Number)[0] * 60 +
+                                currentSchedule[0].split(':').map(Number)[1] + 1440 };
+                previousBus = { time: currentSchedule[currentSchedule.length-1],
+                                    minutes: currentSchedule[currentSchedule.length-1].split(':').map(Number)[0] * 60 +
+                                    currentSchedule[currentSchedule.length-1].split(':').map(Number)[1] };
             }
 
             return { previousBus, nextBus };
         }
 
         function updateSkyAndCelestial() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const totalMinutes = hours * 60 + minutes;
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const totalMinutes = hours * 60 + minutes;
 
+    const celestial = document.getElementById('celestialBody');
+    const starsContainer = document.getElementById('starsContainer');
+    let newGradient;
 
-            const celestial = document.getElementById('celestialBody');
-            const starsContainer = document.getElementById('starsContainer');
-            let gradient;
+    // Define time periods (in minutes since midnight)
+    const sunriseStart = 5 * 60; // 5:00 AM
+    const sunriseEnd = 7 * 60; // 7:00 AM
+    const dayEnd = 17 * 60; // 5:00 PM
+    const sunsetEnd = 19 * 60; // 7:00 PM
+    const dayLength = 12 * 60; // For celestial movement
 
+    // Helper function to interpolate between two colors
+    function interpolateColor(color1, color2, factor) {
+        const result = color1.slice(1).match(/.{2}/g).map((hex, i) => {
+            const c1 = parseInt(hex, 16);
+            const c2 = parseInt(color2.slice(1).match(/.{2}/g)[i], 16);
+            const value = Math.round(c1 + (c2 - c1) * factor);
+            return value.toString(16).padStart(2, '0');
+        });
+        return `#${result.join('')}`;
+    }
 
-            const dayLength = 12 * 60;
-            const sunrise = 6 * 60;
-            const sunset = 18 * 60;
-            const moonrise = sunset;
-            const moonset = sunrise + 1440;
-
-
-            const isDay = totalMinutes >= sunrise && totalMinutes < sunset;
-            if (isDay) {
-                gradient = 'linear-gradient(to bottom, #87cefa, #4682b4)';
-                celestial.textContent = '☀️';
-                starsContainer.style.display = 'none';
-            } else {
-                gradient = 'linear-gradient(to bottom, #191970, #000080)';
-                celestial.textContent = '🌙';
-                starsContainer.style.display = 'block';
-                if (!starsCreated) {
-                    createStars();
-                    starsCreated = true;
-                }
-            }
-            document.getElementById('background-container').style.background = gradient;
-
-
-            let progress;
-            if (isDay) {
-                progress = (totalMinutes - sunrise) / dayLength;
-            } else {
-                const adjustedMinutes = totalMinutes < sunrise ? totalMinutes + 1440 : totalMinutes;
-                progress = (adjustedMinutes - moonrise) / dayLength;
-            }
-            progress = Math.max(0, Math.min(1, progress));
-
-
-            const xPos = 5 + progress * 90;
-            const yPos = 90 - 80 * 4 * progress * (1 - progress);
-
-
-            celestial.style.left = `${xPos}vw`;
-            celestial.style.top = `${yPos}vh`;
-            celestial.style.display = 'block';
+    // Determine time period and set gradient
+    if (totalMinutes >= sunriseStart && totalMinutes < sunriseEnd) {
+        // Sunrise: Warm orange, pink, yellow
+        const factor = (totalMinutes - sunriseStart) / (sunriseEnd - sunriseStart);
+        const topColor = interpolateColor('#ff4500', '#ffd700', factor); // Orange to yellow
+        const bottomColor = interpolateColor('#ff69b4', '#87ceeb', factor); // Pink to light blue
+        newGradient = `linear-gradient(to bottom, ${topColor}, ${bottomColor})`;
+        celestial.textContent = '☀️';
+        starsContainer.style.display = 'none';
+    } else if (totalMinutes >= sunriseEnd && totalMinutes < dayEnd) {
+        // Daytime: Bright blue tones
+        const factor = (totalMinutes - sunriseEnd) / (dayEnd - sunriseEnd);
+        const topColor = interpolateColor('#87ceeb', '#4682b4', factor); // Light to medium blue
+        const bottomColor = interpolateColor('#b0e0e6', '#1e90ff', factor); // Cyan to deep blue
+        newGradient = `linear-gradient(to bottom, ${topColor}, ${bottomColor})`;
+        celestial.textContent = '☀️';
+        starsContainer.style.display = 'none';
+    } else if (totalMinutes >= dayEnd && totalMinutes < sunsetEnd) {
+        // Sunset: Reddish, golden, purple
+        const factor = (totalMinutes - dayEnd) / (sunsetEnd - dayEnd);
+        const topColor = interpolateColor('#ffd700', '#ff4500', factor); // Yellow to orange-red
+        const bottomColor = interpolateColor('#ff8c00', '#4b0082', factor); // Orange to indigo
+        newGradient = `linear-gradient(to bottom, ${topColor}, ${bottomColor})`;
+        celestial.textContent = '☀️';
+        starsContainer.style.display = 'none';
+    } else {
+        // Night: Deep blue and indigo
+        const factor = ((totalMinutes < sunriseStart ? totalMinutes + 1440 : totalMinutes) - sunsetEnd) / (sunriseStart + 1440 - sunsetEnd);
+        const topColor = interpolateColor('#191970', '#000033', factor); // Midnight blue to darker blue
+        const bottomColor = interpolateColor('#000080', '#1c2526', factor); // Navy to dark teal
+        newGradient = `linear-gradient(to bottom, ${topColor}, ${bottomColor})`;
+        celestial.textContent = '🌙';
+        starsContainer.style.display = 'block';
+        if (!starsCreated) {
+            createStars();
+            starsCreated = true;
         }
+    }
+
+    // Apply gradient with smooth transition to the BODY
+    document.body.style.transition = 'background 5s ease';
+    document.body.style.background = newGradient;
+
+
+    // Update celestial body position
+    let progress;
+    if (totalMinutes >= sunriseStart && totalMinutes < sunsetEnd) {
+        progress = (totalMinutes - sunriseStart) / (sunsetEnd - sunriseStart);
+    } else {
+        const adjustedMinutes = totalMinutes < sunriseStart ? totalMinutes + 1440 : totalMinutes;
+        progress = (adjustedMinutes - sunsetEnd) / (sunriseStart + 1440 - sunsetEnd);
+    }
+    progress = Math.max(0, Math.min(1, progress));
+
+    const xPos = 5 + progress * 90;
+    const yPos = 90 - 80 * 4 * progress * (1 - progress);
+
+    celestial.style.left = `${xPos}vw`;
+    celestial.style.top = `${yPos}vh`;
+    celestial.style.display = 'block';
+}
 
         function updateCountdown() {
             const now = new Date();
             const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() + now.getMilliseconds() / 1000) / 60;
             const { previousBus, nextBus } = getBusTimes();
+            let timeDifference = nextBus.minutes - currentTimeInMinutes;
 
-let timeDifference = nextBus.minutes - currentTimeInMinutes;
-if (timeDifference < 0) {
-    timeDifference += 1440;
-}
+            if (timeDifference < 0) {
+                timeDifference += 1440;
+            }
 
-            const minutes = Math.floor(timeDifference);
+            const minutes = Math.floor(timeDifference % 60);
             const seconds = Math.floor((timeDifference * 60) % 60);
-            const totalSeconds = minutes * 60 + seconds;
 
-// Running person animation control
-const runningPerson = document.getElementById('runningPerson');
-if (totalSeconds <= 30 && totalSeconds > 0) {
-    if (runningPerson.style.display !== 'block') {
-        runningPerson.style.display = 'block';
-        runningPerson.style.left = '-100px';
-        // Force reflow
-        void runningPerson.offsetWidth;
-        runningPerson.style.left = 'calc(100vw + 100px)';
-    }
-} else {
-    runningPerson.style.display = 'none';
-    runningPerson.style.left = '-100px';
-}
-// Bus animation control
-const movingBus = document.getElementById('movingBus');
-if (totalSeconds <= 20 && totalSeconds > 0) {
-    if (movingBus.style.display !== 'block') {
-        // Configuración inicial
-        movingBus.style.display = 'block';
-        movingBus.classList.remove('animate');
-        
-        // Force reflow
-        void movingBus.offsetWidth;
-        
-        // Inicia la animación
-        movingBus.classList.add('animate');
-    }
-} else {
-    // Reset
-    movingBus.style.display = 'none';
-    movingBus.classList.remove('animate');
-}
-            document.getElementById('countdown').textContent =
-                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
-
-            let totalDuration = (nextBus.minutes - previousBus.minutes);
-            if (totalDuration <= 0) {
-                totalDuration += 1440;
-            }
-
-            let elapsed = currentTimeInMinutes - previousBus.minutes;
-            if (elapsed < 0) {
-                elapsed += 1440;
-            }
-
-            const percentage = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0;
-            const clampedPercentage = Math.min(Math.max(percentage, 0), 100);
-
-            const progressFill = document.getElementById('progressFill');
-            progressFill.style.width = `${clampedPercentage}%`;
-
-            const remainingMinutes = timeDifference;
-            if (remainingMinutes <= 3 && remainingMinutes > 0) {
-                progressFill.style.transition = 'background-color 5s linear';
-                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
-            } else if (remainingMinutes > 3) {
-                const startColor = 204;
-                const endColor = 51;
-                const colorValue = Math.round(startColor - (startColor - endColor) * (clampedPercentage / 100));
-                progressFill.style.backgroundColor = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
-                progressFill.style.transition = 'background-color 0.5s linear, width 0.5s linear';
-            } else {
-                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
-                progressFill.style.transition = 'none';
-            }
-
-            const progressBarWidth = document.querySelector('.progress-bar').offsetWidth;
-            const busPosition = (progressBarWidth * clampedPercentage / 100) - (document.getElementById('busEmoji').offsetWidth / 2);
-            document.getElementById('busEmoji').style.left = `${Math.min(Math.max(0, busPosition), progressBarWidth - document.getElementById('busEmoji').offsetWidth)}px`;
-
-            updateSkyAndCelestial();
-        }
-
-        function createStars() {
-            const starsContainer = document.getElementById('starsContainer');
-            starsContainer.innerHTML = '';
-            const numberOfStars = 50;
-
-            for (let i = 0; i < numberOfStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-
-                const x = Math.random() * 100;
-                const y = Math.random() * 75;
-                const size = Math.random() * 2 + 1;
-
-                star.style.left = `${x}vw`;
-                star.style.top = `${y}vh`;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-
-                const delay = Math.random() * 3;
-                star.style.animationDelay = `${delay}s`;
-
-                starsContainer.appendChild(star);
-            }
-            starsCreated = true;
-        }
-
-        document.getElementById('toggleRoute').addEventListener('click', function() {
-            isGrosvenorToHQ = !isGrosvenorToHQ;
-            const routeTitle = document.getElementById('routeTitle');
-            const toggleButton = document.getElementById('toggleRoute');
-
-            if (isGrosvenorToHQ) {
-                routeTitle.textContent = "Grosvenor to HQ in";
-                toggleButton.textContent = "🔄";
-            } else {
-                routeTitle.textContent = "HQ to Grosvenor in";
-                toggleButton.textContent = "🔄";
-            }
-            updateCountdown();
-        });
-
-        function findClosestBusTimes(inputTime) {
-            if (!inputTime) return [];
-            const [inputHours, inputMinutes] = inputTime.split(':').map(Number);
-            if (isNaN(inputHours) || isNaN(inputMinutes)) return [];
-            const targetTimeInMinutes = inputHours * 60 + inputMinutes;
-            const maxDelayMinutes = 50;
-
-            const schedule = grosvenorToHQSchedule.map(item => {
-                const [grosH, grosM] = item.gros.split(':').map(Number);
-                const [hqH, hqM] = item.hq.split(':').map(Number);
-                let grosMinutes = grosH * 60 + grosM;
-                let hqMinutes = hqH * 60 + hqM;
-                if (hqMinutes < grosMinutes) {
-                    hqMinutes += 1440;
-                }
-                return { gros: item.gros, hq: item.hq, grosMinutes, hqMinutes };
-            });
-
-            schedule.push({
-                gros: schedule[0].gros,
-                hq: schedule[0].hq,
-                grosMinutes: schedule[0].grosMinutes + 1440,
-                hqMinutes: schedule[0].hqMinutes + 1440
-            });
-
-            const validTimes = schedule.filter(item => {
-                let diff = item.hqMinutes - targetTimeInMinutes;
-                if (diff < -maxDelayMinutes && item.hqMinutes < targetTimeInMinutes) {
-                    diff = (item.hqMinutes + 1440) - targetTimeInMinutes;
-                }
-                return diff >= 0 && diff <= maxDelayMinutes;
-            });
-
-            validTimes.sort((a, b) => a.grosMinutes - b.grosMinutes);
-            return validTimes.slice(0, 3).map(item => {
-                let displayGrosH = Math.floor((item.grosMinutes % 1440) / 60);
-                let displayGrosM = item.grosMinutes % 60;
-                let displayHqH = Math.floor((item.hqMinutes % 1440) / 60);
-                let displayHqM = item.hqMinutes % 60;
-                return {
-                    gros: `${String(displayGrosH).padStart(2, '0')}:${String(displayGrosM).padStart(2, '0')}`,
-                    hq: `${String(displayHqH).padStart(2, '0')}:${String(displayHqM).padStart(2, '0')}`
-                };
-            });
-        }
-
-        document.getElementById('playButton').addEventListener('click', function() {
-            document.querySelector('.input-container').style.display = 'none';
-            document.getElementById('closestTimes').style.display = 'none';
-            const eGateButton = document.getElementById('eGateButton');
-            eGateButton.style.display = 'inline-block';
-            eGateButton.style.width = '100px';
-            eGateButton.style.height = '24px';
-            eGateButton.style.background = 'white';
-        });
-
-        document.getElementById('busTimeInput').addEventListener('change', function() {
-            const input = document.getElementById('busTimeInput').value.trim();
-            const closestTimesDiv = document.getElementById('closestTimes');
-
-            if (!input) {
-                closestTimesDiv.textContent = '';
-                closestTimesDiv.style.display = 'none';
-                return;
-            }
-
-            const closestTimes = findClosestBusTimes(input);
-            if (closestTimes.length === 0) {
-                closestTimesDiv.textContent = 'No suitable bus found.';
-                closestTimesDiv.style.display = 'block';
-            } else {
-                const result = closestTimes.map(item => `${item.gros} ➡️ ${item.hq}`).join(', ');
-                closestTimesDiv.textContent = `Closest: ${result}`;
-                closestTimesDiv.style.display = 'block';
-            }
-        });
-
-        document.getElementById('eGateButton').addEventListener('click', function() {
-            document.getElementById('eGateButton').style.display = 'none';
-            document.querySelector('.input-container').style.display = 'flex';
-        });
-
-        function showFirstVisitPopup() {
-            const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            if (!localStorage.getItem('hasVisited') && !isPWA && isIOS) {
-                const popup = document.getElementById('firstVisitPopup');
-                popup.style.display = 'block';
-                document.body.classList.add('black-background');
-            }
-        }
-
-        document.getElementById('closePopup').addEventListener('click', function() {
-            const popup = document.getElementById('firstVisitPopup');
-            popup.style.display = 'none';
-            document.body.classList.remove('black-background');
-            localStorage.setItem('hasVisited', 'true');
-        });
-        function showCalendarOnLoad() {
-    const calendarWindow = document.getElementById('calendar-window');
-    calendarWindow.classList.add('visible');
-}
-        window.onload = function() {
-        generateRandomDune();
-        window.scrollTo(0, 0);
-        updateSkyAndCelestial();
-        updateCountdown();
-        updateCurrentDate();
-        showFirstVisitPopup();
-        const now = new Date();
-        if (now.getHours() < 6 || now.getHours() >= 18) {
-            createStars();
-        } 
-        window.onload = function() {
-    generateRandomDune();
-    window.scrollTo(0, 0);
-    updateSkyAndCelestial();
-    updateCountdown();
-    updateCurrentDate();
-    showFirstVisitPopup();
-    showCalendarOnLoad(); // Añadir esta línea
-    const now = new Date();
-    if (now.getHours() < 6 || now.getHours() >= 18) {
-        createStars();
-    }
-}; 
-    };
-
-        let intervalId = null;
-        function startUpdateLoop() {
-            if (intervalId) clearInterval(intervalId);
-            intervalId = setInterval(updateCountdown, 100);
-        }
-
-        startUpdateLoop();
-
-        document.body.addEventListener('touchmove', function(event) {
-            if (!event.target.closest('#events-container')) {
-                event.preventDefault();
-            }
-        }, { passive: false });
-
-        // Calendar JavaScript
-        const calendarWindow = document.getElementById('calendar-window');
-        const calendarEventsList = document.getElementById('events-list');
-        const calendarCurrentDate = document.getElementById('current-date');
-
-        const calendarUrl = 'https://p108-caldav.icloud.com/published/2/MTUxMDYwNTYxNDE1MTA2MOcLt9DeC6aDOBzlZCUDejDdugx2IBT9HDhJA6jGIXwDHsR2_c0JH71EnIqBSkhBPTX-OE44UuANI0LecwDIOcg';
-
-        let isCalendarDragging = false;
-        let currentCalendarX;
-        let currentCalendarY;
-        let initialCalendarX;
-        let initialCalendarY;
-        let showingToday = true;
-
-
-        function startCalendarDragging(e) {
-            if (e.type === 'touchstart') {
-                e.preventDefault();
-            }
-            let clientX, clientY;
-            if (e.type === 'mousedown') {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            } else if (e.type === 'touchstart' && e.touches.length === 1) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                return;
-            }
-            const rect = calendarWindow.getBoundingClientRect();
-            initialCalendarX = clientX - rect.left;
-            initialCalendarY = clientY - rect.top;
-            if (e.target === calendarTitleBar || e.target === calendarTitle) {
-                isCalendarDragging = true;
-                calendarWindow.style.cursor = 'move';
-                calendarWindow.style.transform = 'none';
-            }
-        }
-
-        function dragCalendar(e) {
-            if (isCalendarDragging) {
-                e.preventDefault();
-                let clientX, clientY;
-                if (e.type === 'mousemove') {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                } else if (e.type === 'touchmove' && e.touches.length === 1) {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                } else {
-                    return;
-                }
-                currentCalendarX = clientX - initialCalendarX;
-                currentCalendarY = clientY - initialCalendarY;
-                const maxX = window.innerWidth - calendarWindow.offsetWidth;
-                const maxY = window.innerHeight - calendarWindow.offsetHeight;
-                currentCalendarX = Math.min(Math.max(0, currentCalendarX), maxX);
-                currentCalendarY = Math.min(Math.max(0, currentCalendarY), maxY);
-                calendarWindow.style.left = currentCalendarX + 'px';
-                calendarWindow.style.top = currentCalendarY + 'px';
-            }
-        }
-
-        function stopCalendarDragging() {
-            if (isCalendarDragging) {
-                isCalendarDragging = false;
-                calendarWindow.style.cursor = 'default';
-            }
-        }
-
-        function updateCalendarDate() {
-    const dateElement = document.getElementById('current-date');
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const date = showingToday ? new Date() : new Date(Date.now() + 24 * 60 * 60 * 1000);
-    dateElement.textContent = date.toLocaleDateString('en-US', options);
-}
-
-        function formatCalendarTime(date) {
-            if (!(date instanceof Date) || isNaN(date)) {
-                return 'Invalid time';
-            }
-            return date.toLocaleTimeString(navigator.language || 'en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            });
-        }
-
-        async function fetchCalendarEvents() {
-            calendarEventsList.innerHTML = '<div class="loading-spinner"></div>';
-            try {
-                const proxyUrl = 'https://api.allorigins.win/raw?url=';
-                const response = await fetch(proxyUrl + encodeURIComponent(calendarUrl));
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
-                }
-                const icsData = await response.text();
-                if (!icsData) {
-                    throw new Error('Empty response received');
-                }
-                const events = parseICS(icsData);
-                displayCalendarEvents(events);
-            } catch (error) {
-                console.error('Error fetching calendar:', error);
-                calendarEventsList.innerHTML = `<div class="loading">Unable to load events: ${error.message}</div>`;
-            }
-        }
-
-        function parseICS(icsData) {
-            const events = [];
-            const lines = icsData.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
-            let currentEvent = null;
-            let currentLine = '';
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i];
-                if (line.startsWith(' ') || line.startsWith('\t')) {
-                    if (currentLine) {
-                        currentLine += line.substring(1);
-                    }
-                    continue;
-                } else {
-                    if (currentLine) {
-                        processICSLine(currentLine, currentEvent);
-                    }
-                    currentLine = line;
-                }
-                if (currentLine.toUpperCase() === 'BEGIN:VEVENT') {
-                    currentEvent = {};
-                    currentLine = '';
-                } else if (currentLine.toUpperCase() === 'END:VEVENT') {
-                    if (currentEvent && currentEvent.dtstart && currentEvent.summary) {
-                        if (!currentEvent.dtend && currentEvent.dtstartIsDate) {
-                            currentEvent.dtend = currentEvent.dtstart;
-                        }
-                        events.push(currentEvent);
-                    }
-                    currentEvent = null;
-                    currentLine = '';
-                }
-            }
-            if (currentLine) {
-                processICSLine(currentLine, currentEvent);
-            }
-            return events;
-        }
-
-        function processICSLine(line, eventObj) {
-            if (!eventObj || !line.includes(':')) return;
-            const [keyPart, ...valueParts] = line.split(':');
-            const value = valueParts.join(':');
-            const keyParts = keyPart.split(';');
-            const key = keyParts[0].toUpperCase();
-            if (key === 'DTSTART') {
-                const parsedDate = parseICSDate(value, keyPart);
-                eventObj.dtstart = parsedDate.date;
-                eventObj.dtstartIsDate = parsedDate.isDate;
-            } else if (key === 'DTEND') {
-                const parsedDate = parseICSDate(value, keyPart);
-                eventObj.dtend = parsedDate.date;
-                eventObj.dtendIsDate = parsedDate.isDate;
-            } else if (key === 'SUMMARY') {
-                eventObj.summary = value.replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/g, '\n');
-            }
-        }
-
-        function parseICSDate(dateStr, keyPart) {
-            const isDateOnly = keyPart.toUpperCase().includes('VALUE=DATE');
-            const cleanStr = dateStr.replace('T', '').replace('Z', '');
-            const year = parseInt(cleanStr.substr(0, 4), 10);
-            const month = parseInt(cleanStr.substr(4, 2), 10) - 1;
-            const day = parseInt(cleanStr.substr(6, 2), 10);
-            if (isDateOnly) {
-                return { date: new Date(year, month, day), isDate: true };
-            } else {
-                const hour = parseInt(cleanStr.substr(8, 2) || '0', 10);
-                const minute = parseInt(cleanStr.substr(10, 2) || '0', 10);
-                const second = parseInt(cleanStr.substr(12, 2) || '0', 10);
-                if (dateStr.endsWith('Z')) {
-                    return { date: new Date(Date.UTC(year, month, day, hour, minute, second)), isDate: false };
-                } else {
-                    return { date: new Date(year, month, day, hour, minute, second), isDate: false };
-                }
-            }
-        }
-
-        function isCalendarDateSameDay(date, referenceDate) {
-            if (!(date instanceof Date) || isNaN(date)) {
-                return false;
-            }
-            const compareDate = new Date(date);
-            compareDate.setHours(0, 0, 0, 0);
-            const refDate = new Date(referenceDate);
-            refDate.setHours(0, 0, 0, 0);
-            return compareDate.getTime() === refDate.getTime();
-        }
-
-        function displayCalendarEvents(events) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-            const targetDate = showingToday ? today : tomorrow;
-            const filteredEvents = events.filter(event => event.dtstart && isCalendarDateSameDay(event.dtstart, targetDate));
-            if (filteredEvents.length === 0) {
-                calendarEventsList.innerHTML = '<div class="loading">No events scheduled</div>';
-                return;
-            }
-            filteredEvents.sort((a, b) => {
-                if (a.dtstartIsDate && !b.dtstartIsDate) return -1;
-                if (!a.dtstartIsDate && b.dtstartIsDate) return 1;
-                if (a.dtstartIsDate && b.dtstartIsDate) return 0;
-                return a.dtstart.getTime() - b.dtstart.getTime();
-            });
-            calendarEventsList.innerHTML = filteredEvents.map(event => {
-                let timeString = '';
-                if (event.dtstartIsDate) {
-                    timeString = 'All Day';
-                } else {
-                    timeString = formatCalendarTime(event.dtstart);
-                    if (event.dtend && !event.dtendIsDate && event.dtend.getTime() !== event.dtstart.getTime()) {
-                        timeString += ` - ${formatCalendarTime(event.dtend)}`;
-                    }
-                }
-                return `
-                    <div class="event">
-                        <div class="event-title">${event.summary || 'No Title'}</div>
-                        <div class="event-time">${timeString}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function toggleCalendarDay() {
-    const eventsList = document.getElementById('events-list');
-    const dateHeader = document.getElementById('current-date');
-    
-    // Añadir clases de fade out
-    eventsList.classList.add('fade-out');
-    dateHeader.classList.add('fade-out');
-    
-    // Esperar a que termine la animación de fade out
-    setTimeout(() => {
-        // Cambiar el día
-        showingToday = !showingToday;
-        
-        // Actualizar el contenido
-        updateCalendarDate();
-        fetchCalendarEvents();
-        
-        // Forzar un reflow
-        void eventsList.offsetWidth;
-        void dateHeader.offsetWidth;
-        
-        // Quitar las clases de fade out y añadir fade in
-        eventsList.classList.remove('fade-out');
-        dateHeader.classList.remove('fade-out');
-        eventsList.classList.add('fade-in');
-        dateHeader.classList.add('fade-in');
-        
-        // Limpiar las clases de fade in después de la animación
-        setTimeout(() => {
-            eventsList.classList.remove('fade-in');
-            dateHeader.classList.remove('fade-in');
-        }, 500);
-    }, 500);
-}
-
-function startAutoCycle() {
-    setInterval(() => {
-        toggleCalendarDay();
-    }, 15000); // Cambiado a 15 segundos para dar más tiempo a leer
-}
-// Función para extraer la ciudad de los eventos
-function getEventCity(events) {
-    if (!events || events.length === 0) return null;
-    
-    for (let event of events) {
-        const summary = event.summary.toLowerCase();
-        // Ignorar eventos que contengan "dubai"
-        if (!summary.includes('dubai')) {
-            // Buscar una ciudad en el título del evento
-            const cities = {
-                'london': { lat: 51.5074, lon: -0.1278, timezone: 'Europe/London' },
-                'paris': { lat: 48.8566, lon: 2.3522, timezone: 'Europe/Paris' },
-                'madrid': { lat: 40.4168, lon: -3.7038, timezone: 'Europe/Madrid' },
-                'rome': { lat: 41.9028, lon: 12.4964, timezone: 'Europe/Rome' },
-                'berlin': { lat: 52.5200, lon: 13.4050, timezone: 'Europe/Berlin' }
-            };
-
-            for (let city in cities) {
-                if (summary.includes(city)) {
-                    return {
-                        name: city.charAt(0).toUpperCase() + city.slice(1),
-                        ...cities[city]
-                    };
-                }
-            }
-        }
-    }
-    return null;
-}
-function displayCalendarEvents(events) {
-    const eventsList = document.getElementById('events-list');
-    
-    // Preparar el nuevo contenido
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-    const targetDate = showingToday ? today : tomorrow;
-    const filteredEvents = events.filter(event => event.dtstart && isCalendarDateSameDay(event.dtstart, targetDate));
-    
-    let newContent = '';
-    if (filteredEvents.length === 0) {
-        newContent = '<div class="loading-spinner"></div>';
-    } else {
-        filteredEvents.sort((a, b) => {
-            if (a.dtstartIsDate && !b.dtstartIsDate) return -1;
-            if (!a.dtstartIsDate && b.dtstartIsDate) return 1;
-            if (a.dtstartIsDate && b.dtstartIsDate) return 0;
-            return a.dtstart.getTime() - b.dtstart.getTime();
-        });
-        
-        newContent = filteredEvents.map(event => {
-            let timeString = '';
-            if (event.dtstartIsDate) {
-                timeString = 'All Day';
-            } else {
-                timeString = formatCalendarTime(event.dtstart);
-                if (event.dtend && !event.dtendIsDate && event.dtend.getTime() !== event.dtstart.getTime()) {
-                    timeString += ` - ${formatCalendarTime(event.dtend)}`;
-                }
-            }
-            return `
-                <div class="event">
-                    <div class="event-title">${event.summary || 'No Title'}</div>
-                    <div class="event-time">${timeString}</div>
-                </div>
-            `;
-        }).join('');
-    }
-    
-    // Actualizar el contenido con la transición
-    eventsList.style.opacity = '0';
-    eventsList.style.transform = 'translateX(-20px)';
-    
-    setTimeout(() => {
-        eventsList.innerHTML = newContent;
-        
-        // Forzar un reflow
-        void eventsList.offsetWidth;
-        
-        eventsList.style.opacity = '1';
-        eventsList.style.transform = 'translateX(0)';
-    }, 300);
-    updateWeather(events);
-}
-
-function updateCalendarDate() {
-    const dateElement = document.getElementById('current-date');
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const date = showingToday ? new Date() : new Date(Date.now() + 24 * 60 * 60 * 1000);
-    dateElement.textContent = date.toLocaleDateString('en-US', options);
-}
-
-        updateCalendarDate();
-        fetchCalendarEvents();
-        startAutoCycle();
-
-        setInterval(() => {
-            console.log("Updating calendar...");
-            fetchCalendarEvents();
-        }, 300000);
-        const camel = document.getElementById('camel');
-        const path = document.getElementById('dune-path');
-        const svg = path.closest('svg');
-        const pathLength = path.getTotalLength();
-        const duneHeight = 250;
-        const viewBoxWidth = 1440;
-
-        function updateCamelPosition(progress) {
-    const point = path.getPointAtLength(progress * pathLength);
-    const svgRect = svg.getBoundingClientRect();
-    const scaleX = svgRect.width / viewBoxWidth;
-    const scaleY = svgRect.height / duneHeight;
-    const x = point.x * scaleX;
-    const y = point.y;
-    const distanceFromSvgBottom = (duneHeight - y) * scaleY;
-    camel.style.left = `${x - camel.width / 2}px`;
-    camel.style.bottom = `${distanceFromSvgBottom - 13}px`;
-    const delta = 0.01;
-    const nextPoint = path.getPointAtLength(Math.min((progress + delta) * pathLength, pathLength));
-    const slope = (nextPoint.y - point.y) / (nextPoint.x - point.x);
-    const angle = Math.atan(slope) * (180 / Math.PI);
-    camel.style.transform = `rotate(${angle}deg)`;
-    
-    // Solo ocultamos el camello cuando haya salido completamente de la pantalla
-    if (x - camel.width / 2 > window.innerWidth) {
-        camel.style.display = 'none';
-    } else {
-        camel.style.display = 'block';
-    }
-}
-
-        let progress = 0;
-function animate() {
-    progress += 0.0001;
-    if (progress > 1) {
-        progress = 0;
-        camel.style.display = 'block';
-    }
-    updateCamelPosition(progress);
-    requestAnimationFrame(animate);
-        }
-        animate();
-
-        window.addEventListener('resize', () => updateCamelPosition(progress));
-// Night Mode Toggle Functionality
-const nightModeToggle = document.querySelector('.night-mode-toggle');
-const toggleSlider = document.querySelector('.toggle-slider');
-const nightModeOverlay = document.querySelector('.night-mode-overlay');
-let isNightMode = false;
-
-nightModeToggle.addEventListener('click', () => {
-    isNightMode = !isNightMode;
-    
-    // Toggle classes for night mode
-    nightModeToggle.classList.toggle('active');
-    nightModeOverlay.classList.toggle('active');
-    
-    // Elementos principales
-    document.body.classList.toggle('night-mode');
-    document.querySelector('.container').classList.toggle('night-mode');
-    
-    // Asegurarse de que la radio, fecha y calendario cambien
-    document.querySelector('.radio-box').classList.toggle('night-mode');
-    document.querySelector('.date-box').classList.toggle('night-mode');
-    document.querySelector('.calendar-box').classList.toggle('night-mode');
-    document.querySelector('#calendar-window').classList.toggle('night-mode');
-
-    // Todas las cajas superiores
-    document.querySelectorAll('.box-base').forEach(box => {
-        box.classList.toggle('night-mode');
-    });
-    
-    // Elementos específicos del tiempo (weather)
-    const weatherElements = [
-        '.weather-box',
-        '.weather-data',
-        '.weather-item',
-        '#dubaiTempMax',
-        '#dubaiTempMin',
-        '#dubaiHumidity',
-        '#dubaiSunrise',
-        '#dubaiSunset'
-    ];
-    
-    weatherElements.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(element => {
-            element.classList.toggle('night-mode');
-        });
-    });
-    
-    // Elementos de tiempo (hora)
-    const timeElements = [
-        '.time-box',
-        '.time-data',
-        '#currentTime'
-    ];
-    
-    timeElements.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(element => {
-            element.classList.toggle('night-mode');
-        });
-    });
-    
-    // Elementos de fecha
-    const dateElements = [
-        '.date-box',
-        '.date-data',
-        '#currentDate'
-    ];
-    
-    dateElements.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(element => {
-            element.classList.toggle('night-mode');
-        });
-    });
-    
-    // Radio y audio
-    const radioElements = [
-        '.radio-box',
-        '.radio-content',
-        'audio'
-    ];
-    
-    radioElements.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(element => {
-            element.classList.toggle('night-mode');
-        });
-    });
-    
-    // Cuenta regresiva y elementos relacionados
-    const countdownElements = [
-        '#countdown',
-        '#nextBus',
-        '.progress-bar',
-        '.progress-fill'
-    ];
-    
-    countdownElements.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(element => {
-            element.classList.toggle('night-mode');
-        });
-    });
-    
-    // Botones
-    const buttonElements = [
-        '#toggleRoute',
-        '#eGateButton'
-    ];
-    
-    buttonElements.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(element => {
-            element.classList.toggle('night-mode');
-        });
-    });
-    
-    // Actualizar el audio si está presente
-    const audioElement = document.querySelector('audio');
-    if (audioElement) {
-        const isPlaying = !audioElement.paused;
-        audioElement.load();
-        if (isPlaying) {
-            audioElement.play();
-        }
-    }
-    
-    // Actualizar el ícono del toggle
-    toggleSlider.innerHTML = isNightMode ? '🌚' : '🌞';
-    
-    // Guardar preferencia
-    localStorage.setItem('nightMode', isNightMode);
-});
-
-// Restaurar preferencia al cargar
-document.addEventListener('DOMContentLoaded', () => {
-    const savedNightMode = localStorage.getItem('nightMode') === 'true';
-    if (savedNightMode) {
-        nightModeToggle.click();
-    }
-});
-
-// Restaurar preferencia de modo nocturno
-        // Weather Update Function for Dubai only
-        async function updateWeather() {
-            try {
-                // Dubai Weather
-                const dubaiResponse = await fetch('https://api.open-meteo.com/v1/forecast?latitude=25.2048&longitude=55.2708&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&current_weather=true&timezone=Asia%2FDubai');
-                const dubaiData = await dubaiResponse.json();
-
-                // Update Dubai weather
-                document.getElementById('dubaiTempMax').textContent = `${Math.round(dubaiData.daily.temperature_2m_max[0])}°C`;
-                document.getElementById('dubaiTempMin').textContent = `${Math.round(dubaiData.daily.temperature_2m_min[0])}°C`;
-                document.getElementById('dubaiHumidity').textContent = `${Math.round(dubaiData.current_weather.temperature)}%`;
-
-                const dubaiSunrise = new Date(dubaiData.daily.sunrise[0]);
-                const dubaiSunset = new Date(dubaiData.daily.sunset[0]);
-
-                document.getElementById('dubaiSunrise').textContent = dubaiSunrise.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                });
-                document.getElementById('dubaiSunset').textContent = dubaiSunset.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                });
-
-            } catch (error) {
-            console.error('Error fetching weather data:', error);
-            }
-        }
-
-        // Update weather every 30 minutes
-        updateWeather();
-        setInterval(updateWeather, 30 * 60 * 1000);
-
-        // Add night mode support for weather box
-        document.querySelector('.night-mode-toggle').addEventListener('click', () => {
-            document.getElementById('dubaiWeatherBox').classList.toggle('night-mode');
-        });
-        // Current Time Update Function
-function updateCurrentTime() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', {
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    });
-    document.getElementById('currentTime').textContent = timeString;
-}
-function updateCurrentDate() {
-    const now = new Date();
-    const options = { 
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    };
-    
-    const dateString = now.toLocaleDateString('en-EN', options)
-        .replace('.', '');
-    
-    document.getElementById('currentDate').textContent = dateString;
-}
-
-// Actualizamos la fecha inmediatamente
-updateCurrentDate();
-
-// Actualizamos la fecha cada día a la medianoche
-setInterval(() => {
-    updateCurrentDate();
-}, 1000 * 60 * 60 * 24); // 24 horas en milisegundos
-// Update time every second
-updateCurrentTime();
-setInterval(updateCurrentTime, 1000);
-
-// Add night mode support for time box
-document.querySelector('.night-mode-toggle').addEventListener('click', () => {
-    document.getElementById('currentTimeBox').classList.toggle('night-mode');
-});
-// Radio Box Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const radioBox = document.getElementById('radioBox');
-    const radioToggle = document.getElementById('radioToggle');
-    let isExpanded = false;
-
-    radioToggle.addEventListener('click', function() {
-        isExpanded = !isExpanded;
-        radioBox.classList.toggle('expanded');
-    });
-});
-// Calendar Toggle Functionality
-document.getElementById('calendarBox').addEventListener('click', function() {
-    const calendarWindow = document.getElementById('calendar-window');
-    calendarWindow.classList.toggle('visible');
-});
-
-// Close calendar when clicking outside
-document.addEventListener('click', function(event) {
-    const calendarBox = document.getElementById('calendarBox');
-    const calendarWindow = document.getElementById('calendar-window');
-    
-    if (!calendarBox.contains(event.target) && !calendarWindow.contains(event.target)) {
-        calendarWindow.classList.remove('visible');
-    }
-});
-
-// Night mode support for calendar box
-document.querySelector('.night-mode-toggle').addEventListener('click', () => {
-    document.getElementById('calendarBox').classList.toggle('night-mode');
-});
-    </script>
-</body>
-</html>
+            document
