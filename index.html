@@ -532,4 +532,194 @@
             const minutes = Math.floor(timeDifference % 60);
             const seconds = Math.floor((timeDifference * 60) % 60);
 
-            document
+            document.getElementById('countdown').textContent =
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('nextBus').textContent = `Next bus at: ${nextBus.time}`;
+
+            const totalDuration = (nextBus.minutes - previousBus.minutes + 1440) % 1440;
+            const elapsed = (currentTimeInMinutes - previousBus.minutes + 1440) % 1440;
+            const percentage = (elapsed / totalDuration) * 100;
+            const busPosition = Math.min(Math.max(percentage, 0), 100) * 2.76;
+
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = `${Math.min(Math.max(percentage, 0), 100)}%`;
+
+            const remainingMinutes = timeDifference;
+            if (remainingMinutes <= 3 && remainingMinutes > 2.9167) {
+                progressFill.style.transition = 'background-color 5s linear';
+                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
+            } else if (remainingMinutes > 3) {
+                const startColor = 204;
+                const endColor = 51;
+                const colorValue = Math.round(startColor - (startColor - endColor) * (percentage / 100));
+                progressFill.style.backgroundColor = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
+                progressFill.style.transition = 'background-color 0.5s linear';
+            } else if (remainingMinutes <= 2.9167) {
+                progressFill.style.backgroundColor = 'rgb(255, 0, 0)';
+                progressFill.style.transition = 'none';
+            }
+
+            document.getElementById('busEmoji').style.left = `${busPosition}px`;
+            
+            updateSkyAndCelestial();
+        }
+
+        function createStars() {
+            const starsContainer = document.getElementById('starsContainer');
+            const numberOfStars = 50;
+
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+
+                const x = Math.random() * 100;
+                const y = Math.random() * 75;
+                const size = Math.random() * 3 + 1;
+
+                star.style.left = `${x}vw`;
+                star.style.top = `${y}vh`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+
+                const delay = Math.random() * 3;
+                star.style.animationDelay = `${delay}s`;
+
+                starsContainer.appendChild(star);
+            }
+        }
+
+        document.getElementById('toggleRoute').addEventListener('click', function() {
+            isGrosvenorToHQ = !isGrosvenorToHQ;
+            const routeTitle = document.getElementById('routeTitle');
+            const toggleButton = document.getElementById('toggleRoute');
+            
+            if (isGrosvenorToHQ) {
+                routeTitle.textContent = "Grosvenor to HQ in";
+                toggleButton.textContent = "🔄";
+            } else {
+                routeTitle.textContent = "HQ to Grosvenor in";
+                toggleButton.textContent = "🔄";
+            }
+            updateCountdown();
+        });
+
+        function findClosestBusTimes(inputTime) {
+            const [inputHours, inputMinutes] = inputTime.split(':').map(Number);
+            const targetTimeInMinutes = inputHours * 60 + inputMinutes;
+            const maxDelayMinutes = 50;
+
+            const schedule = grosvenorToHQSchedule.map(item => ({
+                gros: item.gros,
+                hq: item.hq,
+                grosMinutes: item.gros.split(':').map(Number)[0] * 60 + item.gros.split(':').map(Number)[1],
+                hqMinutes: item.hq.split(':').map(Number)[0] * 60 + item.hq.split(':').map(Number)[1]
+            }));
+
+            schedule.push({
+                gros: schedule[0].gros,
+                hq: schedule[0].hq,
+                grosMinutes: schedule[0].grosMinutes + 1440,
+                hqMinutes: schedule[0].hqMinutes + 1440
+            });
+
+            const validTimes = schedule.filter(item => {
+                const diff = item.hqMinutes - targetTimeInMinutes;
+                return diff >= 0 && diff <= maxDelayMinutes;
+            });
+
+            validTimes.sort((a, b) => a.grosMinutes - b.grosMinutes);
+
+            return validTimes.slice(0, 3).map(item => ({ gros: item.gros, hq: item.hq }));
+        }
+
+        document.getElementById('playButton').addEventListener('click', function() {
+            document.querySelector('.input-container').style.display = 'none';
+            document.getElementById('closestTimes').style.display = 'none';
+            const eGateButton = document.getElementById('eGateButton');
+            eGateButton.style.display = 'inline-block';
+            eGateButton.style.width = '100px';
+            eGateButton.style.height = '24px';
+            eGateButton.style.background = 'white';
+        });
+
+        document.getElementById('busTimeInput').addEventListener('change', function() {
+            const input = document.getElementById('busTimeInput').value.trim();
+            const closestTimesDiv = document.getElementById('closestTimes');
+
+            if (!input) {
+                closestTimesDiv.textContent = '';
+                closestTimesDiv.style.display = 'none';
+                return;
+            }
+
+            const closestTimes = findClosestBusTimes(input);
+            if (closestTimes.length === 0) {
+                closestTimesDiv.textContent = '';
+                closestTimesDiv.style.display = 'none';
+            } else {
+                const result = closestTimes.map(item => `${item.gros} ➡️ ${item.hq}`).join(', ');
+                closestTimesDiv.textContent = result;
+                closestTimesDiv.style.display = 'block';
+            }
+        });
+
+        document.getElementById('eGateButton').addEventListener('click', function() {
+            document.getElementById('eGateButton').style.display = 'none';
+            document.querySelector('.input-container').style.display = 'flex';
+        });
+
+        function showFirstVisitPopup() {
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (!localStorage.getItem('hasVisited') && !isPWA && isIOS) {
+                const popup = document.getElementById('firstVisitPopup');
+                popup.style.display = 'block';
+                document.body.classList.add('black-background');
+            }
+        }
+
+        document.getElementById('closePopup').addEventListener('click', function() {
+            const popup = document.getElementById('firstVisitPopup');
+            popup.style.display = 'none';
+            document.body.classList.remove('black-background');
+            localStorage.setItem('hasVisited', 'true');
+        });
+
+        window.onload = function() {
+            window.scrollTo(0, 0);
+            updateSkyAndCelestial();
+            updateCountdown();
+            showFirstVisitPopup();
+            const now = new Date();
+            if (now.getHours() < 6 || now.getHours() >= 18) {
+                createStars();
+            }
+        };
+
+        let intervalId = null;
+        function startUpdateLoop() {
+            if (intervalId) clearInterval(intervalId);
+            intervalId = setInterval(updateCountdown, 100);
+        }
+
+        startUpdateLoop();
+    </script>
+    <svg class="dune" viewBox="0 0 1000 250" preserveAspectRatio="none">
+    <defs>
+        <linearGradient id="duneGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#f4e4bc;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#edc9af;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#d2a679;stop-opacity:0.8" />
+        </linearGradient>
+    </defs>
+    <path class="dune-gradient" d="
+        M0,250
+        C120,225 320,130 430,80
+        C540,50 680,110 860,190
+        C930,220 1000,235 1000,250
+        L1000,250
+        L0,250
+        Z" />
+</svg>
+</body>
+</html>
